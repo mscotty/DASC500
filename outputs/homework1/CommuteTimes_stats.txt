@@ -1,0 +1,22 @@
+Calculated metrics for Time (minutes)
+Mean: 26.90625
+Median: 25.950000000000003
+Mode:
+2 Mode(s) found: 23.4, 24.8
+Population Variance: 20.85600260416667
+Population Standard Deviation: 4.566837264909564
+Sample Variance: 21.299747340425533
+Sample Standard Deviation: 4.615164931010108
+First quartile: 23.75
+Third quartile: 28.5
+Calculated metrics for Time (minutes)
+Mean: 26.90625
+Median: 25.950000000000003
+Mode:
+2 Mode(s) found: 23.4, 24.8
+Population Variance: 20.85600260416667
+Population Standard Deviation: 4.566837264909564
+Sample Variance: 21.299747340425533
+Sample Standard Deviation: 4.615164931010108
+First quartile: 23.75
+Third quartile: 28.5

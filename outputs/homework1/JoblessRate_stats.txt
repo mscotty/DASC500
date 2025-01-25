@@ -1,0 +1,22 @@
+Calculated metrics for Jobless_rate
+Mean: 6.814814814814815
+Median: 6.8
+Mode:
+1 Mode(s) found: 7.1
+Population Variance: 0.9545953360768176
+Population Standard Deviation: 0.9770339482724322
+Sample Variance: 0.9913105413105414
+Sample Standard Deviation: 0.9956457910876445
+First quartile: 6.1
+Third quartile: 7.5
+Calculated metrics for Delinquent_Loans
+Mean: 6.33074074074074
+Median: 5.57
+Mode:
+1 Mode(s) found: 5.57
+Population Variance: 4.817014266117968
+Population Standard Deviation: 2.194769752415494
+Sample Variance: 5.002284045584044
+Sample Standard Deviation: 2.236578647305756
+First quartile: 4.765000000000001
+Third quartile: 7.119999999999999
