@@ -7,11 +7,13 @@ import plotly.io as pio
 
 from DASC500.utilities.data_type.distinguish_data_types import distinguish_data_types
 from DASC500.utilities.print.print_series_mode import print_series_mode
-from DASC500.plotting.auto_select_binning_method import auto_select_binning_method
-from DASC500.formulas.histogram_bins.freedman_diaconis_rule import freedman_diaconis_rule
-from DASC500.formulas.histogram_bins.square_root_rule import square_root_rule
-from DASC500.formulas.histogram_bins.sturges_rule import sturges_rule
 from DASC500.plotting.plot_histogram import plot_histogram
+from DASC500.plotting.plot_stacked_bar_chart import plot_stacked_bar_chart_horizontal, plot_stacked_bar_chart_vertical
+from DASC500.plotting.plot_clustered_bar_chart import plot_clustered_bar_chart_horizontal, plot_clustered_bar_chart_vertical
+from DASC500.plotting.plot_individual_bar_charts import plot_individual_bar_charts
+from DASC500.plotting.plot_line_chart import plot_line_chart
+from DASC500.plotting.plot_heatmap import plot_heatmap
+from DASC500.plotting.plot_radar_chart import plot_radar_chart
 
 
 # -------------------------------------
@@ -105,5 +107,43 @@ class DataAnalysis:
             data = self.df[key].dropna()
             plot_histogram(data,
                            **kwargs)
-
-            
+    
+    def plot_stacked_bar_chart_horizontal(self, 
+                                          **kwargs):
+        plot_stacked_bar_chart_horizontal(self.df, 
+                                          **kwargs)
+    
+    def plot_stacked_bar_chart_vertical(self, 
+                                        **kwargs):
+        plot_stacked_bar_chart_vertical(self.df, 
+                                        **kwargs)
+    
+    def plot_clustered_bar_chart_horizontal(self, 
+                                            **kwargs):
+        plot_clustered_bar_chart_horizontal(self.df, 
+                                            **kwargs)
+    
+    def plot_clustered_bar_chart_vertical(self, 
+                                          **kwargs):
+        plot_clustered_bar_chart_vertical(self.df, 
+                                          **kwargs)
+    
+    def plot_individual_bar_charts(self, 
+                               **kwargs):
+        plot_individual_bar_charts(self.df, 
+                                   **kwargs)
+    
+    def plot_line_chart(self, 
+                        **kwargs):
+        plot_line_chart(self.df, 
+                        **kwargs)
+    
+    def plot_heatmap(self, 
+                     **kwargs):
+        plot_heatmap(self.df,
+                     **kwargs)
+    
+    def plot_radar_chart(self,
+                         **kwargs):
+        plot_radar_chart(self.df,
+                         **kwargs)
