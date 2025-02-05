@@ -1,9 +1,11 @@
 import os
+from copy import deepcopy
+import warnings
 
 import pandas as pd
 import numpy as np
-import plotly.graph_objects as go
-import plotly.io as pio
+import scipy.stats as stats
+
 
 from DASC500.utilities.data_type.distinguish_data_types import distinguish_data_types
 from DASC500.utilities.print.print_series_mode import print_series_mode
@@ -26,10 +28,28 @@ class DataAnalysis:
         and calculating initial stats and numeric columns.
         """
         self.file = file
-        self.df = pd.read_csv(file)
+        self.df_original = pd.read_csv(file)
+        self.df = deepcopy(self.df_original)
         self.determine_numeric_col()
         self.calculate_stats()
     
+    def downsample_dataframe(self, new_size, random_state=None):
+        """
+        Downsample a DataFrame to a specified number of rows.
+
+        Parameters:
+            df (pd.DataFrame): The original DataFrame.
+            new_size (int): The desired number of rows in the downsampled DataFrame.
+            random_state (int, optional): Random seed for reproducibility.
+
+        Returns:
+            pd.DataFrame: The downsampled DataFrame.
+        """
+        if new_size >= len(self.df_original):
+            warnings.warn(f"{new_size} provided is outside of the data's supported range: 1-{len(self.df_original)}")
+            return self.df_original.copy()  # Return original if the requested size is too large
+        self.df = self.df_original.sample(n=new_size, random_state=random_state).reset_index(drop=True)
+
     def determine_numeric_col(self):
         """
         Identify numeric columns in the DataFrame and store them.
@@ -96,8 +116,80 @@ class DataAnalysis:
         """
         return self.df[col1_name].corr(self.df[col2_name])
 
-    def plot_histograms(self, 
-                        **kwargs):
+    def confidence_intervals(self, confidence=0.95):
+        """
+        Compute confidence intervals for the mean and variance of each numerical column in a Pandas DataFrame.
+
+        Parameters:
+            confidence (float): Confidence level (default 0.95 for 95%).
+
+        Returns:
+            dict: Confidence intervals for mean and variance of each column.
+        """
+        results = {}
+        alpha = 1 - confidence  # Significance level
+
+        for column in self.df.select_dtypes(include=[np.number]):  # Process only numerical columns
+            data = self.df[column].dropna().values  # Remove NaN values
+            n = len(data)
+
+            if n < 2:
+                results[column] = "Not enough data for CI calculation"
+                continue
+
+            # Sample mean and sample variance
+            mean = self.num_headers[column]['mean']
+            variance = self.num_headers[column]['sample_variance']
+            #mean = np.mean(data)
+            #variance = np.var(data, ddof=1)  # Sample variance
+
+            # Mean CI
+            t_critical = stats.t.ppf(1 - alpha / 2, df=n-1)  # t critical value
+            mean_margin = t_critical * (np.sqrt(variance) / np.sqrt(n))
+            mean_ci = (mean - mean_margin, mean + mean_margin)
+
+            # Variance CI
+            chi2_lower = stats.chi2.ppf(alpha / 2, df=n-1)  # Lower chi-square critical value
+            chi2_upper = stats.chi2.ppf(1 - alpha / 2, df=n-1)  # Upper chi-square critical value
+
+            var_ci_lower = (n - 1) * variance / chi2_upper
+            var_ci_upper = (n - 1) * variance / chi2_lower if chi2_lower > 0 else np.nan  # Prevent division by zero
+
+            variance_ci = (var_ci_lower, var_ci_upper)
+
+            # Store results
+            results[column] = {
+                "mean": mean,
+                "mean_CI": mean_ci,
+                "variance": variance,
+                "variance_CI": variance_ci
+            }
+        
+        self.conf_interval = results
+    
+    def print_confidence_intervals(self, file=None):
+        """!
+        @brief Print or save confidence intervals of numeric columns.
+        Args:
+        - file (str): File path to save confidence intervals. If None, prints to console.
+        """
+        for col, res in self.conf_interval.items():
+            # Build the string with all metrics
+            conf_string = (
+                f"{col}:\n"
+                f"Mean CI: {res['mean_CI']}\n"
+                f"Variance CI: {res['variance_CI']}\n"
+            )
+
+            # Print or write the string based on the `file` argument
+            if file is None:
+                print(conf_string)
+            else:
+                with open(file, 'a+') as f:
+                    f.write(conf_string)
+
+    def plot_histograms_per_col(self, 
+                                **kwargs):
         """!
         @brief Create and save histograms for numeric columns using the specified binning method.
         Args:

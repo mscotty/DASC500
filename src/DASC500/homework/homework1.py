@@ -15,7 +15,7 @@ for file_name in file_names:
     output_file = os.path.join(output_folder, os.path.splitext(file_name)[0] + '_stats.txt')
     data_obj.print_stats(output_file)
     for bin_option in bin_options:
-        data_obj.plot_histograms(binning_method=bin_option, output_dir=output_folder, use_bin_width=True)
+        data_obj.plot_histograms_per_col(binning_method=bin_option, output_dir=output_folder, use_bin_width=True)
     if file_name == "JoblessRate.csv":
         print(data_obj.calculate_pearson_corr_coeff('Jobless_rate', 'Delinquent_Loans'))
     obj[file_name] = data_obj

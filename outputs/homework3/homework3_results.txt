@@ -1,0 +1,55 @@
+Problem 1:
+See .../classes/DataAnalysis.py
+
+Problem 2:
+DataAnalysis object downsampled (random seed: 1)
+goal: 30
+actual: 30
+Histogram plots created here:
+D:\Mitchell\School\2025 Winter\DASC500\github\DASC500\src\DASC500\../../outputs/homework3
+Problem 3:
+TV:
+Manual Results:
+Mean=160.86333333333334 [sales in thousands of items]
+Sample Variance=6220.135505747126 [sales in thousands of items]^2
+Implicit Function Results:
+Mean=160.86333333333334 [sales in thousands of items]
+Sample Variance=6220.135505747126 [sales in thousands of items]^2
+Radio:
+Manual Results:
+Mean=23.730000000000008 [sales in thousands of items]
+Sample Variance=159.1732068965517 [sales in thousands of items]^2
+Implicit Function Results:
+Mean=23.730000000000004 [sales in thousands of items]
+Sample Variance=159.1732068965517 [sales in thousands of items]^2
+Newspaper:
+Manual Results:
+Mean=34.766666666666666 [sales in thousands of items]
+Sample Variance=645.9795402298851 [sales in thousands of items]^2
+Implicit Function Results:
+Mean=34.766666666666666 [sales in thousands of items]
+Sample Variance=645.9795402298851 [sales in thousands of items]^2
+Sales:
+Manual Results:
+Mean=14.749999999999998 [sales in thousands of items]
+Sample Variance=16.730172413793106 [sales in thousands of items]^2
+Implicit Function Results:
+Mean=14.749999999999998 [sales in thousands of items]
+Sample Variance=16.730172413793106 [sales in thousands of items]^2
+
+Problem 4:
+Unnamed: 0:
+Mean CI: (np.float64(61.176121542080566), np.float64(107.62387845791945))
+Variance CI: (np.float64(2453.44689196965), np.float64(6990.509055455999))
+TV:
+Mean CI: (np.float64(131.4135994954622), np.float64(190.3130671712045))
+Variance CI: (np.float64(3945.2080422934), np.float64(11240.925016791032))
+Radio:
+Mean CI: (np.float64(19.01896387821406), np.float64(28.44103612178595))
+Variance CI: (np.float64(100.95783530530639), np.float64(287.65516149175727))
+Newspaper:
+Mean CI: (np.float64(25.276128662521195), np.float64(44.257204670812136))
+Variance CI: (np.float64(409.7215687531588), np.float64(1167.4034379791356))
+Sales:
+Mean CI: (np.float64(13.222674300651796), np.float64(16.2773256993482))
+Variance CI: (np.float64(10.611346118563976), np.float64(30.234488211337634))
