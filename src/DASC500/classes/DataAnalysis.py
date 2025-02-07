@@ -9,6 +9,7 @@ import scipy.stats as stats
 
 from DASC500.utilities.data_type.distinguish_data_types import distinguish_data_types
 from DASC500.utilities.print.print_series_mode import print_series_mode
+from DASC500.formulas.statistics.hypothesis_test import hypothesis_test
 from DASC500.plotting.plot_histogram import plot_histogram
 from DASC500.plotting.plot_stacked_bar_chart import plot_stacked_bar_chart_horizontal, plot_stacked_bar_chart_vertical
 from DASC500.plotting.plot_clustered_bar_chart import plot_clustered_bar_chart_horizontal, plot_clustered_bar_chart_vertical
@@ -167,13 +168,18 @@ class DataAnalysis:
         
         self.conf_interval = results
     
-    def print_confidence_intervals(self, file=None):
+    def print_confidence_intervals(self, file=None, col_names=None):
         """!
         @brief Print or save confidence intervals of numeric columns.
         Args:
         - file (str): File path to save confidence intervals. If None, prints to console.
         """
+        if col_names is None:
+            col_names = self.df.select_dtypes(include=[np.number])
+
         for col, res in self.conf_interval.items():
+            if col not in col_names:
+                continue
             # Build the string with all metrics
             conf_string = (
                 f"{col}:\n"
@@ -187,6 +193,9 @@ class DataAnalysis:
             else:
                 with open(file, 'a+') as f:
                     f.write(conf_string)
+    
+    def hypothesis_test(self, data_col_name, **kwargs):
+        return hypothesis_test(self.df[data_col_name], **kwargs)
 
     def plot_histograms_per_col(self, 
                                 **kwargs):

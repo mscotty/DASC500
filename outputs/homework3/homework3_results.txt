@@ -7,40 +7,42 @@ goal: 30
 actual: 30
 Histogram plots created here:
 D:\Mitchell\School\2025 Winter\DASC500\github\DASC500\src\DASC500\../../outputs/homework3
+
 Problem 3:
+
 TV:
 Manual Results:
-Mean=160.86333333333334 [sales in thousands of items]
-Sample Variance=6220.135505747126 [sales in thousands of items]^2
+Mean=160.86333333333334 [thousands of dollars]
+Sample Variance=6220.135505747126 [thousands of dollars]^2
 Implicit Function Results:
-Mean=160.86333333333334 [sales in thousands of items]
-Sample Variance=6220.135505747126 [sales in thousands of items]^2
+Mean=160.86333333333334 [thousands of dollars]
+Sample Variance=6220.135505747126 [thousands of dollars]^2
+
 Radio:
 Manual Results:
-Mean=23.730000000000008 [sales in thousands of items]
-Sample Variance=159.1732068965517 [sales in thousands of items]^2
+Mean=23.730000000000008 [thousands of dollars]
+Sample Variance=159.1732068965517 [thousands of dollars]^2
 Implicit Function Results:
-Mean=23.730000000000004 [sales in thousands of items]
-Sample Variance=159.1732068965517 [sales in thousands of items]^2
+Mean=23.730000000000004 [thousands of dollars]
+Sample Variance=159.1732068965517 [thousands of dollars]^2
+
 Newspaper:
 Manual Results:
-Mean=34.766666666666666 [sales in thousands of items]
-Sample Variance=645.9795402298851 [sales in thousands of items]^2
+Mean=34.766666666666666 [thousands of dollars]
+Sample Variance=645.9795402298851 [thousands of dollars]^2
 Implicit Function Results:
-Mean=34.766666666666666 [sales in thousands of items]
-Sample Variance=645.9795402298851 [sales in thousands of items]^2
+Mean=34.766666666666666 [thousands of dollars]
+Sample Variance=645.9795402298851 [thousands of dollars]^2
+
 Sales:
 Manual Results:
-Mean=14.749999999999998 [sales in thousands of items]
-Sample Variance=16.730172413793106 [sales in thousands of items]^2
+Mean=14.749999999999998 [thousands of items]
+Sample Variance=16.730172413793106 [thousands of items]^2
 Implicit Function Results:
-Mean=14.749999999999998 [sales in thousands of items]
-Sample Variance=16.730172413793106 [sales in thousands of items]^2
+Mean=14.749999999999998 [thousands of items]
+Sample Variance=16.730172413793106 [thousands of items]^2
 
 Problem 4:
-Unnamed: 0:
-Mean CI: (np.float64(61.176121542080566), np.float64(107.62387845791945))
-Variance CI: (np.float64(2453.44689196965), np.float64(6990.509055455999))
 TV:
 Mean CI: (np.float64(131.4135994954622), np.float64(190.3130671712045))
 Variance CI: (np.float64(3945.2080422934), np.float64(11240.925016791032))
@@ -53,3 +55,213 @@ Variance CI: (np.float64(409.7215687531588), np.float64(1167.4034379791356))
 Sales:
 Mean CI: (np.float64(13.222674300651796), np.float64(16.2773256993482))
 Variance CI: (np.float64(10.611346118563976), np.float64(30.234488211337634))
+
+Problem 5:
+For TV:
+Test Statistic (W): 9.050020403095061
+Critical Value: 2.045229642132703
+p-value: 6.040670186280295e-10
+Conclusion: Reject H0: There is significant evidence that μ ≠ 30.55
+For Radio:
+Test Statistic (W): -2.9608064550473436
+Critical Value: 2.045229642132703
+p-value: 0.0060626907988354795
+Conclusion: Reject H0: There is significant evidence that μ ≠ 30.55
+For Newspaper:
+Test Statistic (W): 0.9086999761122678
+Critical Value: 2.045229642132703
+p-value: 0.3709988275278
+Conclusion: Fail to reject H0: There is not enough evidence to say μ ≠ 30.55
+For Sales:
+Test Statistic (W): -21.15765377318487
+Critical Value: 2.045229642132703
+p-value: 0.0
+Conclusion: Reject H0: There is significant evidence that μ ≠ 30.55
+
+Problem 6:
+
+Repeating the confidence interval and hypothesis #1
+TV:
+Mean CI: (np.float64(96.79885161731514), np.float64(164.35448171601823))
+Variance CI: (np.float64(5190.03478266611), np.float64(14787.760544200057))
+Radio:
+Mean CI: (np.float64(16.2771196009131), np.float64(27.68954706575357))
+Variance CI: (np.float64(148.11642829213824), np.float64(422.02227267562955))
+Newspaper:
+Mean CI: (np.float64(29.42318049013455), np.float64(48.85681950986545))
+Variance CI: (np.float64(429.49235049414517), np.float64(1223.7355433310695))
+Sales:
+Mean CI: (np.float64(11.19103535979746), np.float64(15.095631306869208))
+Variance CI: (np.float64(17.338014771656248), np.float64(49.40051878098373))
+
+For TV:
+Mean=130.57666666666668 [thousands of dollars]
+Sample Variance=8182.767367816092 [thousands of dollars]^2
+
+For Radio:
+Mean=21.983333333333334 [thousands of dollars]
+Sample Variance=233.5248850574712 [thousands of dollars]^2
+
+For Newspaper:
+Mean=39.14 [thousands of dollars]
+Sample Variance=677.1507586206897 [thousands of dollars]^2
+
+For Sales:
+Mean=13.143333333333334 [thousands of items]
+Sample Variance=27.335643678160913 [thousands of items]^2
+
+Repeating the confidence interval and hypothesis #2
+TV:
+Mean CI: (np.float64(118.42280942182956), np.float64(179.37719057817046))
+Variance CI: (np.float64(4225.2948775881505), np.float64(12038.965343178575))
+Radio:
+Mean CI: (np.float64(19.260291186258204), np.float64(29.82637548040847))
+Variance CI: (np.float64(126.96245527901102), np.float64(361.74909521613273))
+Newspaper:
+Mean CI: (np.float64(27.663641930199788), np.float64(41.669691403133555))
+Variance CI: (np.float64(223.0891672903934), np.float64(635.6391284531317))
+Sales:
+Mean CI: (np.float64(12.668760842823708), np.float64(16.224572490509622))
+Variance CI: (np.float64(14.37886700333433), np.float64(40.96913624786524))
+
+For TV:
+Mean=148.9 [thousands of dollars]
+Sample Variance=6661.728965517241 [thousands of dollars]^2
+
+For Radio:
+Mean=24.543333333333337 [thousands of dollars]
+Sample Variance=200.1728850574713 [thousands of dollars]^2
+
+For Newspaper:
+Mean=34.66666666666667 [thousands of dollars]
+Sample Variance=351.7291954022989 [thousands of dollars]^2
+
+For Sales:
+Mean=14.446666666666665 [thousands of items]
+Sample Variance=22.67016091954023 [thousands of items]^2
+
+Repeating the confidence interval and hypothesis #3
+TV:
+Mean CI: (np.float64(129.11927940233426), np.float64(193.48072059766577))
+Variance CI: (np.float64(4710.843655597255), np.float64(13422.420245197392))
+Radio:
+Mean CI: (np.float64(17.9355527419727), np.float64(29.051113924693972))
+Variance CI: (np.float64(140.5108811528426), np.float64(400.35208844504245))
+Newspaper:
+Mean CI: (np.float64(22.561890308294913), np.float64(40.63810969170508))
+Variance CI: (np.float64(371.5885962649925), np.float64(1058.7526698037636))
+Sales:
+Mean CI: (np.float64(12.416443064086941), np.float64(14.870223602579731))
+Variance CI: (np.float64(6.8472881694397385), np.float64(19.509706980189787))
+
+For TV:
+Mean=161.3 [thousands of dollars]
+Sample Variance=7427.259999999998 [thousands of dollars]^2
+
+For Radio:
+Mean=23.493333333333336 [thousands of dollars]
+Sample Variance=221.53374712643682 [thousands of dollars]^2
+
+For Newspaper:
+Mean=31.599999999999998 [thousands of dollars]
+Sample Variance=585.8579310344828 [thousands of dollars]^2
+
+For Sales:
+Mean=13.643333333333336 [thousands of items]
+Sample Variance=10.79564367816092 [thousands of items]^2
+
+Problem 7:
+
+Repeating the confidence interval and hypothesis #1
+TV:
+Mean CI: (np.float64(130.1838657459532), np.float64(165.65413425404677))
+Variance CI: (np.float64(6158.663187294721), np.float64(10781.026831090348))
+Radio:
+Mean CI: (np.float64(20.650585492135644), np.float64(26.54541450786436))
+Variance CI: (np.float64(170.09828169366037), np.float64(297.7649666968156))
+Newspaper:
+Mean CI: (np.float64(25.793489987508313), np.float64(34.70251001249168))
+Variance CI: (np.float64(388.5235708222557), np.float64(680.1286113822548))
+Sales:
+Mean CI: (np.float64(12.992373793540505), np.float64(15.105626206459497))
+Variance CI: (np.float64(21.86050792116163), np.float64(38.26783756018842))
+
+For TV:
+Mean=147.91899999999998 [thousands of dollars]
+Sample Variance=7988.967413131313 [thousands of dollars]^2
+
+For Radio:
+Mean=23.598000000000003 [thousands of dollars]
+Sample Variance=220.65009696969696 [thousands of dollars]^2
+
+For Newspaper:
+Mean=30.247999999999998 [thousands of dollars]
+Sample Variance=503.989591919192 [thousands of dollars]^2
+
+For Sales:
+Mean=14.049000000000001 [thousands of items]
+Sample Variance=28.35727171717172 [thousands of items]^2
+
+Repeating the confidence interval and hypothesis #2
+TV:
+Mean CI: (np.float64(126.77885728692837), np.float64(159.74514271307163))
+Variance CI: (np.float64(5319.82725711177), np.float64(9312.605455353854))
+Radio:
+Mean CI: (np.float64(20.089116437522794), np.float64(26.10688356247721))
+Variance CI: (np.float64(177.2671474753082), np.float64(310.3144002329562))
+Newspaper:
+Mean CI: (np.float64(26.924337250089206), np.float64(35.779662749910784))
+Variance CI: (np.float64(383.8544327226818), np.float64(671.9550676116813))
+Sales:
+Mean CI: (np.float64(12.909121558787236), np.float64(14.916878441212758))
+Variance CI: (np.float64(19.732392612513447), np.float64(34.54247256709674))
+
+For TV:
+Mean=143.262 [thousands of dollars]
+Sample Variance=6900.836319191919 [thousands of dollars]^2
+
+For Radio:
+Mean=23.098000000000003 [thousands of dollars]
+Sample Variance=229.94949090909085 [thousands of dollars]^2
+
+For Newspaper:
+Mean=31.351999999999997 [thousands of dollars]
+Sample Variance=497.93282424242426 [thousands of dollars]^2
+
+For Sales:
+Mean=13.912999999999997 [thousands of items]
+Sample Variance=25.59669797979798 [thousands of items]^2
+
+Repeating the confidence interval and hypothesis #3
+TV:
+Mean CI: (np.float64(138.5538000042676), np.float64(172.54819999573243))
+Variance CI: (np.float64(5656.818723736873), np.float64(9902.52471754517))
+Radio:
+Mean CI: (np.float64(21.0362443985226), np.float64(27.117755601477402))
+Variance CI: (np.float64(181.0424939336521), np.float64(316.92332009531134))
+Newspaper:
+Mean CI: (np.float64(25.124690552455426), np.float64(34.14930944754457))
+Variance CI: (np.float64(398.6715487017626), np.float64(697.8931194375059))
+Sales:
+Mean CI: (np.float64(13.654670035925959), np.float64(15.837329964074039))
+Variance CI: (np.float64(23.32005937320956), np.float64(40.82285037503885))
+
+For TV:
+Mean=155.55100000000002 [thousands of dollars]
+Sample Variance=7337.978887878788 [thousands of dollars]^2
+
+For Radio:
+Mean=24.077 [thousands of dollars]
+Sample Variance=234.8468393939394 [thousands of dollars]^2
+
+For Newspaper:
+Mean=29.636999999999997 [thousands of dollars]
+Sample Variance=517.1534656565656 [thousands of dollars]^2
+
+For Sales:
+Mean=14.745999999999999 [thousands of items]
+Sample Variance=30.250589898989897 [thousands of items]^2
+
+Problem 8:
+For assistance, please reference the plots generated here:
+D:\Mitchell\School\2025 Winter\DASC500\github\DASC500\src\DASC500\../../outputs/homework3
