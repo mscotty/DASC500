@@ -22,6 +22,7 @@ def plot_histogram(data,
                    title_font_size=28,
                    title_font_name='Times New Roman',
                    x_axis_name=None,
+                   x_axis_units=None,
                    x_axis_font_size=24,
                    x_axis_font_name='Times New Roman',
                    y_axis_name=None,
@@ -40,6 +41,7 @@ def plot_histogram(data,
     @param[in] title_font_size (int) Font size for the histogram title.
     @param[in] title_font_name (str) Font name for the histogram title.
     @param[in] x_axis_name (str) Custom label for the x-axis.
+    @param[in] x_axis_units (str) Support label for the x-axis.
     @param[in] x_axis_font_size (int) Font size for the x-axis label.
     @param[in] x_axis_font_name (str) Font name for the x-axis label.
     @param[in] y_axis_name (str) Custom label for the y-axis.
@@ -81,6 +83,11 @@ def plot_histogram(data,
     else:
         bins = bin_count
         bin_str = 'bin_count'
+    
+    if x_axis_units is None:
+        x_axis_units = ''
+    else:
+        x_axis_units = f" [{x_axis_units}]"
 
     # Create interactive histogram using Plotly
     fig = go.Figure()
@@ -102,7 +109,7 @@ def plot_histogram(data,
             x=0.5,  # Center title
         ),
         xaxis=dict(
-            title=dict(text=data.name if x_axis_name is None else x_axis_name, 
+            title=dict(text=data.name+x_axis_units if x_axis_name is None else x_axis_name, 
                     font=dict(family=x_axis_font_name, size=x_axis_font_size)),
             gridcolor="lightgray",
             tickfont=dict(family=x_axis_font_name, size=x_axis_font_size-4),

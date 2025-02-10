@@ -78,189 +78,469 @@ Critical Value: 2.045229642132703
 p-value: 0.0
 Conclusion: Reject H0: There is significant evidence that μ ≠ 30.55
 
+Repeating the confidence interval and hypothesis #1
+TV:
+Mean CI: (np.float64(74.45747866372707), np.float64(184.43585466960624))
+Variance CI: (np.float64(5285.06114010825), np.float64(24524.24133034048))
+Radio:
+Mean CI: (np.float64(15.521344405833789), np.float64(35.57198892749955))
+Variance CI: (np.float64(175.66776906258698), np.float64(815.1502221533738))
+Newspaper:
+Mean CI: (np.float64(14.833473824698977), np.float64(37.9931928419677))
+Variance CI: (np.float64(234.36998009176807), np.float64(1087.5457823445136))
+Sales:
+Mean CI: (np.float64(9.87049993546505), np.float64(17.542833397868286))
+Variance CI: (np.float64(25.721148193829265), np.float64(119.35370828765852))
+
+For TV:
+Mean=129.44666666666666 [thousands of dollars]
+Sample Variance=9860.016952380955 [thousands of dollars]^2
+Test Statistic (W): 3.8573447226513946
+Critical Value: 2.1447866879169273
+p-value: 0.0017421401826496208
+Conclusion: Reject H0: There is significant evidence that μ ≠ 30.55
+
+For Radio:
+Mean=25.546666666666667 [thousands of dollars]
+Sample Variance=327.73266666666666 [thousands of dollars]^2
+Test Statistic (W): -1.0703977836671408
+Critical Value: 2.1447866879169273
+p-value: 0.3025478506619077
+Conclusion: Fail to reject H0: There is not enough evidence to say μ ≠ 30.55
+
+For Newspaper:
+Mean=26.413333333333338 [thousands of dollars]
+Sample Variance=437.24980952380946 [thousands of dollars]^2
+Test Statistic (W): -0.7661809361677373
+Critical Value: 2.1447866879169273
+p-value: 0.4562937003050558
+Conclusion: Fail to reject H0: There is not enough evidence to say μ ≠ 30.55
+
+For Sales:
+Mean=13.706666666666667 [thousands of items]
+Sample Variance=47.986380952380955 [thousands of items]^2
+Test Statistic (W): -9.417045619955392
+Critical Value: 2.1447866879169273
+p-value: 1.9553901897673143e-07
+Conclusion: Reject H0: There is significant evidence that μ ≠ 30.55
+
+Repeating the confidence interval and hypothesis #2
+TV:
+Mean CI: (np.float64(99.3961197117494), np.float64(206.17721362158392))
+Variance CI: (np.float64(4982.2342427017575), np.float64(23119.035275683))
+Radio:
+Mean CI: (np.float64(18.349713178535698), np.float64(32.67695348813098))
+Variance CI: (np.float64(89.69340301507465), np.float64(416.2038248882254))
+Newspaper:
+Mean CI: (np.float64(17.556353872177574), np.float64(50.55031279448908))
+Variance CI: (np.float64(475.66836581283746), np.float64(2207.2414087841125))
+Sales:
+Mean CI: (np.float64(11.498973587692134), np.float64(16.9943597456412))
+Variance CI: (np.float64(13.195682028963589), np.float64(61.231853713259326))
+
+For TV:
+Mean=152.78666666666666 [thousands of dollars]
+Sample Variance=9295.051238095237 [thousands of dollars]^2
+Test Statistic (W): 4.910449328480976
+Critical Value: 2.1447866879169273
+p-value: 0.00022977131062273948
+Conclusion: Reject H0: There is significant evidence that μ ≠ 30.55
+
+For Radio:
+Mean=25.513333333333335 [thousands of dollars]
+Sample Variance=167.33552380952378 [thousands of dollars]^2
+Test Statistic (W): -1.5079771658337942
+Critical Value: 2.1447866879169273
+p-value: 0.153792021687863
+Conclusion: Fail to reject H0: There is not enough evidence to say μ ≠ 30.55
+
+For Newspaper:
+Mean=34.05333333333333 [thousands of dollars]
+Sample Variance=887.4255238095237 [thousands of dollars]^2
+Test Statistic (W): 0.4554714221692158
+Critical Value: 2.1447866879169273
+p-value: 0.6557541963067559
+Conclusion: Fail to reject H0: There is not enough evidence to say μ ≠ 30.55
+
+For Sales:
+Mean=14.246666666666668 [thousands of items]
+Sample Variance=24.61838095238095 [thousands of items]^2
+Test Statistic (W): -12.726010983386738
+Critical Value: 2.1447866879169273
+p-value: 4.3849006647889155e-09
+Conclusion: Reject H0: There is significant evidence that μ ≠ 30.55
+
+Repeating the confidence interval and hypothesis #3
+TV:
+Mean CI: (np.float64(116.2794453978266), np.float64(211.17388793550666))
+Variance CI: (np.float64(3934.7484116175965), np.float64(18258.392299073257))
+Radio:
+Mean CI: (np.float64(14.506012034190015), np.float64(30.773987965809987))
+Variance CI: (np.float64(115.6385010143573), np.float64(536.5967262768193))
+Newspaper:
+Mean CI: (np.float64(19.79645878298902), np.float64(42.110207883677646))
+Variance CI: (np.float64(217.56072731317394), np.float64(1009.5458953429234))
+Sales:
+Mean CI: (np.float64(11.893862031508107), np.float64(17.65280463515856))
+Variance CI: (np.float64(14.49175260353759), np.float64(67.24600316382838))
+
+For TV:
+Mean=163.72666666666663 [thousands of dollars]
+Sample Variance=7340.820666666666 [thousands of dollars]^2
+Test Statistic (W): 6.020068913822816
+Critical Value: 2.1447866879169273
+p-value: 3.144473810867687e-05
+Conclusion: Reject H0: There is significant evidence that μ ≠ 30.55
+
+For Radio:
+Mean=22.64 [thousands of dollars]
+Sample Variance=215.73971428571426 [thousands of dollars]^2
+Test Statistic (W): -2.0857250800878813
+Critical Value: 2.1447866879169273
+p-value: 0.05578569279382517
+Conclusion: Fail to reject H0: There is not enough evidence to say μ ≠ 30.55
+
+For Newspaper:
+Mean=30.953333333333333 [thousands of dollars]
+Sample Variance=405.8898095238095 [thousands of dollars]^2
+Test Statistic (W): 0.07753640683356033
+Critical Value: 2.1447866879169273
+p-value: 0.9392940791785598
+Conclusion: Fail to reject H0: There is not enough evidence to say μ ≠ 30.55
+
+For Sales:
+Mean=14.773333333333333 [thousands of items]
+Sample Variance=27.036380952380956 [thousands of items]^2
+Test Statistic (W): -11.75131859272936
+Critical Value: 2.1447866879169273
+p-value: 1.223215617685014e-08
+Conclusion: Reject H0: There is significant evidence that μ ≠ 30.55
+
 Problem 6:
 
 Repeating the confidence interval and hypothesis #1
 TV:
-Mean CI: (np.float64(96.79885161731514), np.float64(164.35448171601823))
-Variance CI: (np.float64(5190.03478266611), np.float64(14787.760544200057))
+Mean CI: (np.float64(113.29626460821764), np.float64(176.4504020584491))
+Variance CI: (np.float64(4535.767515099431), np.float64(12923.582732329205))
 Radio:
-Mean CI: (np.float64(16.2771196009131), np.float64(27.68954706575357))
-Variance CI: (np.float64(148.11642829213824), np.float64(422.02227267562955))
+Mean CI: (np.float64(18.30778756920427), np.float64(29.825545764129064))
+Variance CI: (np.float64(150.86311949077765), np.float64(429.8483111195331))
 Newspaper:
-Mean CI: (np.float64(29.42318049013455), np.float64(48.85681950986545))
-Variance CI: (np.float64(429.49235049414517), np.float64(1223.7355433310695))
+Mean CI: (np.float64(20.681285530492982), np.float64(39.005381136173696))
+Variance CI: (np.float64(381.8495370385142), np.float64(1087.988761944))
 Sales:
-Mean CI: (np.float64(11.19103535979746), np.float64(15.095631306869208))
-Variance CI: (np.float64(17.338014771656248), np.float64(49.40051878098373))
+Mean CI: (np.float64(12.271203553893816), np.float64(16.00879644610619))
+Variance CI: (np.float64(15.886607312482205), np.float64(45.26508099355025))
 
 For TV:
-Mean=130.57666666666668 [thousands of dollars]
-Sample Variance=8182.767367816092 [thousands of dollars]^2
+Mean=144.87333333333336 [thousands of dollars]
+Sample Variance=7151.229609195402 [thousands of dollars]^2
+Test Statistic (W): 7.404660393153519
+Critical Value: 2.045229642132703
+p-value: 3.694942063425799e-08
+Conclusion: Reject H0: There is significant evidence that μ ≠ 30.55
 
 For Radio:
-Mean=21.983333333333334 [thousands of dollars]
-Sample Variance=233.5248850574712 [thousands of dollars]^2
+Mean=24.066666666666666 [thousands of dollars]
+Sample Variance=237.8554022988506 [thousands of dollars]^2
+Test Statistic (W): -2.3025150014007467
+Critical Value: 2.045229642132703
+p-value: 0.028676503487497174
+Conclusion: Reject H0: There is significant evidence that μ ≠ 30.55
 
 For Newspaper:
-Mean=39.14 [thousands of dollars]
-Sample Variance=677.1507586206897 [thousands of dollars]^2
+Mean=29.843333333333337 [thousands of dollars]
+Sample Variance=602.035643678161 [thousands of dollars]^2
+Test Statistic (W): -0.15774809790074545
+Critical Value: 2.045229642132703
+p-value: 0.8757485744076106
+Conclusion: Fail to reject H0: There is not enough evidence to say μ ≠ 30.55
 
 For Sales:
-Mean=13.143333333333334 [thousands of items]
-Sample Variance=27.335643678160913 [thousands of items]^2
+Mean=14.140000000000002 [thousands of items]
+Sample Variance=25.047310344827594 [thousands of items]^2
+Test Statistic (W): -17.95926918489581
+Critical Value: 2.045229642132703
+p-value: 0.0
+Conclusion: Reject H0: There is significant evidence that μ ≠ 30.55
 
 Repeating the confidence interval and hypothesis #2
 TV:
-Mean CI: (np.float64(118.42280942182956), np.float64(179.37719057817046))
-Variance CI: (np.float64(4225.2948775881505), np.float64(12038.965343178575))
+Mean CI: (np.float64(117.9922956768217), np.float64(191.0677043231783))
+Variance CI: (np.float64(6072.809749477768), np.float64(17303.016293010085))
 Radio:
-Mean CI: (np.float64(19.260291186258204), np.float64(29.82637548040847))
-Variance CI: (np.float64(126.96245527901102), np.float64(361.74909521613273))
+Mean CI: (np.float64(21.39281783709513), np.float64(32.72718216290487))
+Variance CI: (np.float64(146.09707022543734), np.float64(416.26859571702704))
 Newspaper:
-Mean CI: (np.float64(27.663641930199788), np.float64(41.669691403133555))
-Variance CI: (np.float64(223.0891672903934), np.float64(635.6391284531317))
+Mean CI: (np.float64(22.54488433678658), np.float64(38.12178232988009))
+Variance CI: (np.float64(275.9364814065084), np.float64(786.214887437117))
 Sales:
-Mean CI: (np.float64(12.668760842823708), np.float64(16.224572490509622))
-Variance CI: (np.float64(14.37886700333433), np.float64(40.96913624786524))
+Mean CI: (np.float64(12.467637592530561), np.float64(16.825695740802775))
+Variance CI: (np.float64(21.598978469630694), np.float64(61.54111388135166))
 
 For TV:
-Mean=148.9 [thousands of dollars]
-Sample Variance=6661.728965517241 [thousands of dollars]^2
+Mean=154.53 [thousands of dollars]
+Sample Variance=9574.577344827585 [thousands of dollars]^2
+Test Statistic (W): 6.9398878700421704
+Critical Value: 2.045229642132703
+p-value: 1.255104677966301e-07
+Conclusion: Reject H0: There is significant evidence that μ ≠ 30.55
 
 For Radio:
-Mean=24.543333333333337 [thousands of dollars]
-Sample Variance=200.1728850574713 [thousands of dollars]^2
+Mean=27.06 [thousands of dollars]
+Sample Variance=230.34110344827593 [thousands of dollars]^2
+Test Statistic (W): -1.2595062671118438
+Critical Value: 2.045229642132703
+p-value: 0.21789054633798344
+Conclusion: Fail to reject H0: There is not enough evidence to say μ ≠ 30.55
 
 For Newspaper:
-Mean=34.66666666666667 [thousands of dollars]
-Sample Variance=351.7291954022989 [thousands of dollars]^2
+Mean=30.333333333333336 [thousands of dollars]
+Sample Variance=435.0498850574712 [thousands of dollars]^2
+Test Statistic (W): -0.056896191953651545
+Critical Value: 2.045229642132703
+p-value: 0.9550181044950767
+Conclusion: Fail to reject H0: There is not enough evidence to say μ ≠ 30.55
 
 For Sales:
-Mean=14.446666666666665 [thousands of items]
-Sample Variance=22.67016091954023 [thousands of items]^2
+Mean=14.646666666666668 [thousands of items]
+Sample Variance=34.053609195402295 [thousands of items]^2
+Test Statistic (W): -14.926817236225071
+Critical Value: 2.045229642132703
+p-value: 3.774758283725532e-15
+Conclusion: Reject H0: There is significant evidence that μ ≠ 30.55
 
 Repeating the confidence interval and hypothesis #3
 TV:
-Mean CI: (np.float64(129.11927940233426), np.float64(193.48072059766577))
-Variance CI: (np.float64(4710.843655597255), np.float64(13422.420245197392))
+Mean CI: (np.float64(113.50094224568286), np.float64(176.1523910876505))
+Variance CI: (np.float64(4463.848101138292), np.float64(12718.66559464671))
 Radio:
-Mean CI: (np.float64(17.9355527419727), np.float64(29.051113924693972))
-Variance CI: (np.float64(140.5108811528426), np.float64(400.35208844504245))
+Mean CI: (np.float64(17.206803740084816), np.float64(27.886529593248525))
+Variance CI: (np.float64(129.70818414606032), np.float64(369.5723917267517))
 Newspaper:
-Mean CI: (np.float64(22.561890308294913), np.float64(40.63810969170508))
-Variance CI: (np.float64(371.5885962649925), np.float64(1058.7526698037636))
+Mean CI: (np.float64(18.384666071879376), np.float64(33.92866726145397))
+Variance CI: (np.float64(274.77221328071977), np.float64(782.897584379552))
 Sales:
-Mean CI: (np.float64(12.416443064086941), np.float64(14.870223602579731))
-Variance CI: (np.float64(6.8472881694397385), np.float64(19.509706980189787))
+Mean CI: (np.float64(11.767815316513097), np.float64(15.57885135015357))
+Variance CI: (np.float64(16.517080311800946), np.float64(47.0614627393234))
 
 For TV:
-Mean=161.3 [thousands of dollars]
-Sample Variance=7427.259999999998 [thousands of dollars]^2
+Mean=144.82666666666668 [thousands of dollars]
+Sample Variance=7037.839264367817 [thousands of dollars]^2
+Test Statistic (W): 7.461025415719487
+Critical Value: 2.045229642132703
+p-value: 3.191143371772398e-08
+Conclusion: Reject H0: There is significant evidence that μ ≠ 30.55
 
 For Radio:
-Mean=23.493333333333336 [thousands of dollars]
-Sample Variance=221.53374712643682 [thousands of dollars]^2
+Mean=22.54666666666667 [thousands of dollars]
+Sample Variance=204.5018850574713 [thousands of dollars]^2
+Test Statistic (W): -3.0653698033555963
+Critical Value: 2.045229642132703
+p-value: 0.004668419871348473
+Conclusion: Reject H0: There is significant evidence that μ ≠ 30.55
 
 For Newspaper:
-Mean=31.599999999999998 [thousands of dollars]
-Sample Variance=585.8579310344828 [thousands of dollars]^2
+Mean=26.15666666666667 [thousands of dollars]
+Sample Variance=433.2142643678161 [thousands of dollars]^2
+Test Statistic (W): -1.1561213167082778
+Critical Value: 2.045229642132703
+p-value: 0.2570674996355502
+Conclusion: Fail to reject H0: There is not enough evidence to say μ ≠ 30.55
 
 For Sales:
-Mean=13.643333333333336 [thousands of items]
-Sample Variance=10.79564367816092 [thousands of items]^2
+Mean=13.673333333333334 [thousands of items]
+Sample Variance=26.041333333333338 [thousands of items]^2
+Test Statistic (W): -18.11405540245585
+Critical Value: 2.045229642132703
+p-value: 0.0
+Conclusion: Reject H0: There is significant evidence that μ ≠ 30.55
 
 Problem 7:
 
 Repeating the confidence interval and hypothesis #1
 TV:
-Mean CI: (np.float64(130.1838657459532), np.float64(165.65413425404677))
-Variance CI: (np.float64(6158.663187294721), np.float64(10781.026831090348))
+Mean CI: (np.float64(122.04253379106149), np.float64(155.43946620893854))
+Variance CI: (np.float64(5459.72359799328), np.float64(9557.500517601515))
 Radio:
-Mean CI: (np.float64(20.650585492135644), np.float64(26.54541450786436))
-Variance CI: (np.float64(170.09828169366037), np.float64(297.7649666968156))
+Mean CI: (np.float64(20.85006099677791), np.float64(26.68793900322208))
+Variance CI: (np.float64(166.82745786951807), np.float64(292.039237210489))
 Newspaper:
-Mean CI: (np.float64(25.793489987508313), np.float64(34.70251001249168))
-Variance CI: (np.float64(388.5235708222557), np.float64(680.1286113822548))
+Mean CI: (np.float64(24.514257699271564), np.float64(32.10974230072843))
+Variance CI: (np.float64(282.40246069215124), np.float64(494.3586640959656))
 Sales:
-Mean CI: (np.float64(12.992373793540505), np.float64(15.105626206459497))
-Variance CI: (np.float64(21.86050792116163), np.float64(38.26783756018842))
+Mean CI: (np.float64(12.889454577262043), np.float64(14.960545422737962))
+Variance CI: (np.float64(20.996929953158254), np.float64(36.75610409455746))
 
 For TV:
-Mean=147.91899999999998 [thousands of dollars]
-Sample Variance=7988.967413131313 [thousands of dollars]^2
+Mean=138.741 [thousands of dollars]
+Sample Variance=7082.308706060606 [thousands of dollars]^2
+Test Statistic (W): 12.855936198844587
+Critical Value: 1.9842169515086827
+p-value: 0.0
+Conclusion: Reject H0: There is significant evidence that μ ≠ 30.55
 
 For Radio:
-Mean=23.598000000000003 [thousands of dollars]
-Sample Variance=220.65009696969696 [thousands of dollars]^2
+Mean=23.768999999999995 [thousands of dollars]
+Sample Variance=216.40721111111108 [thousands of dollars]^2
+Test Statistic (W): -4.609543102246414
+Critical Value: 1.9842169515086827
+p-value: 1.2060240817790557e-05
+Conclusion: Reject H0: There is significant evidence that μ ≠ 30.55
 
 For Newspaper:
-Mean=30.247999999999998 [thousands of dollars]
-Sample Variance=503.989591919192 [thousands of dollars]^2
+Mean=28.311999999999998 [thousands of dollars]
+Sample Variance=366.3301575757576 [thousands of dollars]^2
+Test Statistic (W): -1.1692940662731868
+Critical Value: 1.9842169515086827
+p-value: 0.24509278880568552
+Conclusion: Fail to reject H0: There is not enough evidence to say μ ≠ 30.55
 
 For Sales:
-Mean=14.049000000000001 [thousands of items]
-Sample Variance=28.35727171717172 [thousands of items]^2
+Mean=13.925000000000002 [thousands of items]
+Sample Variance=27.237045454545452 [thousands of items]^2
+Test Statistic (W): -31.85529682668421
+Critical Value: 1.9842169515086827
+p-value: 0.0
+Conclusion: Reject H0: There is significant evidence that μ ≠ 30.55
 
 Repeating the confidence interval and hypothesis #2
 TV:
-Mean CI: (np.float64(126.77885728692837), np.float64(159.74514271307163))
-Variance CI: (np.float64(5319.82725711177), np.float64(9312.605455353854))
+Mean CI: (np.float64(136.83280498204462), np.float64(170.14919501795535))
+Variance CI: (np.float64(5433.421248717505), np.float64(9511.457029812178))
 Radio:
-Mean CI: (np.float64(20.089116437522794), np.float64(26.10688356247721))
-Variance CI: (np.float64(177.2671474753082), np.float64(310.3144002329562))
+Mean CI: (np.float64(18.81060936048931), np.float64(24.611390639510688))
+Variance CI: (np.float64(164.71398802789517), np.float64(288.3395097897327))
 Newspaper:
-Mean CI: (np.float64(26.924337250089206), np.float64(35.779662749910784))
-Variance CI: (np.float64(383.8544327226818), np.float64(671.9550676116813))
+Mean CI: (np.float64(25.07636363367408), np.float64(32.92163636632592))
+Variance CI: (np.float64(301.2822827974157), np.float64(527.4086722703009))
 Sales:
-Mean CI: (np.float64(12.909121558787236), np.float64(14.916878441212758))
-Variance CI: (np.float64(19.732392612513447), np.float64(34.54247256709674))
+Mean CI: (np.float64(13.159442493308282), np.float64(15.166557506691712))
+Variance CI: (np.float64(19.719777950358566), np.float64(34.52039001329878))
 
 For TV:
-Mean=143.262 [thousands of dollars]
-Sample Variance=6900.836319191919 [thousands of dollars]^2
+Mean=153.49099999999999 [thousands of dollars]
+Sample Variance=7048.189514141414 [thousands of dollars]^2
+Test Statistic (W): 14.643940473292082
+Critical Value: 1.9842169515086827
+p-value: 0.0
+Conclusion: Reject H0: There is significant evidence that μ ≠ 30.55
 
 For Radio:
-Mean=23.098000000000003 [thousands of dollars]
-Sample Variance=229.94949090909085 [thousands of dollars]^2
+Mean=21.711 [thousands of dollars]
+Sample Variance=213.66563535353538 [thousands of dollars]^2
+Test Statistic (W): -6.046941882747244
+Critical Value: 1.9842169515086827
+p-value: 2.625180117732384e-08
+Conclusion: Reject H0: There is significant evidence that μ ≠ 30.55
 
 For Newspaper:
-Mean=31.351999999999997 [thousands of dollars]
-Sample Variance=497.93282424242426 [thousands of dollars]^2
+Mean=28.999000000000002 [thousands of dollars]
+Sample Variance=390.82090808080807 [thousands of dollars]^2
+Test Statistic (W): -0.784554112180548
+Critical Value: 1.9842169515086827
+p-value: 0.4345883497460692
+Conclusion: Fail to reject H0: There is not enough evidence to say μ ≠ 30.55
 
 For Sales:
-Mean=13.912999999999997 [thousands of items]
-Sample Variance=25.59669797979798 [thousands of items]^2
+Mean=14.162999999999997 [thousands of items]
+Sample Variance=25.580334343434345 [thousands of items]^2
+Test Statistic (W): -32.400099613186654
+Critical Value: 1.9842169515086827
+p-value: 0.0
+Conclusion: Reject H0: There is significant evidence that μ ≠ 30.55
 
 Repeating the confidence interval and hypothesis #3
 TV:
-Mean CI: (np.float64(138.5538000042676), np.float64(172.54819999573243))
-Variance CI: (np.float64(5656.818723736873), np.float64(9902.52471754517))
+Mean CI: (np.float64(120.40416403880778), np.float64(152.16583596119227))
+Variance CI: (np.float64(4938.1492546324735), np.float64(8644.460330279433))
 Radio:
-Mean CI: (np.float64(21.0362443985226), np.float64(27.117755601477402))
-Variance CI: (np.float64(181.0424939336521), np.float64(316.92332009531134))
+Mean CI: (np.float64(21.550049037325778), np.float64(27.373950962674222))
+Variance CI: (np.float64(166.02963265997272), np.float64(290.6426070118489))
 Newspaper:
-Mean CI: (np.float64(25.124690552455426), np.float64(34.14930944754457))
-Variance CI: (np.float64(398.6715487017626), np.float64(697.8931194375059))
+Mean CI: (np.float64(24.6612388332231), np.float64(32.828761166776886))
+Variance CI: (np.float64(326.54133410362357), np.float64(571.6258183584173))
 Sales:
-Mean CI: (np.float64(13.654670035925959), np.float64(15.837329964074039))
-Variance CI: (np.float64(23.32005937320956), np.float64(40.82285037503885))
+Mean CI: (np.float64(12.830891314715352), np.float64(14.749108685284646))
+Variance CI: (np.float64(18.011635113477478), np.float64(31.530206397844555))
 
 For TV:
-Mean=155.55100000000002 [thousands of dollars]
-Sample Variance=7337.978887878788 [thousands of dollars]^2
+Mean=136.28500000000003 [thousands of dollars]
+Sample Variance=6405.726742424243 [thousands of dollars]^2
+Test Statistic (W): 13.210965712413286
+Critical Value: 1.9842169515086827
+p-value: 0.0
+Conclusion: Reject H0: There is significant evidence that μ ≠ 30.55
 
 For Radio:
-Mean=24.077 [thousands of dollars]
-Sample Variance=234.8468393939394 [thousands of dollars]^2
+Mean=24.462 [thousands of dollars]
+Sample Variance=215.37227878787874 [thousands of dollars]^2
+Test Statistic (W): -4.148391561405669
+Critical Value: 1.9842169515086827
+p-value: 7.084890355080198e-05
+Conclusion: Reject H0: There is significant evidence that μ ≠ 30.55
 
 For Newspaper:
-Mean=29.636999999999997 [thousands of dollars]
-Sample Variance=517.1534656565656 [thousands of dollars]^2
+Mean=28.744999999999994 [thousands of dollars]
+Sample Variance=423.5867424242425 [thousands of dollars]^2
+Test Statistic (W): -0.8770129915065259
+Critical Value: 1.9842169515086827
+p-value: 0.3826028198327376
+Conclusion: Fail to reject H0: There is not enough evidence to say μ ≠ 30.55
 
 For Sales:
-Mean=14.745999999999999 [thousands of items]
-Sample Variance=30.250589898989897 [thousands of items]^2
+Mean=13.79 [thousands of items]
+Sample Variance=23.364545454545457 [thousands of items]^2
+Test Statistic (W): -34.67331348106377
+Critical Value: 1.9842169515086827
+p-value: 0.0
+Conclusion: Reject H0: There is significant evidence that μ ≠ 30.55
+
+Repeating the confidence interval and hypothesis #1
+TV:
+Mean CI: (np.float64(135.07112398882492), np.float64(159.01387601117506))
+Variance CI: (np.float64(6112.772852414314), np.float64(9064.163827222472))
+Radio:
+Mean CI: (np.float64(21.193784914023905), np.float64(25.33421508597611))
+Variance CI: (np.float64(182.8020460183265), np.float64(271.06318737283704))
+Newspaper:
+Mean CI: (np.float64(27.517224294413793), np.float64(33.590775705586196))
+Variance CI: (np.float64(393.34673258900045), np.float64(583.2638167932555))
+Sales:
+Mean CI: (np.float64(13.294986285464187), np.float64(14.750013714535815))
+Variance CI: (np.float64(22.575245594345198), np.float64(33.47510687005289))
+
+For TV:
+Mean=147.0425 [thousands of dollars]
+Sample Variance=7370.9498932160795 [thousands of dollars]^2
+Test Statistic (W): 19.188951004173195
+Critical Value: 1.971956544249395
+p-value: 0.0
+Conclusion: Reject H0: There is significant evidence that μ ≠ 30.55
+
+For Radio:
+Mean=23.264000000000006 [thousands of dollars]
+Sample Variance=220.42774271356785 [thousands of dollars]^2
+Test Statistic (W): -6.940184852641407
+Critical Value: 1.971956544249395
+p-value: 5.395750513059738e-11
+Conclusion: Reject H0: There is significant evidence that μ ≠ 30.55
+
+For Newspaper:
+Mean=30.553999999999995 [thousands of dollars]
+Sample Variance=474.30832562814066 [thousands of dollars]^2
+Test Statistic (W): 0.002597434562742453
+Critical Value: 1.971956544249395
+p-value: 0.9979301513422312
+Conclusion: Fail to reject H0: There is not enough evidence to say μ ≠ 30.55
+
+For Sales:
+Mean=14.0225 [thousands of items]
+Sample Variance=27.22185301507538 [thousands of items]^2
+Test Statistic (W): -44.7984843912898
+Critical Value: 1.971956544249395
+p-value: 0.0
+Conclusion: Reject H0: There is significant evidence that μ ≠ 30.55
 
 Problem 8:
 For assistance, please reference the plots generated here:

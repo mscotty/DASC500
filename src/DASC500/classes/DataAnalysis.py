@@ -9,6 +9,7 @@ import scipy.stats as stats
 
 from DASC500.utilities.data_type.distinguish_data_types import distinguish_data_types
 from DASC500.utilities.print.print_series_mode import print_series_mode
+from DASC500.formulas.statistics.confidence_interval import calculate_confidence_interval
 from DASC500.formulas.statistics.hypothesis_test import hypothesis_test
 from DASC500.plotting.plot_histogram import plot_histogram
 from DASC500.plotting.plot_stacked_bar_chart import plot_stacked_bar_chart_horizontal, plot_stacked_bar_chart_vertical
@@ -46,7 +47,7 @@ class DataAnalysis:
         Returns:
             pd.DataFrame: The downsampled DataFrame.
         """
-        if new_size >= len(self.df_original):
+        if new_size > len(self.df_original):
             warnings.warn(f"{new_size} provided is outside of the data's supported range: 1-{len(self.df_original)}")
             return self.df_original.copy()  # Return original if the requested size is too large
         self.df = self.df_original.sample(n=new_size, random_state=random_state).reset_index(drop=True)
@@ -127,46 +128,15 @@ class DataAnalysis:
         Returns:
             dict: Confidence intervals for mean and variance of each column.
         """
-        results = {}
-        alpha = 1 - confidence  # Significance level
+        conf_interval = {}
 
         for column in self.df.select_dtypes(include=[np.number]):  # Process only numerical columns
-            data = self.df[column].dropna().values  # Remove NaN values
-            n = len(data)
-
-            if n < 2:
-                results[column] = "Not enough data for CI calculation"
-                continue
-
-            # Sample mean and sample variance
-            mean = self.num_headers[column]['mean']
-            variance = self.num_headers[column]['sample_variance']
-            #mean = np.mean(data)
-            #variance = np.var(data, ddof=1)  # Sample variance
-
-            # Mean CI
-            t_critical = stats.t.ppf(1 - alpha / 2, df=n-1)  # t critical value
-            mean_margin = t_critical * (np.sqrt(variance) / np.sqrt(n))
-            mean_ci = (mean - mean_margin, mean + mean_margin)
-
-            # Variance CI
-            chi2_lower = stats.chi2.ppf(alpha / 2, df=n-1)  # Lower chi-square critical value
-            chi2_upper = stats.chi2.ppf(1 - alpha / 2, df=n-1)  # Upper chi-square critical value
-
-            var_ci_lower = (n - 1) * variance / chi2_upper
-            var_ci_upper = (n - 1) * variance / chi2_lower if chi2_lower > 0 else np.nan  # Prevent division by zero
-
-            variance_ci = (var_ci_lower, var_ci_upper)
+            result = calculate_confidence_interval(self.df[column], confidence=confidence)
 
             # Store results
-            results[column] = {
-                "mean": mean,
-                "mean_CI": mean_ci,
-                "variance": variance,
-                "variance_CI": variance_ci
-            }
+            conf_interval[column] = result
         
-        self.conf_interval = results
+        self.conf_interval = conf_interval
     
     def print_confidence_intervals(self, file=None, col_names=None):
         """!
@@ -197,13 +167,17 @@ class DataAnalysis:
     def hypothesis_test(self, data_col_name, **kwargs):
         return hypothesis_test(self.df[data_col_name], **kwargs)
 
-    def plot_histograms_per_col(self, 
+    def plot_histograms_per_col(self,
+                                key_in=None, 
                                 **kwargs):
         """!
         @brief Create and save histograms for numeric columns using the specified binning method.
         Args:
         - kwargs: Optional arguments for binning method, output directory, or bin width/count.
         """
+        if key_in is None:
+            key_in = self.num_headers.keys()
+            
         for key in self.num_headers.keys():
             data = self.df[key].dropna()
             plot_histogram(data,
