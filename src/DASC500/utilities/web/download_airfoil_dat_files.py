@@ -7,40 +7,40 @@ import os
 import time
 import requests
 
-def download_dat_files(url, save_dir=".", delay=1):
+from DASC500.classes.AirfoilDatabase import AirfoilDatabase
+
+def download_dat_files(url, save_dir=".", db_name="airfoil_data.db", db_dir=".", delay=1):
     """
-    Downloads all .dat files from the given URL and its subsequent pages.
+    Downloads all .dat files from the given URL and its subsequent pages,
+    parses the data, and stores it in an SQLite database.
 
     Args:
         url (str): The base URL of the webpage containing the .dat files.
-        save_dir (str, optional): The directory to save the downloaded .dat files. 
-            Defaults to the current directory (.).
+        save_dir (str, optional): The directory to save the downloaded .dat files. Defaults to the current directory (.).
+        db_name (str, optional): The name of the SQLite database file. Defaults to "airfoil_data.db".
+        db_dir (str, optional): The directory to save the SQLite database. Defaults to the current directory (.).
         delay (int, optional): Delay between requests in seconds. Defaults to 1.
     """
-    os.makedirs(save_dir, exist_ok=True)
 
-    # Initialize WebDriver (e.g., Chrome)
-    driver = webdriver.Chrome()  # Replace with your preferred driver
+    os.makedirs(save_dir, exist_ok=True)
+    airfoil_db = AirfoilDatabase(db_name, db_dir)  # Initialize the database object
+
+    driver = webdriver.Chrome()
     driver.get(url)
 
     while True:
-        # Wait for the page to fully load
-        WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.TAG_NAME, 'a'))) 
-
-        # Get the page source after JavaScript rendering
+        WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.TAG_NAME, 'a')))
         html = driver.page_source
         soup = BeautifulSoup(html, 'html.parser')
 
-        # Find all links to .dat files with better error handling
         dat_links = []
         for link in soup.find_all('a'):
             try:
                 if link.has_attr('href') and link['href'].endswith('.dat'):
                     dat_links.append(link['href'])
             except:
-                pass 
+                pass
 
-        # Download each .dat file
         for dat_link in dat_links:
             dat_url = f"https://m-selig.ae.illinois.edu/ads/{dat_link}"
             try:
@@ -51,21 +51,41 @@ def download_dat_files(url, save_dir=".", delay=1):
                         for chunk in response.iter_content(1024):
                             f.write(chunk)
                     print(f"Downloaded: {dat_filename}")
+
+                    name = os.path.splitext(os.path.basename(dat_link))[0]
+                    with open(dat_filename, 'r') as f:
+                        lines = f.readlines()
+                        description = lines[0].strip() if lines else ""
+                        pointcloud = ""
+
+                        for line in lines[1:]: # Skip the first line
+                            line = line.strip() # Remove leading/trailing whitespace
+                            if line:  # Check if the line is not empty
+                                try:
+                                    x, y = map(float, line.split()) # Convert to float and unpack
+                                    if abs(x) <= 1.0 and abs(y) <= 1.0: # Check if both coordinates are within [-1, 1]
+                                        pointcloud += f"{x} {y}\n" # Add the point only if it's valid
+                                except ValueError:
+                                    pass # Skip lines that can not be converted to floats or do not have 2 values.
+                                    
+                    airfoil_db.store_airfoil_data(name, description, pointcloud)
+
             except Exception as e:
-                print(f"Error downloading {dat_url}: {e}")
+                print(f"Error downloading or processing {dat_url}: {e}")
 
-        # Introduce a short delay between requests
-        time.sleep(delay)
+            time.sleep(delay)
 
-        # Find the link to the next page (if it exists)
-        next_page_link = driver.find_element(By.LINK_TEXT, "Next")
         try:
+            next_page_link = driver.find_element(By.LINK_TEXT, "Next")
             next_page_link.click()
         except:
-            break  # No more pages
+            break
 
     driver.quit()
+    airfoil_db.close()  # Close the database connection
 
 if __name__ == "__main__":
-    download_dat_files("https://m-selig.ae.illinois.edu/ads/coord_database.html", save_dir="airfoil_data")
-    print("Finished downloading all .dat files.")
+    download_dat_files("https://m-selig.ae.illinois.edu/ads/coord_database.html", 
+                       save_dir="airfoil_data", 
+                       db_dir="my_airfoil_database")  # Specify database directory
+    print("Finished processing all .dat files.")

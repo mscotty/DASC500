@@ -51,7 +51,8 @@ packages = [
     "DASC500.plotting",
     "DASC500.utilities",
     "DASC500.utilities.data_type",
-    "DASC500.utilities.print"
+    "DASC500.utilities.print",
+    "DASC500.xfoil"
 ]
 package-dir = {"" = "src"}
 

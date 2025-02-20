@@ -1,0 +1,90 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+
+def normalize_data(data):
+    # Convert the list of points into a numpy array for easier manipulation
+    data = np.array(data)
+    
+    # Separate the x and y coordinates
+    x = data[:, 0]
+    y = data[:, 1]
+    
+    # Find where x crosses 0 and make necessary adjustments
+    min_x = np.min(x)
+    max_x = np.max(x)
+    
+    # Normalize x values so that they start at 0 and end at 1
+    x_normalized = (x - min_x) / (max_x - min_x)
+    
+    # Now we want to adjust the y-values, but retain the airfoil shape
+    y_normalized = y  # If needed, we could apply a transformation here, but it's not always necessary
+    
+    # Create a new data array
+    fixed_data = np.column_stack((x_normalized, y_normalized))
+    
+    return fixed_data
+
+def reorder_airfoil_data(data):
+    # Convert the data into a numpy array for easier manipulation
+    data = np.array(data)
+    x = data[:,0]
+    y = data[:,1]
+    
+    # Find the leading edge (LE) and trailing edge (TE) by their x-values
+    LE_index = np.argmin(x)  # Index of the LE (smallest x)
+    TE_index = np.argmax(x)  # Index of the TE (largest x)
+    
+    # Separate the data into two parts: suction surface (top) and bottom surface
+    # top_surface = data[LE_index:TE_index + 1]  # Points from LE to TE
+    # bottom_surface = data[TE_index:][::-1]  # Points from TE to LE, reversed
+    flip = None
+    for idx, val in enumerate(x):
+        if idx+3 > len(x):
+            continue
+        if np.abs(val - x[idx+1]) > np.abs(val - x[idx+2]):
+            flip = idx
+            break
+
+    if flip is not None:
+        data_split_x = [x[0:flip+1], x[flip+1:]]
+        ordered_x = np.append(data_split_x[0], np.flip(data_split_x[1]))
+        data_split_y = [y[0:flip+1], y[flip+1:]]
+        ordered_y = np.append(data_split_y[0], np.flip(data_split_y[1]))
+    else:
+        ordered_x = x
+        ordered_y = y
+    # Combine the surfaces to form the correct order
+    #ordered_data = np.vstack((top_surface, bottom_surface))
+    #ordered_data = np.roll(data, LE_index-1)
+    ordered_data = np.stack((ordered_x,ordered_y), axis=1)
+    
+    return ordered_data
+
+if __name__ == "__main__":
+    # Example usage
+    df = pd.read_csv(r'C:\Users\fluff\AppData\Local\Temp\tmpxekbmff6.dat', sep=' ')
+    data = np.array([df.iloc[:,0], df.iloc[:,1]])
+    data = np.transpose(data)
+    # Plot to verify
+    plt.plot(data[:, 0], data[:, 1])
+    plt.title("Fixed Airfoil Data")
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.ylim(-1, 1)
+    plt.xlim(-0.1, 1.1)
+    plt.grid(True)
+    plt.show()
+
+    fixed_data = reorder_airfoil_data(data)
+    np.savetxt(r'D:\Mitchell\School\2025 Winter\DASC500\retry_airfoil.txt', fixed_data, delimiter=',')
+
+    # Plot to verify
+    plt.plot(fixed_data[:, 0], fixed_data[:, 1])
+    plt.title("Fixed Airfoil Data")
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.ylim(-1, 1)
+    plt.xlim(-0.1, 1.1)
+    plt.grid(True)
+    plt.show()
