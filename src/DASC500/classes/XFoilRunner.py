@@ -4,13 +4,37 @@ import tempfile
 import pandas as pd
 import numpy as np
 
+import sqlite3
+
 from DASC500.xfoil.fix_airfoil_data import *
 
 class XFoilRunner:
-    def __init__(self, xfoil_path="xfoil", polar_dir="D:\Mitchell\School\polar_data"):
+    def __init__(self, 
+                 xfoil_path="xfoil", 
+                 polar_dir="D:\Mitchell\School\polar_data", 
+                 log_failed_runs=True):
         self.xfoil_path = xfoil_path
         self.polar_dir = polar_dir
+        self.log_failed_runs = log_failed_runs
+        self.failed_runs_log = "failed_runs.txt"
         os.makedirs(self.polar_dir, exist_ok=True)
+    
+    def _initialize_database(self):
+        with sqlite3.connect(self.database_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS results (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    airfoil TEXT,
+                    mach REAL,
+                    reynolds REAL,
+                    alpha REAL,
+                    cl REAL,
+                    cd REAL,
+                    cm REAL
+                )
+            ''')
+            conn.commit()
     
     def run_xfoil(self, 
                   airfoil_name, 
@@ -42,7 +66,7 @@ class XFoilRunner:
             if os.path.isfile(polar_file):
                 os.remove(polar_file)
                 
-            command = [self.xfoil_path]
+            command = [self.xfoil_path, "-no_gui"]
 
             with subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True) as process:
                 xfoil_commands = f"""
@@ -83,6 +107,7 @@ class XFoilRunner:
                     return polar_df
                 except pd.errors.EmptyDataError:
                     print(f"Polar file is empty for {airfoil_name}")
+                    self._log_failed_run(airfoil_name, Mach, Re, alpha_start, alpha_end, alpha_increment)
                     return None
                 except FileNotFoundError:
                     print(f"Polar file not found for {polar_file}")
@@ -90,9 +115,11 @@ class XFoilRunner:
 
         except FileNotFoundError:
             print(f"XFoil executable not found at {self.xfoil_path}")
+            self._log_failed_run(airfoil_name, Mach, Re, alpha_start, alpha_end, alpha_increment)
             return None
         except Exception as e:
             print(f"An error occurred while running XFoil: {e}")
+            self._log_failed_run(airfoil_name, Mach, Re, alpha_start, alpha_end, alpha_increment)
             return None
         finally:
             # Cleanup
@@ -158,18 +185,9 @@ class XFoilRunner:
             os.remove(airfoil_file)
         
         return pd.concat(results, ignore_index=True) if results else None
-
-    """def process_airfoils_from_db(self, db_path, reynolds_list, mach_list, alpha_start, alpha_end, alpha_increment):
-        Runs XFoil for all airfoils in the database and stores results.
-        airfoil_db = AirfoilDatabase(db_path)
-        airfoil_db.create_aero_coeffs_table()
+    
+    def log_failed_run(self, airfoil, mach, reynolds, alpha):
+        if self.log_failed_runs:
+            with open(self.failed_runs_log, "a") as log_file:
+                log_file.write(f"{airfoil}, {mach}, {reynolds}, {alpha}\n")
         
-        airfoils = airfoil_db.get_all_airfoils()
-        for name, description, pointcloud in airfoils:
-            print(f"Processing {name}...")
-            results_df = self.run_xfoil(name, pointcloud, reynolds_list, mach_list, alpha_start, alpha_end, alpha_increment)
-            if results_df is not None:
-                for _, row in results_df.iterrows():
-                    airfoil_db.store_aero_coeffs(name, row["Re"], row["alpha"], row["cl"], row["cd"], row["cm"])
-        
-        airfoil_db.close()"""

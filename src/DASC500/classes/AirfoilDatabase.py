@@ -1,11 +1,10 @@
 import os
-import math
 import sqlite3
 import matplotlib.pyplot as plt
 import concurrent.futures
-import pandas as pd
 
 from DASC500.classes.XFoilRunner import XFoilRunner
+from DASC500.classes.XFoilDatabase import XFoilDatabase
 
 class AirfoilDatabase:
     def __init__(self, db_name="airfoil_data.db", db_dir="."):
@@ -14,6 +13,7 @@ class AirfoilDatabase:
         self.conn = sqlite3.connect(self.db_path)
         self.cursor = self.conn.cursor()
         self._create_table()
+        self.xfoil_db = XFoilDatabase()
 
     def _create_table(self):
         self.cursor.execute("""
@@ -39,24 +39,6 @@ class AirfoilDatabase:
             )
         """)
         self.conn.commit()
-    
-    def create_aero_coeffs_table(self):
-        """Creates the table for storing aerodynamic coefficients if it doesn't exist."""
-        self.cursor.execute("""
-            CREATE TABLE IF NOT EXISTS aero_coeffs (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL,
-                reynolds_number REAL NOT NULL,
-                mach REAL NOT NULL,
-                alpha REAL NOT NULL,
-                cl REAL,
-                cd REAL,
-                cm REAL,
-                FOREIGN KEY (name) REFERENCES airfoils(name),
-                UNIQUE (name, reynolds_number, mach, alpha)  -- Ensure unique combinations
-            )
-        """)
-        self.conn.commit()
         
     def store_airfoil_data(self, name, description, pointcloud, overwrite=False):
         try:
@@ -71,31 +53,6 @@ class AirfoilDatabase:
                 print(f"Updated: {name} in database.") # If it exists and overwrite is True, it should update it.
             else:
                 print(f"Airfoil {name} already exists in the database. Use overwrite=True to update.")
-
-    def store_aero_coeffs(self, name, reynolds_number, mach, alpha, cl, cd, cm):
-        """Stores aerodynamic coefficients for a given airfoil, Reynolds number, Mach number, and AoA.
-        
-        Ensures values are non-empty and valid before inserting.
-        """
-        # Validate inputs
-        if None in [name, reynolds_number, mach, alpha, cl, cd, cm]:
-            print(f"Skipping entry for {name} (Re={reynolds_number}, Mach={mach}, alpha={alpha}) due to missing values.")
-            return
-        
-        if any(math.isnan(x) for x in [cl, cd, cm]):
-            print(f"Skipping entry for {name} (Re={reynolds_number}, Mach={mach}, alpha={alpha}) due to NaN values.")
-            return
-
-        try:
-            self.cursor.execute("""
-                INSERT OR REPLACE INTO aero_coeffs (name, reynolds_number, mach, alpha, cl, cd, cm)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            """, (name, reynolds_number, mach, alpha, cl, cd, cm))  
-            self.conn.commit()
-            print(f"Stored aero coeffs for {name} (Re={reynolds_number}, Mach={mach}, alpha={alpha})")
-        except Exception as e:
-            print(f"Error storing aero coeffs for {name}: {e}")
-            self.conn.rollback()
 
     def get_airfoil_data(self, name):
         self.cursor.execute("SELECT description, pointcloud FROM airfoils WHERE name=?", (name,))
@@ -166,7 +123,7 @@ class AirfoilDatabase:
                 return
             
             for _, row in polar_df.iterrows():
-                self.store_aero_coeffs(name, Re, Mach, row["alpha"], row["cl"], row["cd"], row["cm"])
+                self.xfoil_db.store_results(name, Re, Mach, row["alpha"], row["cl"], row["cd"], row["cm"])
 
         # Use multiprocessing to run simulations in parallel
         """with concurrent.futures.ProcessPoolExecutor(max_workers=max_workers) as executor:
@@ -176,24 +133,11 @@ class AirfoilDatabase:
 
         print("Finished processing all airfoils.")
     
-    def get_aero_coeffs(self, name):
-        """Returns all aerodynamic coefficients for a given airfoil."""
-        self.cursor.execute("SELECT reynolds_number, mach, alpha, cl, cd, cm FROM aero_coeffs WHERE name=?", (name,))
-        rows = self.cursor.fetchall()
-        return pd.DataFrame(rows, columns=["Re", "Mach", "Alpha", "Cl", "Cd", "Cm"]) if rows else None
-
-    def get_aero_coeffs_by_conditions(self, name, Re, Mach):
-        """Returns aerodynamic coefficients for a given airfoil at a specific Re and Mach."""
-        self.cursor.execute("""
-            SELECT alpha, cl, cd, cm FROM aero_coeffs 
-            WHERE name=? AND reynolds_number=? AND mach=?
-        """, (name, Re, Mach))
-        rows = self.cursor.fetchall()
-        return pd.DataFrame(rows, columns=["Alpha", "Cl", "Cd", "Cm"]) if rows else None
+    def get_aero_coeffs(self, name, Re=None, Mach=None):
+        return self.xfoil_db.get_results(name, Re, Mach)
 
     def plot_polar(self, name, Re, Mach):
-        """Plots Cl vs. Cd (Lift-Drag Polar) for the given airfoil."""
-        df = self.get_aero_coeffs_by_conditions(name, Re, Mach)
+        df = self.get_aero_coeffs(name, Re, Mach)
         if df is None or df.empty:
             print(f"No aerodynamic data found for {name} (Re={Re}, Mach={Mach})")
             return
@@ -207,12 +151,11 @@ class AirfoilDatabase:
         plt.show()
 
     def plot_coeff_vs_alpha(self, name, coeff="Cl", Re=None, Mach=None):
-        """Plots Cl, Cd, or Cm vs. Alpha for a given airfoil at specified conditions."""
         if coeff not in ["Cl", "Cd", "Cm"]:
             print("Invalid coefficient. Choose 'Cl', 'Cd', or 'Cm'.")
             return
 
-        df = self.get_aero_coeffs_by_conditions(name, Re, Mach)
+        df = self.get_aero_coeffs(name, Re, Mach)
         if df is None or df.empty:
             print(f"No aerodynamic data found for {name} (Re={Re}, Mach={Mach})")
             return
@@ -228,6 +171,7 @@ class AirfoilDatabase:
     def clear_database(self):
         self.cursor.execute("DELETE FROM airfoils")
         self.conn.commit()
+        self.xfoil_db.clear_results()
         print("Database cleared.")
 
     def close(self):
@@ -252,9 +196,14 @@ if __name__ == "__main__":
     db = AirfoilDatabase(db_dir="my_airfoil_database")
     xfoil = XFoilRunner("D:/Mitchell/software/CFD/xfoil.exe")
 
-    mach_list = [0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]  # Define Mach numbers
-    reynolds_list = [1000, 5000, 10000, 25000, 50000, 100000, 150000, 200000, 300000, 500000, 750000, 1000000, 1500000, 2000000]  # Define Reynolds numbers
-    alpha_range = (-5, 15, 1)  # Define angle of attack range
+    mach_list = [0.2]  # Define Mach numbers
+    reynolds_list = [10000]  # Define Reynolds numbers
+    alpha_start=0
+    alpha_end=8
+    alpha_increment=4
+    #mach_list = [0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]  # Define Mach numbers
+    #reynolds_list = [1000, 5000, 10000, 25000, 50000, 100000, 150000, 200000, 300000, 500000, 750000, 1000000, 1500000, 2000000]  # Define Reynolds numbers
+    #alpha_range = (-5, 15, 1)  # Define angle of attack range
 
     db.run_all_airfoils(xfoil, max_workers=12, mach_list=mach_list, reynolds_list=reynolds_list, alpha_start=-20, alpha_end=20, alpha_increment=4)
     db.close()
