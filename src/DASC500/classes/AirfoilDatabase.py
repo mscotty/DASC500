@@ -2,61 +2,72 @@ import os
 import sqlite3
 import matplotlib.pyplot as plt
 import concurrent.futures
+import threading
 
 from DASC500.classes.XFoilRunner import XFoilRunner
-from DASC500.classes.XFoilDatabase import XFoilDatabase
 
 class AirfoilDatabase:
     def __init__(self, db_name="airfoil_data.db", db_dir="."):
         self.db_path = os.path.join(db_dir, db_name) # Path to the database
         os.makedirs(db_dir, exist_ok=True) # Create directory if it doesn't exist.
-        self.conn = sqlite3.connect(self.db_path)
-        self.cursor = self.conn.cursor()
+        # self.conn = sqlite3.connect(self.db_path)
+        # self.cursor = self.conn.cursor()
+        self.write_lock = threading.Lock() #Add the lock.
+        self._enable_wal()
         self._create_table()
-        self.xfoil_db = XFoilDatabase()
+    
+    def _enable_wal(self):
+        with sqlite3.connect(self.db_path) as conn:
+            conn.execute("PRAGMA journal_mode=WAL;")
 
     def _create_table(self):
-        self.cursor.execute("""
-            CREATE TABLE IF NOT EXISTS airfoils (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT UNIQUE NOT NULL,
-                description TEXT,
-                pointcloud TEXT
-            )
-        """)
-        self.cursor.execute("""
-            CREATE TABLE IF NOT EXISTS aero_coeffs (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL,
-                reynolds_number REAL NOT NULL,
-                mach REAL NOT NULL,
-                alpha REAL NOT NULL,
-                cl REAL,
-                cd REAL,
-                cm REAL,
-                FOREIGN KEY (name) REFERENCES airfoils(name),
-                UNIQUE (name, reynolds_number, mach, alpha)
-            )
-        """)
-        self.conn.commit()
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS airfoils (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT UNIQUE NOT NULL,
+                    description TEXT,
+                    pointcloud TEXT
+                )
+            """)
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS aero_coeffs (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT NOT NULL,
+                    reynolds_number REAL NOT NULL,
+                    mach REAL NOT NULL,
+                    alpha REAL NOT NULL,
+                    cl REAL,
+                    cd REAL,
+                    cm REAL,
+                    FOREIGN KEY (name) REFERENCES airfoils(name),
+                    UNIQUE (name, reynolds_number, mach, alpha)
+                )
+            """)
+            conn.commit()
         
     def store_airfoil_data(self, name, description, pointcloud, overwrite=False):
         try:
-            if overwrite:
-                self.cursor.execute("REPLACE INTO airfoils (name, description, pointcloud) VALUES (?, ?, ?)", (name, description, pointcloud))
-            else:
-                self.cursor.execute("INSERT INTO airfoils (name, description, pointcloud) VALUES (?, ?, ?)", (name, description, pointcloud))
-            self.conn.commit()
-            print(f"Stored: {name} in database.")
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+                if overwrite:
+                    cursor.execute("REPLACE INTO airfoils (name, description, pointcloud) VALUES (?, ?, ?)", (name, description, pointcloud))
+                else:
+                    cursor.execute("INSERT INTO airfoils (name, description, pointcloud) VALUES (?, ?, ?)", (name, description, pointcloud))
+                conn.commit()
+                print(f"Stored: {name} in database.")
         except sqlite3.IntegrityError:
             if overwrite:
-                print(f"Updated: {name} in database.") # If it exists and overwrite is True, it should update it.
+                print(f"Updated: {name} in database.")
             else:
                 print(f"Airfoil {name} already exists in the database. Use overwrite=True to update.")
 
     def get_airfoil_data(self, name):
-        self.cursor.execute("SELECT description, pointcloud FROM airfoils WHERE name=?", (name,))
-        return self.cursor.fetchone()
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT description, pointcloud FROM airfoils WHERE name=?", (name,))
+            return cursor.fetchone()
     
     def plot_airfoil(self, name):
         """Plots the airfoil using its pointcloud data."""
@@ -86,6 +97,21 @@ class AirfoilDatabase:
         else:
             print(f"Airfoil {name} not found in the database.")
     
+    def store_aero_coeffs(self, name, reynolds_number, mach, alpha, cl, cd, cm):
+        try:
+            with self.write_lock: #Acquire the Lock
+                with sqlite3.connect(self.db_path) as conn:
+                    cursor = conn.cursor()
+                    cursor.execute("""
+                        INSERT OR IGNORE INTO aero_coeffs (name, reynolds_number, mach, alpha, cl, cd, cm)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)
+                    """, (name, reynolds_number, mach, alpha, cl, cd, cm))
+                    conn.commit()
+                    print(f"Stored aero coeffs for {name} (Re={reynolds_number}, Mach={mach}, alpha={alpha})")
+        except sqlite3.Error as e:
+            print(f"SQLite error storing aero coeffs for {name}: {e}")
+            print(f"Error details: {e.__class__.__name__}, {e}")
+    
     def run_all_airfoils(self, 
                          xfoil_runner, 
                          max_workers=4, 
@@ -104,37 +130,40 @@ class AirfoilDatabase:
             alpha_range (tuple): (start_alpha, end_alpha, alpha_increment)
             max_workers (int): Number of parallel processes to run.
         """
-        self.cursor.execute("SELECT name, pointcloud FROM airfoils")
-        airfoils = self.cursor.fetchall()
-
-        tasks = []
-        for name, pointcloud in airfoils:
-            for Re in reynolds_list:
-                for Mach in mach_list:
-                    tasks.append((name, pointcloud, Re, Mach))
-
         def run_task(task):
             name, pointcloud, Re, Mach = task
-            print(f"Running {name} at Re={Re}, Mach={Mach}...")
             polar_df = xfoil_runner.run_xfoil(name, pointcloud, Re=Re, Mach=Mach, **varargin)
+            if polar_df is not None and not polar_df.empty:
+                for _, row in polar_df.iterrows():
+                    self.store_aero_coeffs(name, Re, Mach, row["alpha"], row["cl"], row["cd"], row["cm"])
 
-            if polar_df is None or polar_df.empty:
-                print(f"Skipping {name} at Re={Re}, Mach={Mach} due to empty results.")
-                return
-            
-            for _, row in polar_df.iterrows():
-                self.xfoil_db.store_results(name, Re, Mach, row["alpha"], row["cl"], row["cd"], row["cm"])
-
-        # Use multiprocessing to run simulations in parallel
-        """with concurrent.futures.ProcessPoolExecutor(max_workers=max_workers) as executor:
-            executor.map(run_task, tasks)"""
         with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+            tasks = []
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT name, pointcloud FROM airfoils")
+                airfoils = cursor.fetchall()
+            for name, pointcloud in airfoils:
+                for Re in reynolds_list:
+                    for Mach in mach_list:
+                        tasks.append((name, pointcloud, Re, Mach))
             executor.map(run_task, tasks)
 
         print("Finished processing all airfoils.")
     
     def get_aero_coeffs(self, name, Re=None, Mach=None):
-        return self.xfoil_db.get_results(name, Re, Mach)
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            query = "SELECT * FROM aero_coeffs WHERE name = ?"
+            params = [name]
+            if Re is not None:
+                query += " AND reynolds_number = ?"
+                params.append(Re)
+            if Mach is not None:
+                query += " AND mach = ?"
+                params.append(Mach)
+            cursor.execute(query, tuple(params))
+            return cursor.fetchall()
 
     def plot_polar(self, name, Re, Mach):
         df = self.get_aero_coeffs(name, Re, Mach)
@@ -169,13 +198,16 @@ class AirfoilDatabase:
         plt.show()
 
     def clear_database(self):
-        self.cursor.execute("DELETE FROM airfoils")
-        self.conn.commit()
-        self.xfoil_db.clear_results()
-        print("Database cleared.")
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM airfoils")
+            cursor.execute("DELETE FROM aero_coeffs")
+            conn.commit()
+            print("Database cleared.")
 
     def close(self):
-        self.conn.close()
+        # We are not opening the connection in init anymore.
+        pass
 
 
 if __name__ == "__main__":
@@ -196,17 +228,17 @@ if __name__ == "__main__":
     db = AirfoilDatabase(db_dir="my_airfoil_database")
     xfoil = XFoilRunner("D:/Mitchell/software/CFD/xfoil.exe")
 
-    mach_list = [0.2]  # Define Mach numbers
-    reynolds_list = [10000]  # Define Reynolds numbers
+    #mach_list = [0.2]  # Define Mach numbers
+    #reynolds_list = [10000]  # Define Reynolds numbers
     alpha_start=0
     alpha_end=8
     alpha_increment=4
-    #mach_list = [0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]  # Define Mach numbers
-    #reynolds_list = [1000, 5000, 10000, 25000, 50000, 100000, 150000, 200000, 300000, 500000, 750000, 1000000, 1500000, 2000000]  # Define Reynolds numbers
+    mach_list = [0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]  # Define Mach numbers
+    reynolds_list = [1000, 5000, 10000, 25000, 50000, 100000, 150000, 200000, 300000, 500000, 750000, 1000000, 1500000, 2000000]  # Define Reynolds numbers
     #alpha_range = (-5, 15, 1)  # Define angle of attack range
 
-    db.run_all_airfoils(xfoil, max_workers=12, mach_list=mach_list, reynolds_list=reynolds_list, alpha_start=-20, alpha_end=20, alpha_increment=4)
-    db.close()
+    db.run_all_airfoils(xfoil, max_workers=1, mach_list=mach_list, reynolds_list=reynolds_list, alpha_start=-20, alpha_end=20, alpha_increment=4)
+    # db.close()
     
 
     
