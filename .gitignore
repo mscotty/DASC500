@@ -173,3 +173,5 @@ cython_debug/
 # Airfoil data
 /airfoil_data
 
+my_airfoil_database/airfoil_data_with_aero.db
+my_airfoil_database/airfoil_data - Copy.db

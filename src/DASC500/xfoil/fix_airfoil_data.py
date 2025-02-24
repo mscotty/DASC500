@@ -25,7 +25,7 @@ def normalize_data(data):
     
     return fixed_data
 
-def reorder_airfoil_data(data):
+def reorder_airfoil_data_bad(data):
     # Convert the data into a numpy array for easier manipulation
     data = np.array(data)
     x = data[:,0]
@@ -60,6 +60,57 @@ def reorder_airfoil_data(data):
     ordered_data = np.stack((ordered_x,ordered_y), axis=1)
     
     return ordered_data
+
+def reorder_airfoil_data(data):
+    """Reorders airfoil data with precise trailing edge handling."""
+    data = np.array(data)
+    if len(data) < 3:
+        return data
+
+    LE_index = np.argmin(data[:, 0])
+    LE = data[LE_index]
+    TE_index = np.argmax(data[:, 0])
+    TE = data[TE_index]
+
+    # Find transition point
+    transition_index = -1
+    for i in range(TE_index, len(data) - 1):
+        if data[i + 1, 0] < data[i, 0]:
+            transition_index = i
+            break
+
+    if transition_index == -1:
+        transition_index = TE_index
+
+    # Split into surfaces
+    upper = data[LE_index:transition_index + 1]
+    lower = np.concatenate((data[transition_index + 1:], data[:LE_index]))
+
+    # Sort by angle
+    def sort_by_angle(surface):
+        angles = np.arctan2(surface[:, 1] - LE[1], surface[:, 0] - LE[0])
+        sorted_indices = np.argsort(angles)
+        return surface[sorted_indices]
+
+    upper = sort_by_angle(upper)
+    lower = sort_by_angle(lower)
+
+    # Reverse lower surface
+    lower = np.flip(lower, axis=0)
+
+    # Concatenate without overlap
+    ordered_data = np.concatenate((upper, lower), axis=0)
+    return ordered_data
+
+def close_airfoil_data(data):
+    """Ensures that the airfoil data is self-closing by adding the first point to the end."""
+    data = np.array(data)
+    if len(data) < 3:
+        return data  # Not enough points to close
+
+    if not np.allclose(data[0], data[-1]):
+        return np.vstack((data, data[0]))  # Add the first point to the end
+    return data  # Already closed
 
 if __name__ == "__main__":
     # Example usage

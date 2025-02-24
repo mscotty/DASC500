@@ -8,8 +8,14 @@ import time
 import requests
 
 from DASC500.classes.AirfoilDatabase import AirfoilDatabase
+from DASC500.classes.AirfoilSeries import AirfoilSeries
 
-def download_dat_files(url, save_dir=".", db_name="airfoil_data.db", db_dir=".", delay=1):
+def download_dat_files(url, 
+                       save_dir=".", 
+                       db_name="airfoil_data.db", 
+                       db_dir=".", 
+                       overwrite=False,
+                       delay=1):
     """
     Downloads all .dat files from the given URL and its subsequent pages,
     parses the data, and stores it in an SQLite database.
@@ -19,6 +25,7 @@ def download_dat_files(url, save_dir=".", db_name="airfoil_data.db", db_dir=".",
         save_dir (str, optional): The directory to save the downloaded .dat files. Defaults to the current directory (.).
         db_name (str, optional): The name of the SQLite database file. Defaults to "airfoil_data.db".
         db_dir (str, optional): The directory to save the SQLite database. Defaults to the current directory (.).
+        overwrite (logical, optional): Dictates if data already present in the specified database should be overwritten. Default to "False".
         delay (int, optional): Delay between requests in seconds. Defaults to 1.
     """
 
@@ -53,6 +60,7 @@ def download_dat_files(url, save_dir=".", db_name="airfoil_data.db", db_dir=".",
                     print(f"Downloaded: {dat_filename}")
 
                     name = os.path.splitext(os.path.basename(dat_link))[0]
+                    airfoil_series = AirfoilSeries.identify_airfoil_series(name)
                     with open(dat_filename, 'r') as f:
                         lines = f.readlines()
                         description = lines[0].strip() if lines else ""
@@ -68,7 +76,7 @@ def download_dat_files(url, save_dir=".", db_name="airfoil_data.db", db_dir=".",
                                 except ValueError:
                                     pass # Skip lines that can not be converted to floats or do not have 2 values.
                                     
-                    airfoil_db.store_airfoil_data(name, description, pointcloud)
+                    airfoil_db.store_airfoil_data(name, description, pointcloud, airfoil_series, dat_url, overwrite=overwrite)
 
             except Exception as e:
                 print(f"Error downloading or processing {dat_url}: {e}")
@@ -87,5 +95,6 @@ def download_dat_files(url, save_dir=".", db_name="airfoil_data.db", db_dir=".",
 if __name__ == "__main__":
     download_dat_files("https://m-selig.ae.illinois.edu/ads/coord_database.html", 
                        save_dir="airfoil_data", 
-                       db_dir="my_airfoil_database")  # Specify database directory
+                       db_dir="my_airfoil_database",
+                       overwrite=True)  # Specify database directory
     print("Finished processing all .dat files.")

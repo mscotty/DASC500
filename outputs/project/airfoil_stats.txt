@@ -1,0 +1,11 @@
+Calculated metrics for Num_Points
+Mean: 65.5068578553616
+Median: 61.0
+Mode:
+1 Mode(s) found: 34
+Population Variance: 1470.1352397528624
+Population Standard Deviation: 38.34234264821155
+Sample Variance: 1471.0523546872062
+Sample Standard Deviation: 38.354300341515895
+First quartile: 34.0
+Third quartile: 81.0

@@ -22,7 +22,8 @@ dependencies = [
     "kaleido",
     "requests",
     "beautifulsoup4",
-    "selenium"
+    "selenium",
+    "shapely"
 ]
 
 [project.optional-dependencies]

@@ -24,13 +24,18 @@ from DASC500.plotting.plot_radar_chart import plot_radar_chart
 # DataAnalysis Class Definition
 # -------------------------------------
 class DataAnalysis:
-    def __init__(self, file):
+    def __init__(self, file=None, dataframe=None):
         """
         Initialize the DataAnalysis object by loading a CSV file 
         and calculating initial stats and numeric columns.
         """
         self.file = file
-        self.df_original = pd.read_csv(file)
+        if file is not None:
+            self.df_original = pd.read_csv(file)
+        elif file is None and dataframe is not None:
+            self.df_original = dataframe
+        else:
+            raise ValueError('Need a valid file or dataframe.')
         self.df = deepcopy(self.df_original)
         self.determine_numeric_col()
         self.calculate_stats()
@@ -177,8 +182,10 @@ class DataAnalysis:
         """
         if key_in is None:
             key_in = self.num_headers.keys()
+        if isinstance(key_in, str):
+            key_in = [key_in]
             
-        for key in self.num_headers.keys():
+        for key in key_in:
             data = self.df[key].dropna()
             plot_histogram(data,
                            **kwargs)
