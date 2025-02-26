@@ -23,7 +23,8 @@ dependencies = [
     "requests",
     "beautifulsoup4",
     "selenium",
-    "shapely"
+    "shapely",
+    "PyQt6"
 ]
 
 [project.optional-dependencies]

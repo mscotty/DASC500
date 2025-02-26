@@ -82,32 +82,6 @@ class AirfoilDatabase:
                 )
             """)
             conn.commit()
-    
-    def create_airfoil_table(self):
-        with sqlite3.connect(self.db_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute("""
-                CREATE TABLE IF NOT EXISTS airfoils (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    name TEXT UNIQUE NOT NULL,
-                    description TEXT,
-                    pointcloud TEXT,
-                    airfoil_series TEXT,
-                    source TEXT
-                )
-            """)
-            conn.commit()
-            try:
-                cursor.execute("ALTER TABLE airfoils ADD COLUMN airfoil_series TEXT")
-                print("Added column airfoil_series")
-            except sqlite3.OperationalError:
-                print("Column airfoil_series already exists")
-
-            try:
-                cursor.execute("ALTER TABLE airfoils ADD COLUMN source TEXT")
-                print("Added column source")
-            except sqlite3.OperationalError:
-                print("Column source already exists")
         
     def store_airfoil_data(self, name, description, pointcloud, airfoil_series, source, overwrite=False):
         try:
@@ -210,6 +184,60 @@ class AirfoilDatabase:
             return np.array([np.fromstring(row, dtype=float, sep=' ') for row in rows])
         except ValueError:
             return np.array([])
+    
+    def check_pointcloud_outliers(self, name, threshold=3.0):
+        """Checks for outliers in the pointcloud of a given airfoil."""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT pointcloud FROM airfoils WHERE name = ?", (name,))
+            result = cursor.fetchone()
+
+            if result and result[0]:
+                pointcloud_np = self._pointcloud_to_numpy(result[0])
+                if pointcloud_np.size == 0:
+                    return False, "Empty pointcloud"
+                x = pointcloud_np[:, 0]
+                y = pointcloud_np[:, 1]
+
+                # Calculate z-scores for x and y coordinates
+                z_x = np.abs((x - np.mean(x)) / np.std(x))
+                z_y = np.abs((y - np.mean(y)) / np.std(y))
+
+                # Identify outliers based on z-score threshold
+                outlier_indices = np.where((z_x > threshold) | (z_y > threshold))[0]
+
+                if len(outlier_indices) > 0:
+                    outlier_points = pointcloud_np[outlier_indices]
+                    return True, outlier_points
+                else:
+                    return False, None
+            else:
+                return False, "Airfoil not found"
+
+    def check_all_pointcloud_outliers(self, threshold=3.0):
+        """Checks all airfoils in the database for outliers."""
+        outliers_found = {}
+
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT name FROM airfoils")
+            airfoils = cursor.fetchall()
+
+            for airfoil in airfoils:
+                name = airfoil[0]
+                has_outliers, outliers = self.check_pointcloud_outliers(name, threshold)
+                if has_outliers:
+                    outliers_found[name] = outliers
+
+        if outliers_found:
+            print("Airfoils with outliers:")
+            for name, outliers in outliers_found.items():
+                print(f"- {name}:")
+                for point in outliers:
+                    print(f"  {point}")
+        else:
+            print("No outliers found in any airfoils.")
+        return outliers_found
 
     def check_self_intersection(self, pointcloud_np):
         """Checks if a pointcloud (NumPy array) has self-intersections."""
@@ -321,37 +349,36 @@ class AirfoilDatabase:
 
     def plot_airfoil(self, 
                      name, 
+                     ax=None,
                      output_dir=None, 
                      output_name=None):
         """Plots the airfoil using its point cloud data, with markers for individual points."""
         data = self.get_airfoil_data(name)
         if data:
             description, pointcloud_str = data
-            try:
-                points = [line.split() for line in pointcloud_str.strip().split('\n')]
-                x = [float(p[0]) for p in points if len(p) == 2]
-                y = [float(p[1]) for p in points if len(p) == 2]
+            pointcloud_np = self._pointcloud_to_numpy(pointcloud_str)
+            x = pointcloud_np[:,0]
+            y = pointcloud_np[:,1]
 
-                if x and y:
-                    plt.figure(figsize=(8, 6))
-                    plt.plot(x, y, label=name, linestyle='-', marker='o', markersize=4)  # Markers added
-                    plt.xlabel("X Coordinate")
-                    plt.ylabel("Y Coordinate")
-                    plt.title(f"Airfoil: {name}")
-                    plt.grid(True)
-                    plt.axis('equal')
-                    plt.legend()
-                    if output_dir is None:
-                        plt.show()
-                    else:
-                        if output_name is None:
-                            output_name = name + '.png'
-                        plt.savefig(os.path.join(output_dir, output_name))
+            if ax is None:
+                fig, ax = plt.subplots()
+
+            ax.plot(x, y, label=f"{name} : {len(x)}", linestyle='-', marker='o', markersize=4)
+            ax.set_title(f"Airfoil: {name}")
+            ax.set_xlabel("X Coordinate")
+            ax.set_ylabel("Y Coordinate")
+            ax.grid(True)
+            ax.axis("equal")
+            ax.legend(loc='upper left')
+            if ax is None:
+                if output_dir is None:
+                    plt.show()
                 else:
-                    print(f"No valid point cloud data found for {name}")
-
-            except (ValueError, IndexError) as e:
-                print(f"Error parsing point cloud data for {name}: {e}")
+                    if output_name is None:
+                        output_name = name + '.png'
+                    plt.savefig(os.path.join(output_dir, output_name))
+            else:
+                return ax
         else:
             print(f"Airfoil {name} not found in the database.")
     
