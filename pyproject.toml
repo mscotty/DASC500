@@ -23,7 +23,8 @@ dependencies = [
     "requests",
     "beautifulsoup4",
     "selenium",
-    "shapely"
+    "shapely",
+    "statsmodels"
 ]
 
 [project.optional-dependencies]
