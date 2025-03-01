@@ -25,6 +25,7 @@ dependencies = [
     "selenium",
     "shapely",
     "PyQt6"
+    "statsmodels"
 ]
 
 [project.optional-dependencies]

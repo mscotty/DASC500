@@ -11,6 +11,10 @@ from DASC500.utilities.data_type.distinguish_data_types import distinguish_data_
 from DASC500.utilities.print.print_series_mode import print_series_mode
 from DASC500.formulas.statistics.confidence_interval import calculate_confidence_interval
 from DASC500.formulas.statistics.hypothesis_test import hypothesis_test
+
+from DASC500.models.build_linear_regression_model import linear_regression_model
+from DASC500.models.build_mult_linear_regression_model import multiple_linear_regression
+
 from DASC500.plotting.plot_histogram import plot_histogram
 from DASC500.plotting.plot_stacked_bar_chart import plot_stacked_bar_chart_horizontal, plot_stacked_bar_chart_vertical
 from DASC500.plotting.plot_clustered_bar_chart import plot_clustered_bar_chart_horizontal, plot_clustered_bar_chart_vertical
@@ -36,11 +40,12 @@ class DataAnalysis:
             self.df_original = dataframe
         else:
             raise ValueError('Need a valid file or dataframe.')
+        self.df_test = None
         self.df = deepcopy(self.df_original)
         self.determine_numeric_col()
         self.calculate_stats()
     
-    def downsample_dataframe(self, new_size, random_state=None):
+    def downsample_dataframe(self, new_size=None, frac=None, random_state=None):
         """
         Downsample a DataFrame to a specified number of rows.
 
@@ -52,10 +57,23 @@ class DataAnalysis:
         Returns:
             pd.DataFrame: The downsampled DataFrame.
         """
-        if new_size > len(self.df_original):
+        if new_size is None and frac is None:
+            raise ValueError("Must provide either a new_size or a frac to downsample data.")
+        elif new_size is not None and frac is not None:
+            raise ValueError("Cannot provide both new_size and frac, only one is supported.")
+        if new_size is not None and new_size > len(self.df_original):
             warnings.warn(f"{new_size} provided is outside of the data's supported range: 1-{len(self.df_original)}")
-            return self.df_original.copy()  # Return original if the requested size is too large
-        self.df = self.df_original.sample(n=new_size, random_state=random_state).reset_index(drop=True)
+            self.df = self.df_original.copy()  # Return original if the requested size is too large
+        elif frac is not None and frac > 1:
+            warnings.warn(f"INPUT:WARNING: fraction input was greater than supported, defaulting to 1")
+            self.df = self.df_original.copy() # Return original if the requested size is too large
+        
+        if frac is None:
+            self.df = self.df_original.sample(n=new_size, random_state=random_state)
+        elif new_size is None:
+            self.df = self.df_original.sample(frac=frac, random_state=random_state)
+        
+        self.df_test = self.df_original.drop(self.df.index)
 
     def determine_numeric_col(self):
         """
@@ -171,6 +189,12 @@ class DataAnalysis:
     
     def hypothesis_test(self, data_col_name, **kwargs):
         return hypothesis_test(self.df[data_col_name], **kwargs)
+    
+    def build_linear_regression_model(self, *args):
+        self.lin_reg_model = linear_regression_model(self.df, *args)
+    
+    def build_mult_linear_regression_model(self, *args, **kwargs):
+        self.mult_lin_reg_model = multiple_linear_regression(self.df, *args, **kwargs)
 
     def plot_histograms_per_col(self,
                                 key_in=None, 
