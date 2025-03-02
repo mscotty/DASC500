@@ -1,5 +1,7 @@
 import os
 import sqlite3
+import csv
+import json
 import matplotlib.pyplot as plt
 import numpy as np
 from collections import Counter
@@ -19,6 +21,8 @@ from DASC500.formulas.airfoil.compute_span import calculate_span
 from DASC500.formulas.airfoil.compute_thickness_to_chord_ratio import thickness_to_chord_ratio
 
 from DASC500.xfoil.fix_airfoil_data import *
+from DASC500.xfoil.interpolate_points import interpolate_points
+from DASC500.xfoil.calculate_distance import calculate_min_distance_sum
 
 from DASC500.classes.XFoilRunner import XFoilRunner
 
@@ -26,8 +30,6 @@ class AirfoilDatabase:
     def __init__(self, db_name="airfoil_data.db", db_dir="."):
         self.db_path = os.path.join(db_dir, db_name) # Path to the database
         os.makedirs(db_dir, exist_ok=True) # Create directory if it doesn't exist.
-        # self.conn = sqlite3.connect(self.db_path)
-        # self.cursor = self.conn.cursor()
         self.write_lock = threading.Lock() #Add the lock.
         self._enable_wal()
         self._create_table()
@@ -99,11 +101,133 @@ class AirfoilDatabase:
             else:
                 print(f"Airfoil {name} already exists in the database. Use overwrite=True to update.")
 
+    def add_airfoils_from_csv(self, csv_file, overwrite=False):
+        """Adds airfoils from a CSV file."""
+        try:
+            with open(csv_file, 'r', newline='', encoding='utf-8') as file:
+                reader = csv.DictReader(file)
+                headers = reader.fieldnames
+                if not headers:
+                    print("CSV file is empty or has no headers.")
+                    return
+
+                with sqlite3.connect(self.db_path) as conn:
+                    cursor = conn.cursor()
+                    for row in reader:
+                        name = row.get('name')  # Assuming 'name' column exists
+                        if not name:
+                            print("Warning: Skipping row with missing 'name'.")
+                            continue
+                        if overwrite:
+                            self._delete_airfoil_data(name, conn, cursor)
+
+                        insert_query = "INSERT OR REPLACE INTO airfoils ("
+                        values_query = "VALUES ("
+                        values = []
+
+                        for header in headers:
+                            if header in ['name', 'description', 'pointcloud', 'airfoil_series', 'source']:
+                                insert_query += f"{header}, "
+                                values_query += "?, "
+                                values.append(row.get(header))
+
+                        insert_query = insert_query.rstrip(', ') + ") "
+                        values_query = values_query.rstrip(', ') + ")"
+                        query = insert_query + values_query
+
+                        try:
+                            cursor.execute(query, values)
+                            conn.commit()
+                            print(f"Added/Updated: {name} from CSV.")
+                        except sqlite3.IntegrityError as e:
+                            print(f"Error adding {name}: {e}")
+
+        except FileNotFoundError:
+            print(f"File not found: {csv_file}")
+        except Exception as e:
+            print(f"An error occurred: {e}")
+
+    def add_airfoils_from_json(self, json_file, overwrite=False):
+        """Adds airfoils from a JSON file."""
+        try:
+            with open(json_file, 'r', encoding='utf-8') as file:
+                data = json.load(file)
+
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+                for name, airfoil_data in data.items():
+                    if overwrite:
+                        self._delete_airfoil_data(name, conn, cursor)
+                    try:
+                        insert_query = "INSERT OR REPLACE INTO airfoils (name, description, pointcloud, airfoil_series, source) VALUES (?, ?, ?, ?, ?)"
+                        cursor.execute(insert_query, (name, airfoil_data.get('description'), airfoil_data.get('pointcloud'), airfoil_data.get('airfoil_series'), airfoil_data.get('source')))
+                        conn.commit()
+                        print(f"Added/Updated: {name} from JSON.")
+                    except sqlite3.IntegrityError as e:
+                        print(f"Error adding {name}: {e}")
+
+        except FileNotFoundError:
+            print(f"File not found: {json_file}")
+        except json.JSONDecodeError:
+            print(f"Invalid JSON format in {json_file}")
+        except Exception as e:
+            print(f"An error occurred: {e}")
+    
+    def update_airfoil_info(self, old_name, new_name, description, series, source):
+        """Updates airfoil info in all related tables."""
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+
+                # Update airfoils table
+                cursor.execute("""
+                    UPDATE airfoils
+                    SET name = ?, description = ?, airfoil_series = ?, source = ?
+                    WHERE name = ?
+                """, (new_name, description, series, source, old_name))
+
+                # Update aero_coeffs table
+                cursor.execute("""
+                    UPDATE aero_coeffs
+                    SET name = ?
+                    WHERE name = ?
+                """, (new_name, old_name))
+
+                # Update airfoil_geometry table
+                cursor.execute("""
+                    UPDATE airfoil_geometry
+                    SET name = ?
+                    WHERE name = ?
+                """, (new_name, old_name))
+
+                conn.commit()
+                print(f"Updated airfoil info for {old_name} to {new_name}.")
+
+        except sqlite3.Error as e:
+            print(f"Error updating airfoil info: {e}")
+
+    def _delete_airfoil_data(self, name, conn, cursor):
+        """Deletes all data associated with an airfoil."""
+        cursor.execute("DELETE FROM airfoils WHERE name = ?", (name,))
+        cursor.execute("DELETE FROM aero_coeffs WHERE name = ?", (name,))
+        cursor.execute("DELETE FROM airfoil_geometry WHERE name = ?", (name,))
+        conn.commit()
+        print(f"Deleted existing data for {name}.")
+
     def get_airfoil_data(self, name):
-        with sqlite3.connect(self.db_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute("SELECT description, pointcloud FROM airfoils WHERE name=?", (name,))
-            return cursor.fetchone()
+        """Retrieves airfoil data including series and source."""
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT description, pointcloud, airfoil_series, source FROM airfoils WHERE name = ?", (name,))
+                result = cursor.fetchone()
+                if result:
+                    return result
+                else:
+                    return None
+        except sqlite3.Error as e:
+            print(f"Error retrieving airfoil data: {e}")
+            return None
     
     def get_airfoil_dataframe(self):
         """Returns a Pandas DataFrame with airfoil names, series, and number of points."""
@@ -355,7 +479,7 @@ class AirfoilDatabase:
         """Plots the airfoil using its point cloud data, with markers for individual points."""
         data = self.get_airfoil_data(name)
         if data:
-            description, pointcloud_str = data
+            description, pointcloud_str, series, source = data
             pointcloud_np = self._pointcloud_to_numpy(pointcloud_str)
             x = pointcloud_np[:,0]
             y = pointcloud_np[:,1]
@@ -383,23 +507,25 @@ class AirfoilDatabase:
             print(f"Airfoil {name} not found in the database.")
     
     def plot_multiple_airfoils(self, 
-                               names, 
-                               output_dir=None, 
-                               output_name=None):
-        """Plots multiple airfoils on the same figure."""
-        plt.figure(figsize=(10, 7))
+                            names, 
+                            ax=None,
+                            output_dir=None, 
+                            output_name=None):
+        """Plots multiple airfoils on the same figure, optionally on a provided axes."""
+        if ax is None:
+            fig, ax = plt.subplots(figsize=(10, 7))  # Create a new figure if ax is not provided
 
         for name in names:
             data = self.get_airfoil_data(name)
             if data:
-                description, pointcloud_str = data
+                description, pointcloud_str, series, source = data
                 try:
                     points = [line.split() for line in pointcloud_str.strip().split('\n')]
                     x = [float(p[0]) for p in points if len(p) == 2]
                     y = [float(p[1]) for p in points if len(p) == 2]
 
                     if x and y:
-                        plt.plot(x, y, label=name, linestyle='-', marker='o', markersize=3)  # Markers added
+                        ax.plot(x, y, label=name, linestyle='-', marker='o', markersize=3)  # Markers added
                     else:
                         print(f"No valid point cloud data found for {name}")
 
@@ -408,19 +534,83 @@ class AirfoilDatabase:
             else:
                 print(f"Airfoil {name} not found in the database.")
 
-        plt.xlabel("X Coordinate")
-        plt.ylabel("Y Coordinate")
-        plt.title("Airfoil Comparison")
-        plt.grid(True)
-        plt.axis('equal')
-        plt.legend()
+        ax.set_xlabel("X Coordinate")
+        ax.set_ylabel("Y Coordinate")
+        ax.set_title("Airfoil Comparison")
+        ax.grid(True)
+        ax.axis('equal')
+        ax.legend()
+
         if output_dir is None:
-            plt.show()
+            if ax is None: #If no ax was passed, show the plot.
+                plt.show()
         else:
             if output_name is None:
                 output_name = ' vs '.join(names) + '.png'
             plt.savefig(os.path.join(output_dir, output_name))
+
+        return ax #Return the ax object.
     
+    def add_airfoil_to_plot(self, name, ax, **kwargs):
+        """Adds a single airfoil to a matplotlib axes object."""
+        data = self.get_airfoil_data(name)
+        if data:
+            description, pointcloud_str, series, source = data
+            try:
+                points = [line.split() for line in pointcloud_str.strip().split('\n')]
+                x = [float(p[0]) for p in points if len(p) == 2]
+                y = [float(p[1]) for p in points if len(p) == 2]
+
+                if x and y:
+                    #ax.plot(x, y, label=name, **kwargs)
+                    ax.plot(x, y, **kwargs)
+                else:
+                    print(f"No valid point cloud data found for {name}")
+
+            except (ValueError, IndexError) as e:
+                print(f"Error parsing point cloud data for {name}: {e}")
+        else:
+            print(f"Airfoil {name} not found in the database.")
+    
+    def find_best_matching_airfoils(self, input_pointcloud_str, num_matches=3):
+        """
+        Compares an input point cloud to the airfoils in the database and returns the best matches.
+        """
+        # try:
+        input_points = [line.split() for line in input_pointcloud_str.strip().split('\n')]
+        input_points = np.array([[float(p[0]), float(p[1])] for p in input_points if len(p) == 2])
+        normalized_input_points = normalize_pointcloud(input_points)
+        if len(normalized_input_points) == 0:
+            return []
+
+        interpolated_input_points = interpolate_points(normalized_input_points)
+
+        matches = []
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT name, pointcloud FROM airfoils")
+            airfoils = cursor.fetchall()
+
+            for name, db_pointcloud_str in airfoils:
+                db_points = [line.split() for line in db_pointcloud_str.strip().split('\n')]
+                db_points = np.array([[float(p[0]), float(p[1])] for p in db_points if len(p) == 2])
+                normalized_db_points = normalize_pointcloud(db_points)
+                if len(normalized_db_points) == 0:
+                    continue
+                    
+                interpolated_db_points = interpolate_points(normalized_db_points)
+
+                if np.shape(interpolated_input_points)[0] == np.shape(interpolated_db_points)[0]:
+                    distance = calculate_min_distance_sum(interpolated_input_points, interpolated_db_points)
+                    matches.append((name, distance))
+
+        matches.sort(key=lambda x: x[1])  # Sort by distance
+        return matches[:num_matches]  # Return the top matches
+
+        # except Exception as e:
+        #     print(f"Error finding best matching airfoils: {e}")
+        #     return []
+
     def compute_geometry_metrics(self):
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
@@ -469,7 +659,8 @@ class AirfoilDatabase:
             tolerance_type (str): "absolute" or "percentage".
         """
         valid_parameters = ["max_thickness", "max_camber", "leading_edge_radius",
-                            "trailing_edge_angle", "chord_length", "thickness_to_chord_ratio", "total_length"]
+                            "trailing_edge_angle", "chord_length", "thickness_to_chord_ratio", 
+                            "span", "aspect_ratio"]
 
         if parameter not in valid_parameters:
             print(f"Invalid parameter. Choose from: {', '.join(valid_parameters)}")

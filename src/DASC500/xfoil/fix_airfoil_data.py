@@ -25,6 +25,34 @@ def normalize_data(data):
     
     return fixed_data
 
+def normalize_pointcloud(pointcloud):
+    """
+    Normalizes a point cloud based on the distance between the leading edge (LE)
+    and trailing edge (TE), scaling all other points accordingly.
+    """
+    points = np.array([[float(p[0]), float(p[1])] for p in pointcloud])
+    if len(points) < 2:  # Need at least two points for LE and TE
+        return np.array([])
+
+    le_index = np.argmin(points[:, 0])
+    te_index = np.argmax(points[:, 0])
+
+    le_point = points[le_index]
+    te_point = points[te_index]
+
+    le_te_distance = np.linalg.norm(te_point - le_point)
+
+    if le_te_distance == 0:
+        return np.array([])  # Avoid division by zero
+
+    # Translate to LE as origin
+    translated_points = points - le_point
+
+    # Scale based on LE-TE distance
+    normalized_points = translated_points / le_te_distance
+
+    return normalized_points
+
 def reorder_airfoil_data_bad(data):
     # Convert the data into a numpy array for easier manipulation
     data = np.array(data)

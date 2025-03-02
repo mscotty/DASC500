@@ -24,7 +24,7 @@ dependencies = [
     "beautifulsoup4",
     "selenium",
     "shapely",
-    "PyQt6"
+    "PyQt6",
     "statsmodels"
 ]
 
