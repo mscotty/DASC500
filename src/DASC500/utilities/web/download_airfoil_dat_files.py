@@ -61,6 +61,8 @@ def download_dat_files(url,
 
                     name = os.path.splitext(os.path.basename(dat_link))[0]
                     airfoil_series = AirfoilSeries.identify_airfoil_series(name)
+                    if airfoil_series == AirfoilSeries.OTHER:
+                        airfoil_series = AirfoilSeries.identify_airfoil_series(description)
                     with open(dat_filename, 'r') as f:
                         lines = f.readlines()
                         description = lines[0].strip() if lines else ""

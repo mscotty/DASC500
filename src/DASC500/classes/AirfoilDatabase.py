@@ -10,6 +10,7 @@ import threading
 import seaborn as sns
 from scipy.spatial import ConvexHull
 from shapely.geometry import Polygon
+import pandas as pd
 
 from DASC500.plotting.plot_histogram import plot_histogram
 
@@ -20,11 +21,13 @@ from DASC500.formulas.airfoil.compute_thickness_camber import compute_thickness_
 from DASC500.formulas.airfoil.compute_span import calculate_span
 from DASC500.formulas.airfoil.compute_thickness_to_chord_ratio import thickness_to_chord_ratio
 
-from DASC500.xfoil.fix_airfoil_data import *
+from DASC500.xfoil.fix_airfoil_data import normalize_pointcloud
+from DASC500.xfoil.fix_airfoil_pointcloud_v2 import *
 from DASC500.xfoil.interpolate_points import interpolate_points
 from DASC500.xfoil.calculate_distance import calculate_min_distance_sum
 
 from DASC500.classes.XFoilRunner import XFoilRunner
+from DASC500.classes.AirfoilSeries import AirfoilSeries
 
 class AirfoilDatabase:
     def __init__(self, db_name="airfoil_data.db", db_dir="."):
@@ -206,6 +209,21 @@ class AirfoilDatabase:
         except sqlite3.Error as e:
             print(f"Error updating airfoil info: {e}")
 
+    def update_airfoil_series(self):
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT name, description, airfoil_series FROM airfoils")
+            airfoils = cursor.fetchall()
+            for name, description, airfoil_series in airfoils:
+                airfoil_series_curr = AirfoilSeries.from_string(airfoil_series)
+                if airfoil_series_curr == AirfoilSeries.OTHER:
+                    airfoil_series_curr = AirfoilSeries.identify_airfoil_series(name)
+                    if airfoil_series_curr == AirfoilSeries.OTHER:
+                        airfoil_series_curr = AirfoilSeries.identify_airfoil_series(description)
+                        #TODO: Add more logic to get the airfoil series
+                    cursor.execute("UPDATE airfoils SET airfoil_series = ? WHERE name = ?", (airfoil_series_curr.value, name))
+                    conn.commit()
+
     def _delete_airfoil_data(self, name, conn, cursor):
         """Deletes all data associated with an airfoil."""
         cursor.execute("DELETE FROM airfoils WHERE name = ?", (name,))
@@ -276,28 +294,6 @@ class AirfoilDatabase:
             print(f"An error occurred: {e}")
             return pd.DataFrame() #Return empty dataframe on error.
     
-    # def cleanup_all_pointclouds(self):
-    #     """Cleans up the point clouds of all airfoils in the database."""
-    #     with sqlite3.connect(self.db_path) as conn:
-    #         cursor = conn.cursor()
-    #         cursor.execute("SELECT name, pointcloud FROM airfoils")
-    #         airfoils = cursor.fetchall()
-
-    #         for name, pointcloud_str in airfoils:
-    #             """rows = pointcloud_str.split('\n')
-    #             rows = [x for x in rows if x.strip()]
-    #             pointcloud_np = np.array([np.fromstring(row, dtype=float, sep=' ') for row in rows])"""
-    #             pointcloud_np = self._pointcloud_to_numpy(pointcloud_str)
-    #             pointcloud_np = reorder_airfoil_data(pointcloud_np)
-    #             pointcloud_reorder = ""
-    #             for row in pointcloud_np:
-    #                 pointcloud_reorder += " ".join(f"{val:.6f}" for val in row) + "\n"
-
-    #             # Update the database with the cleaned point cloud
-    #             cursor.execute("UPDATE airfoils SET pointcloud = ? WHERE name = ?", (pointcloud_reorder.strip(), name))
-    #             conn.commit()
-    #             print(f"Cleaned point cloud for {name}")
-    
     def _pointcloud_to_numpy(self, pointcloud_str):
         """Converts a pointcloud string to a NumPy array."""
         if not pointcloud_str:
@@ -363,62 +359,6 @@ class AirfoilDatabase:
             print("No outliers found in any airfoils.")
         return outliers_found
 
-    def check_self_intersection(self, pointcloud_np):
-        """Checks if a pointcloud (NumPy array) has self-intersections."""
-        if len(pointcloud_np) < 3:
-            return False
-
-        try:
-            polygon = Polygon(pointcloud_np)
-            return not polygon.is_valid or not polygon.is_simple
-        except Exception as e:
-            print(f"Shapely Error: {e}")
-            return True
-
-        except Exception as e:
-            print(f"ConvexHull Error: {e}")
-            return True
-
-    def check_self_closing(self, pointcloud_np):
-        """Checks if a pointcloud (NumPy array) is self-closing."""
-        if len(pointcloud_np) < 3:
-            return False  # Not enough points for a closed shape
-        return np.allclose(pointcloud_np[0], pointcloud_np[-1])
-
-    def check_airfoil_validity(self):
-        """Checks all airfoils in the database for self-intersections and self-closing."""
-        invalid_intersections = []
-        non_closing = []
-
-        with sqlite3.connect(self.db_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute("SELECT name, pointcloud FROM airfoils")
-            airfoils = cursor.fetchall()
-
-            for name, pointcloud_str in airfoils:
-                pointcloud_np = self._pointcloud_to_numpy(pointcloud_str)
-                if pointcloud_np.size > 0:
-                    if self.check_self_intersection(pointcloud_np):
-                        invalid_intersections.append(name)
-                    if not self.check_self_closing(pointcloud_np):
-                        non_closing.append(name)
-
-        if invalid_intersections:
-            print("Airfoils with self-intersections:")
-            for name in invalid_intersections:
-                print(f"- {name}")
-            print(f"Total Number of Airfoils that failed: {len(invalid_intersections)}")
-        else:
-            print("No self-intersections found.")
-
-        if non_closing:
-            print("\nAirfoils that are not self-closing:")
-            for name in non_closing:
-                print(f"- {name}")
-            print(f"Total Number of Airfoils that failed: {len(non_closing)}")
-        else:
-            print("\nAll airfoils are self-closing.")
-
     def fix_all_airfoils(self):
         """Reorders and closes all airfoils in the database."""
         with sqlite3.connect(self.db_path) as conn:
@@ -427,18 +367,10 @@ class AirfoilDatabase:
             airfoils = cursor.fetchall()
             for name, pointcloud in airfoils:
                 pointcloud_np = self._pointcloud_to_numpy(pointcloud)
-                self_intersection = self.check_self_intersection(pointcloud_np)
-                self_closing = self.check_self_closing(pointcloud_np)
-                if self_intersection:
-                    pointcloud_np = reorder_airfoil_data(pointcloud_np)
-                    print(f"Reordered {name}")
-                if not self_closing:
-                    pointcloud_np = close_airfoil_data(pointcloud_np)
-                    print(f"Closed {name}")
+                pointcloud_np = process_airfoil(name, pointcloud_np)
                 pointcloud_str = '\n'.join([' '.join(map(str, row)) for row in pointcloud_np])
-                if self_intersection or not self_closing:
-                    cursor.execute("UPDATE airfoils SET pointcloud = ? WHERE name = ?", (pointcloud_str, name))
-                    conn.commit()
+                cursor.execute("UPDATE airfoils SET pointcloud = ? WHERE name = ?", (pointcloud_str, name))
+                conn.commit()
     
     def plot_airfoil_series_pie(self, output_dir=None, output_name=None):
         """Fetches airfoil series data from the database and plots a pie chart."""
@@ -621,7 +553,7 @@ class AirfoilDatabase:
                 rows = pointcloud.split('\n')
                 rows = [x for x in rows if x.strip()]
                 points = np.array([np.fromstring(row, dtype=float, sep=' ') for row in rows])
-                points = reorder_airfoil_data(points)
+                #points = reorder_airfoil_data(points)
 
                 x_coords, thickness, camber = compute_thickness_camber(points)
                 LE_radius = leading_edge_radius(points)
@@ -871,7 +803,8 @@ if __name__ == "__main__":
     airfoil_db.close()"""
     
     db = AirfoilDatabase(db_dir="my_airfoil_database")
-    db.compute_geometry_metrics()
+    db.update_airfoil_series()
+    #db.compute_geometry_metrics()
     # db.check_airfoil_validity()
     # db.fix_all_airfoils()
     # db.check_airfoil_validity()

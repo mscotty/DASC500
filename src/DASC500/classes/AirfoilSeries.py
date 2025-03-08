@@ -12,6 +12,28 @@ class AirfoilSeries(Enum):
     OTHER = "Other"
 
     @staticmethod
+    def from_string(airfoil_series_str):
+        airfoil_series_name = airfoil_series_str.split('.')[-1]
+        if "NACA" in airfoil_series_name:
+            return AirfoilSeries.NACA
+        elif 'WORTMANN_FX' in airfoil_series_name:
+            return AirfoilSeries.WORTMANN_FX
+        elif "EPL" in airfoil_series_name:
+            return AirfoilSeries.EPPLER
+        elif "SELIG" in airfoil_series_name:  # Covers Selig S series
+            return AirfoilSeries.SELIG
+        elif 'GOETTINGEN' in airfoil_series_name:
+            return AirfoilSeries.GOETTINGEN
+        elif 'RISK' in airfoil_series_name:
+            return AirfoilSeries.RISK
+        elif "LAM" in airfoil_series_name:
+            return AirfoilSeries.LAMINAR
+        elif 'OTHER' in airfoil_series_name:
+            return AirfoilSeries.OTHER
+        else:
+            return None
+
+    @staticmethod
     def identify_airfoil_series(airfoil_name):
         """Identifies the airfoil series based on the airfoil name."""
 

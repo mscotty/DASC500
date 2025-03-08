@@ -14,6 +14,7 @@ from DASC500.formulas.statistics.hypothesis_test import hypothesis_test
 
 from DASC500.models.build_linear_regression_model import linear_regression_model
 from DASC500.models.build_mult_linear_regression_model import multiple_linear_regression
+from DASC500.models.build_parsimonious_regression_model import stepwise_parsimonious_regression
 
 from DASC500.plotting.plot_histogram import plot_histogram
 from DASC500.plotting.plot_stacked_bar_chart import plot_stacked_bar_chart_horizontal, plot_stacked_bar_chart_vertical
@@ -22,6 +23,7 @@ from DASC500.plotting.plot_individual_bar_charts import plot_individual_bar_char
 from DASC500.plotting.plot_line_chart import plot_line_chart
 from DASC500.plotting.plot_heatmap import plot_heatmap
 from DASC500.plotting.plot_radar_chart import plot_radar_chart
+from DASC500.plotting.visualize_regression_models import visualize_regression_models
 
 
 # -------------------------------------
@@ -195,6 +197,10 @@ class DataAnalysis:
     
     def build_mult_linear_regression_model(self, *args, **kwargs):
         self.mult_lin_reg_model = multiple_linear_regression(self.df, *args, **kwargs)
+    
+    def build_stepwise_parsimonious_regression_model(self, *args, **kwargs):
+        model, vars, vif = stepwise_parsimonious_regression(self.df, *args, **kwargs)
+        self.parsimonious_model = {'final_model': model, 'used_vars': vars, 'vif': vif}
 
     def plot_histograms_per_col(self,
                                 key_in=None, 
@@ -253,3 +259,6 @@ class DataAnalysis:
                          **kwargs):
         plot_radar_chart(self.df,
                          **kwargs)
+    
+    def vis_reg_models(self, *args, **kwargs):
+        visualize_regression_models(self.df, *args, **kwargs)

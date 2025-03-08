@@ -1,14 +1,6 @@
 import statsmodels.api as sm
 import pandas as pd
-from statsmodels.stats.outliers_influence import variance_inflation_factor
-
-def compute_vif(df, selected_vars):
-    """Computes Variance Inflation Factor (VIF) to check multicollinearity."""
-    X = sm.add_constant(df[selected_vars])
-    vif_data = pd.DataFrame()
-    vif_data["Variable"] = X.columns
-    vif_data["VIF"] = [variance_inflation_factor(X.values, i) for i in range(X.shape[1])]
-    return vif_data[vif_data["Variable"] != "const"]  # Remove constant from results
+from DASC500.formulas.statistics.compute_vif import compute_vif
 
 def stepwise_parsimonious_regression(df, 
                                      target_var, 
@@ -85,6 +77,4 @@ def stepwise_parsimonious_regression(df,
     
     return final_model, selected_vars, compute_vif(df, selected_vars)
 
-# Example Usage:
-# predictors = ["cyl", "disp", "hp", "drat", "wt", "qsec", "vs", "am", "gear", "carb"]
-# final_model, selected_features, vif_report = stepwise_parsimonious_regression(train_df, "mpg", predictors)
+

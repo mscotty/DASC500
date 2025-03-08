@@ -1,4 +1,6 @@
 import os
+import matplotlib.pyplot as plt
+
 from DASC500.classes.AirfoilDatabase import AirfoilDatabase
 from DASC500.classes.XFoilRunner import XFoilRunner
 from DASC500.classes.DataAnalysis import DataAnalysis
@@ -97,8 +99,20 @@ def stat_analysis_on_airfoil_geom():
     
 
 if __name__ == "__main__":
-    plot_data()
-    # db = AirfoilDatabase(db_dir="my_airfoil_database")
-    # #db.plot_airfoil('ag12')
-    # data = db.get_airfoil_data('ag12')
-    # print(data[1])
+    # plot_data()
+    db = AirfoilDatabase(db_dir="my_airfoil_database")
+    #db.plot_airfoil('ag12')
+    #data = db.get_airfoil_data('ag12')
+    #print(data[1])
+    # db.fix_all_airfoils()
+    #data = db.get_airfoil_data('ag12')
+    #print(data[1])
+    #ax1 = db.plot_airfoil('ag12')
+    #ax2 = db.plot_airfoil('whitcomb')
+    #ax3 = db.plot_airfoil('wb140')
+    #plt.show()
+    data = db.get_airfoil_data('e851')
+    db.plot_airfoil('e851')
+    plt.show()
+    #print(data[0])
+    #print(data[1])
