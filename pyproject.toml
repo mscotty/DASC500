@@ -25,7 +25,8 @@ dependencies = [
     "selenium",
     "shapely",
     "PyQt6",
-    "statsmodels"
+    "statsmodels",
+    "scikit-learn"
 ]
 
 [project.optional-dependencies]

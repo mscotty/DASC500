@@ -4,8 +4,15 @@ from shapely.geometry import LineString, Point
 
 def detect_airfoil_format(points, start_tol=1e-5):
     """Detects airfoil format and key indices."""
+    le_idx = np.argmax(points[:, 0])
+    te_idx = np.argmin(points[:, 0])
+    
+    # Do easiest check first, if the first and last points are the same, then nothing needs to be done
+    if np.allclose(points[0], points[-1], atol=1e-6):
+        return "closed", le_idx, te_idx
+    
+    # Complete check to see if the data is split
     tol = start_tol
-
     while tol < 1e-2:
         le_indices = np.where(np.abs(points[:, 0] - 1) < tol)[0]
         te_indices = np.where(np.abs(points[:, 0] - 0) < tol)[0]
@@ -14,13 +21,10 @@ def detect_airfoil_format(points, start_tol=1e-5):
         elif len(le_indices) >= 2 or len(te_indices) >= 2:
             return "partial_split", le_indices, te_indices
         tol = tol*10
-    le_idx = np.argmax(points[:, 0])
-    te_idx = np.argmin(points[:, 0])
-    if np.allclose(points[0], points[-1], atol=1e-6):
-        return "closed", le_idx, te_idx
+    
     return "unordered", le_idx, te_idx
 
-def detect_direction(points, le_idx, te_idx):
+def detect_direction(le_idx, te_idx):
     """Detects if the airfoil points are in LE to TE or TE to LE order."""
     if le_idx < te_idx:
         return "LE_to_TE"
@@ -66,17 +70,7 @@ def reorder_partial_split_airfoil(points, le_indices, te_indices):
 
     # Assemble the airfoil
     reordered_points = np.vstack([side1, side2])
-    # if is_le:
-    #     if side1_dir == "LE_to_TE":
-    #         reordered_points = np.vstack([side1, side2[1:]])
-    #     else:
-    #         reordered_points = np.vstack([side2[1:],side1])
-    # else:
-    #     if side1_dir == "TE_to_LE":
-    #         reordered_points = np.vstack([side1, side2[1:]])
-    #     else:
-    #         reordered_points = np.vstack([side2[1:], side1])
-
+    
     return reordered_points
 
 def reorder_split_airfoil(points, le_indices, te_indices):
@@ -105,40 +99,6 @@ def reorder_split_airfoil(points, le_indices, te_indices):
     
     reordered_points = np.vstack([ss_points, ps_points])
 
-    # all_points = np.vstack([points[le1_idx:te1_idx + 1], points[te2_idx:le2_idx + 1]])
-    # mean_y = np.mean(all_points[:, 1])
-
-    # ss_points = []
-    # ps_points = []
-
-    # for i in range(len(points)):
-    #     if i in le_indices or i in te_indices:
-    #         continue
-    #     if points[i, 1] >= mean_y:
-    #         ss_points.append(points[i])
-    #     else:
-    #         ps_points.append(points[i])
-
-    # ss_points.sort(key=lambda p: p[0], reverse=True)
-    # ps_points.sort(key=lambda p: p[0])
-
-    # if le1_idx < te1_idx:
-    #     reordered_points = np.vstack([
-    #         points[le1_idx],
-    #         np.array(ss_points),
-    #         points[te1_idx],
-    #         np.array(ps_points[::-1]),
-    #         points[le2_idx]
-    #     ])
-    # else:
-    #     reordered_points = np.vstack([
-    #         points[le2_idx],
-    #         np.array(ss_points),
-    #         points[te2_idx],
-    #         np.array(ps_points[::-1]),
-    #         points[le1_idx]
-    #     ])
-
     return reordered_points
 
 def reorder_airfoil(points, le_idx, te_idx):
@@ -160,7 +120,7 @@ def reorder_airfoil(points, le_idx, te_idx):
     ss_points.sort(key=lambda p: p[0], reverse=True)
     ps_points.sort(key=lambda p: p[0])
 
-    direction = detect_direction(points, le_idx, te_idx)
+    direction = detect_direction(le_idx, te_idx)
 
     if direction == "LE_to_TE":
         reordered_points = [le_point] + ss_points + [te_point] + ps_points + [le_point]
@@ -236,7 +196,7 @@ def resolve_self_intersection(points):
     return points
 
 def remove_duplicate_points(points, tolerance=1e-8):
-    """Removes duplicate points from the point cloud using a tolerance."""
+    """Removes duplicate points from the point cloud using a tolerance. Note it does count the last point"""
     if points is None or len(points) == 0:
         return np.array([])  # Handle empty or None input
 

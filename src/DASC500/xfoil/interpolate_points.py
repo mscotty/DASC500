@@ -1,11 +1,11 @@
 from scipy.interpolate import splprep, splev
 import numpy as np
 
-from scipy.interpolate import splprep, splev
-import numpy as np
-
 def interpolate_points(points, num_points=200, tolerance=1e-8):
     """Interpolates points along a curve to increase resolution."""
+    if num_points == 0:
+        return np.array([])
+
     if len(points) < 3:
         return points  # Not enough points for interpolation
 
@@ -27,15 +27,20 @@ def interpolate_points(points, num_points=200, tolerance=1e-8):
 
     unique_points = np.array(unique_points)
 
-    if len(unique_points) < 3:
+    if len(unique_points) <= 2:
         return unique_points
+
+    # Check for remaining duplicate points
+    if len(set(map(tuple, unique_points.tolist()))) != len(unique_points):
+        return unique_points #Return points early.
 
     x, y = unique_points[:, 0], unique_points[:, 1]
     try:
-        tck, u = splprep([x, y], s=0)  # s=0 for no smoothing
+        k = min(3, len(unique_points) - 1)
+        tck, u = splprep([x, y], s=0, k=k)
         u_new = np.linspace(0, 1, num_points)
         x_new, y_new = splev(u_new, tck)
         return np.column_stack((x_new, y_new))
     except ValueError as e:
         print(f"Error interpolating points: {e}")
-        return unique_points #Return the points before the error.
+        return unique_points

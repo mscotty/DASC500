@@ -13,22 +13,21 @@ class AirfoilSeries(Enum):
 
     @staticmethod
     def from_string(airfoil_series_str):
-        airfoil_series_name = airfoil_series_str.split('.')[-1]
-        if "NACA" in airfoil_series_name:
+        if "NACA" in airfoil_series_str:
             return AirfoilSeries.NACA
-        elif 'WORTMANN_FX' in airfoil_series_name:
+        elif 'WORTMANN_FX' in airfoil_series_str:
             return AirfoilSeries.WORTMANN_FX
-        elif "EPL" in airfoil_series_name:
+        elif "EPL" in airfoil_series_str:
             return AirfoilSeries.EPPLER
-        elif "SELIG" in airfoil_series_name:  # Covers Selig S series
+        elif "SELIG" in airfoil_series_str:  # Covers Selig S series
             return AirfoilSeries.SELIG
-        elif 'GOETTINGEN' in airfoil_series_name:
+        elif 'GOETTINGEN' in airfoil_series_str:
             return AirfoilSeries.GOETTINGEN
-        elif 'RISK' in airfoil_series_name:
+        elif 'RISK' in airfoil_series_str:
             return AirfoilSeries.RISK
-        elif "LAM" in airfoil_series_name:
+        elif "LAM" in airfoil_series_str:
             return AirfoilSeries.LAMINAR
-        elif 'OTHER' in airfoil_series_name:
+        elif 'OTHER' in airfoil_series_str:
             return AirfoilSeries.OTHER
         else:
             return None
