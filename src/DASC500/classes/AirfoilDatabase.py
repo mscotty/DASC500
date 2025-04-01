@@ -372,6 +372,30 @@ class AirfoilDatabase:
                 cursor.execute("UPDATE airfoils SET pointcloud = ? WHERE name = ?", (pointcloud_str, name))
                 conn.commit()
     
+    def output_pointcloud_to_file(self, airfoil_name, file_path):
+        """
+        Outputs the point cloud of an airfoil to a text file.
+
+        Args:
+            airfoil_name (str): The name of the airfoil.
+            file_path (str): The path to the output text file.
+        """
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT pointcloud FROM airfoils WHERE name = ?", (airfoil_name,))
+                result = cursor.fetchone()
+
+                if result and result[0]:
+                    pointcloud_str = result[0]
+                    with open(file_path, 'w') as file:
+                        file.write(pointcloud_str)
+                else:
+                    print(f"Airfoil '{airfoil_name}' not found or point cloud is empty.")
+
+        except sqlite3.Error as e:
+            print(f"Error outputting point cloud: {e}")
+
     def plot_airfoil_series_pie(self, output_dir=None, output_name=None):
         """Fetches airfoil series data from the database and plots a pie chart."""
 
@@ -426,13 +450,10 @@ class AirfoilDatabase:
             ax.grid(True)
             ax.axis("equal")
             ax.legend(loc='upper left')
-            if ax is None:
-                if output_dir is None:
-                    plt.show()
-                else:
-                    if output_name is None:
-                        output_name = name + '.png'
-                    plt.savefig(os.path.join(output_dir, output_name))
+            if output_dir is not None:
+                if output_name is None:
+                    output_name = name + '.png'
+                plt.savefig(os.path.join(output_dir, output_name))
             else:
                 return ax
         else:
@@ -483,26 +504,27 @@ class AirfoilDatabase:
 
         return ax #Return the ax object.
     
-    def add_airfoil_to_plot(self, name, ax, **kwargs):
-        """Adds a single airfoil to a matplotlib axes object."""
-        data = self.get_airfoil_data(name)
-        if data:
-            description, pointcloud_str, series, source = data
-            try:
-                points = [line.split() for line in pointcloud_str.strip().split('\n')]
-                x = [float(p[0]) for p in points if len(p) == 2]
-                y = [float(p[1]) for p in points if len(p) == 2]
+    def add_airfoil_to_plot(self, airfoil_name, ax, linestyle='-', marker='o', markersize=3, label=None):
+        """Adds an airfoil's point cloud to a Matplotlib plot."""
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT pointcloud FROM airfoils WHERE name = ?", (airfoil_name,))
+                result = cursor.fetchone()
 
-                if x and y:
-                    #ax.plot(x, y, label=name, **kwargs)
-                    ax.plot(x, y, **kwargs)
+                if result and result[0]:
+                    pointcloud_str = result[0]
+                    points = [line.split() for line in pointcloud_str.strip().split('\n')]
+                    points = np.array([[float(p[0]), float(p[1])] for p in points if len(p) == 2])
+                    if label: #check if label exists, if not, then use airfoil name.
+                        ax.plot(points[:, 0], points[:, 1], linestyle=linestyle, marker=marker, markersize=markersize, label=label)
+                    else:
+                        ax.plot(points[:, 0], points[:, 1], linestyle=linestyle, marker=marker, markersize=markersize, label=airfoil_name)
                 else:
-                    print(f"No valid point cloud data found for {name}")
+                    print(f"Airfoil '{airfoil_name}' not found.")
 
-            except (ValueError, IndexError) as e:
-                print(f"Error parsing point cloud data for {name}: {e}")
-        else:
-            print(f"Airfoil {name} not found in the database.")
+        except sqlite3.Error as e:
+            print(f"Error plotting airfoil: {e}")
     
     def find_best_matching_airfoils(self, input_pointcloud_str, num_matches=3):
         """
@@ -741,6 +763,53 @@ class AirfoilDatabase:
                 params.append(Mach)
             cursor.execute(query, tuple(params))
             return cursor.fetchall()
+
+    def find_airfoils_by_xfoil_results(self, 
+                                       parameter, 
+                                       target_value, 
+                                       tolerance, 
+                                       tolerance_type="absolute"):
+        """
+        Finds airfoils based on XFOIL results.
+
+        Args:
+            parameter (str): The XFOIL result parameter (reynolds, alpha, cl, cd, cm).
+            target_value (float): The target value for the parameter.
+            tolerance (float): The tolerance for the search.
+            tolerance_type (str): "absolute" or "percentage".
+        """
+        valid_parameters = ["reynolds", "alpha", "cl", "cd", "cm"]
+
+        if parameter not in valid_parameters:
+            print(f"Invalid parameter. Choose from: {', '.join(valid_parameters)}")
+            return []
+
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+
+            if tolerance_type == "absolute":
+                lower_bound = target_value - tolerance
+                upper_bound = target_value + tolerance
+            elif tolerance_type == "percentage":
+                lower_bound = target_value * (1 - tolerance / 100.0)
+                upper_bound = target_value * (1 + tolerance / 100.0)
+            else:
+                print("Invalid tolerance_type. Choose 'absolute' or 'percentage'.")
+                return []
+
+            query = f"SELECT airfoil_name FROM xfoil_results WHERE {parameter} BETWEEN ? AND ?"
+            cursor.execute(query, (lower_bound, upper_bound))
+            results = cursor.fetchall()
+
+            airfoil_names = [row[0] for row in results]
+            if airfoil_names:
+                print(f"Airfoils matching {parameter} = {target_value} ({tolerance} {tolerance_type}):")
+                for name in airfoil_names:
+                    print(f"- {name}")
+                return airfoil_names
+            else:
+                print(f"No airfoils found matching {parameter} = {target_value} ({tolerance} {tolerance_type}).")
+                return []
 
     def plot_polar(self, name, Re, Mach):
         df = self.get_aero_coeffs(name, Re, Mach)

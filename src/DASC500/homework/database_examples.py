@@ -82,6 +82,7 @@ def stat_analysis_on_airfoil_geom():
                                binning_method='Square Root', 
                                title_name='Histogram of Airfoil Calculated Max Camber',
                                x_axis_name='Airfoil Calculated Max Camber',
+                               x_axis_range=[0, 0.3],
                                y_axis_name='# of Airfoils',
                                output_dir=output_folder)
     da.plot_histograms_per_col(key_in='max_thickness', 
@@ -100,19 +101,25 @@ def stat_analysis_on_airfoil_geom():
 
 if __name__ == "__main__":
     # plot_data()
-    db = AirfoilDatabase(db_dir="my_airfoil_database")
+    #db = AirfoilDatabase(db_dir="my_airfoil_database")
     #db.plot_airfoil('ag12')
     #data = db.get_airfoil_data('ag12')
     #print(data[1])
-    # db.fix_all_airfoils()
+    #db.fix_all_airfoils()
+    #db.update_airfoil_series()
+    #db.compute_geometry_metrics()
     #data = db.get_airfoil_data('ag12')
     #print(data[1])
     #ax1 = db.plot_airfoil('ag12')
     #ax2 = db.plot_airfoil('whitcomb')
     #ax3 = db.plot_airfoil('wb140')
     #plt.show()
-    data = db.get_airfoil_data('e851')
-    db.plot_airfoil('e851')
-    plt.show()
-    #print(data[0])
-    #print(data[1])
+    # data = db.get_airfoil_data('e377')
+    #db.plot_airfoil('naca4412', output_dir=output_folder)
+    #db.plot_airfoil('n12', output_dir=output_folder)
+    #db.plot_airfoil('fx63137', output_dir=output_folder)
+    #plt.show()
+    # print(data[0])
+    stat_analysis_on_airfoil_geom()
+    # print(data[1])
+    #db.output_pointcloud_to_file('fx63137', r'D:\Mitchell\School\airfoils\fx63137\fx63137.txt')

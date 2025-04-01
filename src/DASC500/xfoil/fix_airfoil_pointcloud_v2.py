@@ -8,7 +8,7 @@ def detect_airfoil_format(points, start_tol=1e-5):
     te_idx = np.argmin(points[:, 0])
     
     # Do easiest check first, if the first and last points are the same, then nothing needs to be done
-    if np.allclose(points[0], points[-1], atol=1e-6):
+    if np.allclose(points[0], points[-1], atol=1e-4):
         return "closed", le_idx, te_idx
     
     # Complete check to see if the data is split
@@ -42,6 +42,9 @@ def reorder_partial_split_airfoil(points, le_indices, te_indices):
         is_le = False
 
     i1, i2 = sorted(indices[:2])
+    if is_le:
+        i1 += 1
+        i2 += 1
     side1 = points[i1:i2]
     
     # Handle wrapping
