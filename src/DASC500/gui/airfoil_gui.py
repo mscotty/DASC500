@@ -38,6 +38,8 @@ class AirfoilViewer(QWidget):
         self.setup_geometry_search_tab()
         self.setup_compare_tab()
         self.setup_xfoil_tab()
+        self.setup_xfoil_results_search_tab()
+        self.setup_xfoil_plot()
 
         self.setLayout(self.layout)
         self.disable_other_tabs()
@@ -62,32 +64,57 @@ class AirfoilViewer(QWidget):
         self.layout.setMenuBar(menubar)
 
     def save_database(self):
+        """Saves the current database."""
         if self.airfoil_db_instance:
-            QMessageBox.information(self, "Save Database", "Database saved.")
+            try:
+                self.airfoil_db_instance.save_database()
+                QMessageBox.information(self, "Database Saved", "Database saved successfully.")
+            except Exception as e:
+                QMessageBox.critical(self, "Error Saving Database", f"An error occurred: {e}")
         else:
-            QMessageBox.warning(self, "Save Database", "No database loaded.")
+            QMessageBox.warning(self, "Save Database", "No database is currently open.")
 
     def save_database_as(self):
+        """Saves the current database to a new file."""
         if self.airfoil_db_instance:
-            file_path, _ = QFileDialog.getSaveFileName(self, "Save Database As", "", "SQLite Database (*.db)")
+            file_path, _ = QFileDialog.getSaveFileName(self, "Save Airfoil Database As", "", "SQLite Database (*.db)")
             if file_path:
-                self.airfoil_db_instance.db_path = file_path
-                self.airfoil_db_instance._enable_wal()
-                QMessageBox.information(self, "Save Database As", "Database saved as.")
+                try:
+                    self.airfoil_db_instance.save_database_as(file_path)
+                    QMessageBox.information(self, "Database Saved As", "Database saved successfully.")
+                except Exception as e:
+                    QMessageBox.critical(self, "Error Saving Database", f"An error occurred: {e}")
         else:
-            QMessageBox.warning(self, "Save Database As", "No database loaded.")
+            QMessageBox.warning(self, "Save Database As", "No database is currently open.")
 
     def clear_database(self):
+        """Clears the current database."""
         if self.airfoil_db_instance:
-            reply = QMessageBox.question(self, 'Clear Database', 'Are you sure you want to clear the database?', QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
-            if reply == QMessageBox.StandardButton.Yes:
-                os.remove(self.airfoil_db_instance.db_path)
-                self.airfoil_db_instance = None
-                self.tabs.clear()
-                self.setup_start_tab()
-                QMessageBox.information(self, "Clear Database", "Database cleared.")
+            try:
+                self.airfoil_db_instance.clear_database()
+                QMessageBox.information(self, "Database Cleared", "Database cleared successfully.")
+                self.disable_other_tabs()
+                self.populate_airfoil_lists()
+            except Exception as e:
+                QMessageBox.critical(self, "Error Clearing Database", f"An error occurred: {e}")
         else:
-            QMessageBox.warning(self, "Clear Database", "No database loaded.")
+            QMessageBox.warning(self, "Clear Database", "No database is currently open.")
+
+    def populate_airfoil_lists(self):
+        """Populates all airfoil lists in the UI."""
+        self.xfoil_airfoil_list.clear()
+        # Add other lists here when the other tabs are created.
+        if self.airfoil_db_instance:
+            try:
+                with sqlite3.connect(self.airfoil_db_instance.db_path) as conn:
+                    cursor = conn.cursor()
+                    cursor.execute("SELECT name FROM airfoils")
+                    results = cursor.fetchall()
+                    for row in results:
+                        self.listWidget.addItem(row[0])
+                        self.xfoil_airfoil_list.addItem(row[0])
+            except sqlite3.Error as e:
+                QMessageBox.critical(self, "Database Error", f"Error populating airfoil list: {e}")
 
     def setup_start_tab(self):
         start_tab = QWidget()
@@ -174,9 +201,16 @@ class AirfoilViewer(QWidget):
         self.tabs.addTab(start_tab, "Start")
 
     def browse_database(self):
-        file_path, _ = QFileDialog.getOpenFileName(self, "Select Database", "", "SQLite Database (*.db)")
+        """Opens a file dialog to select a database."""
+        file_path, _ = QFileDialog.getOpenFileName(self, "Open Airfoil Database", "", "SQLite Database (*.db)")
         if file_path:
-            self.db_path_edit.setText(file_path)
+            try:
+                self.airfoil_db_instance = AirfoilDatabase(file_path)
+                self.enable_other_tabs()
+                self.populate_airfoil_lists()  # Ensure this is called
+                QMessageBox.information(self, "Database Opened", "Database opened successfully.")
+            except Exception as e:
+                QMessageBox.critical(self, "Error Opening Database", f"An error occurred: {e}")
 
     def browse_file(self):
         file_path, _ = QFileDialog.getOpenFileName(self, "Select File", "", "CSV Files (*.csv);;JSON Files (*.json);;All Files (*.*)")
@@ -370,7 +404,10 @@ class AirfoilViewer(QWidget):
                 labels = list(self.geometry_labels.values())
                 for i, value in enumerate(geometry_data):
                     #labels[i].setText(str(value))
-                    labels[i].setText("{:.3f}".format(value))
+                    if value is not None:
+                        labels[i].setText("{:.3f}".format(value))
+                    else:
+                        labels[i].setText(str(value))
             else:
                 for label in self.geometry_labels.values():
                     label.setText("N/A")
@@ -516,10 +553,12 @@ class AirfoilViewer(QWidget):
         self.search_canvas.draw()
     
     def disable_other_tabs(self):
+        """Disables other tabs until a database is opened."""
         for i in range(1, self.tabs.count()):
             self.tabs.setTabEnabled(i, False)
 
     def enable_other_tabs(self):
+        """Enables other tabs after a database is opened."""
         for i in range(1, self.tabs.count()):
             self.tabs.setTabEnabled(i, True)
     
@@ -627,6 +666,7 @@ class AirfoilViewer(QWidget):
                 self.compare_canvas.draw()
     
     def setup_xfoil_tab(self):
+        """Sets up the XFOIL Results tab."""
         xfoil_tab = QWidget()
         xfoil_layout = QVBoxLayout()
 
@@ -634,11 +674,25 @@ class AirfoilViewer(QWidget):
         airfoil_group = QGroupBox("Airfoil Selection")
         airfoil_layout = QVBoxLayout()
         self.xfoil_airfoil_list = QListWidget()
-        self.xfoil_airfoil_list.setSelectionMode(QListWidget.SelectionMode.SingleSelection)  # Single selection
+        self.xfoil_airfoil_list.setSelectionMode(QListWidget.SelectionMode.SingleSelection)
         self.xfoil_airfoil_list.itemSelectionChanged.connect(self.populate_reynolds_mach)
         airfoil_layout.addWidget(self.xfoil_airfoil_list)
         airfoil_group.setLayout(airfoil_layout)
         xfoil_layout.addWidget(airfoil_group)
+
+        # Populate the airfoil list from the database
+        if self.airfoil_db_instance:
+            try:
+                with sqlite3.connect(self.airfoil_db_instance.db_path) as conn:
+                    cursor = conn.cursor()
+                    cursor.execute("SELECT name FROM airfoils")
+                    results = cursor.fetchall()
+                    for row in results:
+                        self.xfoil_airfoil_list.addItem(row[0])
+            except sqlite3.Error as e:
+                QMessageBox.critical(self, "Database Error", f"Error populating airfoil list: {e}")
+        else:
+            QMessageBox.warning(self, "Airfoil Selection", "Airfoil Database Instance is not set.")
 
         # Reynolds/Mach Selection
         reynolds_mach_group = QGroupBox("Reynolds/Mach Selection")
@@ -678,8 +732,9 @@ class AirfoilViewer(QWidget):
 
         xfoil_tab.setLayout(xfoil_layout)
         self.tabs.addTab(xfoil_tab, "XFOIL Results")
-    
+
     def populate_reynolds_mach(self):
+        """Populates the Reynolds and Mach combo boxes."""
         selected_items = self.xfoil_airfoil_list.selectedItems()
         if not selected_items:
             return
@@ -689,39 +744,43 @@ class AirfoilViewer(QWidget):
         self.xfoil_mach_combo.clear()
 
         if self.airfoil_db_instance:
-            with sqlite3.connect(self.airfoil_db_instance.db_path) as conn:
-                cursor = conn.cursor()
-                cursor.execute("SELECT DISTINCT reynolds_number, mach FROM aero_coeffs WHERE name = ?", (airfoil_name,))
-                results = cursor.fetchall()
+            try:
+                with sqlite3.connect(self.airfoil_db_instance.db_path) as conn:
+                    cursor = conn.cursor()
+                    cursor.execute("SELECT DISTINCT reynolds_number, mach FROM aero_coeffs WHERE name = ?", (airfoil_name,))
+                    results = cursor.fetchall()
 
-                reynolds_set = set()
-                mach_set = set()
+                    reynolds_set = set()
+                    mach_set = set()
 
-                for reynolds, mach in results:
-                    if reynolds is not None:
-                        reynolds_set.add(reynolds)
-                    if mach is not None:
-                        mach_set.add(mach)
+                    for reynolds, mach in results:
+                        if reynolds is not None:
+                            reynolds_set.add(reynolds)
+                        if mach is not None:
+                            mach_set.add(mach)
 
-                for reynolds in sorted(reynolds_set):
-                    self.xfoil_reynolds_combo.addItem(str(reynolds))
-                for mach in sorted(mach_set):
-                    self.xfoil_mach_combo.addItem(str(mach))
+                    for reynolds in sorted(reynolds_set):
+                        self.xfoil_reynolds_combo.addItem(str(reynolds))
+                    for mach in sorted(mach_set):
+                        self.xfoil_mach_combo.addItem(str(mach))
+
+            except sqlite3.Error as e:
+                QMessageBox.critical(self, "Database Error", f"Error populating Reynolds/Mach: {e}")
 
     def plot_xfoil_results(self):
+        """Plots the XFOIL results based on user selections."""
         selected_items = self.xfoil_airfoil_list.selectedItems()
         if not selected_items:
             QMessageBox.warning(self, "Plot XFOIL Results", "Please select an airfoil.")
             return
-        
+
         airfoil_name = selected_items[0].text()
         reynolds = float(self.xfoil_reynolds_combo.currentText()) if self.xfoil_reynolds_combo.currentText() else None
         mach = float(self.xfoil_mach_combo.currentText()) if self.xfoil_mach_combo.currentText() else None
         coefficients = [c for c, check in [("cl", self.xfoil_cl_check), ("cd", self.xfoil_cd_check), ("cm", self.xfoil_cm_check)] if check.isChecked()]
 
-        #if not airfoil_names or not coefficients or not alphas:
         if not coefficients:
-            QMessageBox.warning(self, "Plot XFOIL Results", "Please select airfoils, coefficients, and alpha values.")
+            QMessageBox.warning(self, "Plot XFOIL Results", "Please select coefficients.")
             return
 
         self.xfoil_ax.clear()
@@ -730,21 +789,189 @@ class AirfoilViewer(QWidget):
             data = self.airfoil_db_instance.get_aero_coeffs(airfoil_name, reynolds, mach)
             if data:
                 for row in data:
-                    x_values.append(row[4])
+                    x_values.append(row[4])  # Assuming alpha is at index 4
                     if coeff == "cl":
-                        y_values.append(row[5]) #row[4] is the cl column
+                        y_values.append(row[5])  # Assuming cl is at index 5
                     elif coeff == "cd":
-                        y_values.append(row[6]) #row[5] is the cd column
+                        y_values.append(row[6])  # Assuming cd is at index 6
                     elif coeff == "cm":
-                        y_values.append(row[7]) #row[6] is the cm column
-                        break # break after finding the correct alpha.
-            self.xfoil_ax.plot(x_values, y_values, label=f"{airfoil_name} - {coeff}")
+                        y_values.append(row[7])  # Assuming cm is at index 7
+                self.xfoil_ax.plot(x_values, y_values, label=f"{airfoil_name} - {coeff}")
 
         self.xfoil_ax.set_xlabel("Alpha")
         self.xfoil_ax.set_ylabel("Coefficient Value")
-        self.xfoil_ax.grid(True)
+        self.xfoil_ax.set_title(f"XFOIL Results: {airfoil_name} (Re={reynolds}, Mach={mach})")
         self.xfoil_ax.legend()
         self.xfoil_canvas.draw()
+
+    def setup_xfoil_results_search_tab(self):
+        """Sets up the XFOIL results search tab."""
+        xfoil_search_tab = QWidget()
+        xfoil_search_layout = QGridLayout()
+
+        # Input fields for XFOIL search parameters
+        xfoil_search_layout.addWidget(QLabel("Parameter:"), 0, 0)
+        self.xfoil_parameter_combo = QComboBox()
+        self.xfoil_parameter_combo.addItems(["reynolds", "alpha", "cl", "cd", "cm"])
+        xfoil_search_layout.addWidget(self.xfoil_parameter_combo, 0, 1)
+
+        xfoil_search_layout.addWidget(QLabel("Target Value:"), 1, 0)
+        self.xfoil_target_value_edit = QLineEdit()
+        xfoil_search_layout.addWidget(self.xfoil_target_value_edit, 1, 1)
+
+        xfoil_search_layout.addWidget(QLabel("Tolerance:"), 2, 0)
+        self.xfoil_tolerance_edit = QLineEdit()
+        xfoil_search_layout.addWidget(self.xfoil_tolerance_edit, 2, 1)
+
+        xfoil_search_layout.addWidget(QLabel("Tolerance Type:"), 3, 0)
+        self.xfoil_tolerance_type_combo = QComboBox()
+        self.xfoil_tolerance_type_combo.addItems(["absolute", "percentage"])
+        xfoil_search_layout.addWidget(self.xfoil_tolerance_type_combo, 3, 1)
+
+        # Search button
+        self.xfoil_search_button = QPushButton("Search XFOIL Results")
+        self.xfoil_search_button.clicked.connect(self.perform_xfoil_results_search)
+        xfoil_search_layout.addWidget(self.xfoil_search_button, 4, 0, 1, 2)
+
+        # Results list
+        self.xfoil_search_results_list = QListWidget()
+        self.xfoil_search_results_list.setSelectionMode(QListWidget.SelectionMode.MultiSelection)
+        xfoil_search_layout.addWidget(self.xfoil_search_results_list, 0, 2, 5, 1)
+
+        # Plot area
+        self.xfoil_search_fig, self.xfoil_search_ax = plt.subplots(figsize=(10, 7))
+        self.xfoil_search_canvas = FigureCanvas(self.xfoil_search_fig)
+        xfoil_search_layout.addWidget(self.xfoil_search_canvas, 0, 3, 5, 2)
+
+        # Plot buttons
+        self.xfoil_clear_plot_button = QPushButton("Clear Plot")
+        self.xfoil_clear_plot_button.clicked.connect(self.clear_xfoil_search_plot)
+        xfoil_search_layout.addWidget(self.xfoil_clear_plot_button, 5, 3)
+
+        self.xfoil_plot_selected_button = QPushButton("Plot Selected")
+        self.xfoil_plot_selected_button.clicked.connect(self.plot_selected_airfoils_xfoil_search_tab)
+        xfoil_search_layout.addWidget(self.xfoil_plot_selected_button, 5, 4)
+
+        xfoil_search_tab.setLayout(xfoil_search_layout)
+        self.tabs.addTab(xfoil_search_tab, "XFOIL Results Search")
+
+    def perform_xfoil_results_search(self):
+        """Performs the XFOIL results search."""
+        parameter = self.xfoil_parameter_combo.currentText()
+        try:
+            target_value = float(self.xfoil_target_value_edit.text())
+            tolerance = float(self.xfoil_tolerance_edit.text())
+        except ValueError:
+            QMessageBox.warning(self, "XFOIL Results Search", "Invalid input for target value or tolerance.")
+            return
+
+        tolerance_type = self.xfoil_tolerance_type_combo.currentText()
+
+        results = self.airfoil_db_instance.find_airfoils_by_xfoil_results(
+            parameter, target_value, tolerance, tolerance_type
+        )
+
+        self.xfoil_search_results_list.clear()
+        if results:
+            self.xfoil_search_results_list.addItems(results)
+        else:
+            QMessageBox.information(self, "XFOIL Results Search", "No matching airfoils found.")
+
+    def clear_xfoil_search_plot(self):
+        """Clears the XFOIL search plot."""
+        self.xfoil_search_ax.clear()
+        self.xfoil_search_canvas.draw()
+
+    def plot_selected_airfoils_xfoil_search_tab(self):
+        """Plots the selected airfoils from the search results list."""
+        selected_items = self.xfoil_search_results_list.selectedItems()
+        names = [item.text() for item in selected_items]
+        if names:
+            self.xfoil_search_ax.clear()
+            for name in names:
+                self.airfoil_db_instance.add_airfoil_to_plot(name, self.xfoil_search_ax, linestyle='-', marker='o', markersize=3)
+            self.xfoil_search_ax.set_xlabel("X Coordinate")
+            self.xfoil_search_ax.set_ylabel("Y Coordinate")
+            self.xfoil_search_ax.set_title("Selected Airfoil Comparison")
+            self.xfoil_search_ax.grid(True)
+            self.xfoil_search_ax.axis('equal')
+            self.xfoil_search_ax.legend()
+            self.xfoil_search_canvas.draw()
+
+    def setup_xfoil_plot(self):
+        """Sets up the XFOIL plot tab."""
+        xfoil_plot_tab = QWidget()
+        xfoil_plot_layout = QVBoxLayout()
+
+        # Airfoil selection (reuse existing xfoil_airfoil_list)
+        airfoil_group = QGroupBox("Airfoil Selection")
+        airfoil_layout = QVBoxLayout()
+        airfoil_layout.addWidget(self.xfoil_airfoil_list)  # Reuse existing list
+        airfoil_group.setLayout(airfoil_layout)
+        xfoil_plot_layout.addWidget(airfoil_group)
+
+        # Reynolds and alpha input
+        input_layout = QGridLayout()
+        input_layout.addWidget(QLabel("Reynolds Number:"), 0, 0)
+        self.xfoil_plot_reynolds_edit = QLineEdit()
+        input_layout.addWidget(self.xfoil_plot_reynolds_edit, 0, 1)
+
+        input_layout.addWidget(QLabel("Alpha:"), 1, 0)
+        self.xfoil_plot_alpha_edit = QLineEdit()
+        input_layout.addWidget(self.xfoil_plot_alpha_edit, 1, 1)
+        xfoil_plot_layout.addLayout(input_layout)
+
+        # Plot button
+        self.xfoil_plot_button = QPushButton("Plot XFOIL Data")
+        self.xfoil_plot_button.clicked.connect(self.perform_xfoil_plot)
+        xfoil_plot_layout.addWidget(self.xfoil_plot_button)
+
+        # Plot area
+        self.xfoil_plot_fig, self.xfoil_plot_ax = plt.subplots(figsize=(10, 7))
+        self.xfoil_plot_canvas = FigureCanvas(self.xfoil_plot_fig)
+        xfoil_plot_layout.addWidget(self.xfoil_plot_canvas)
+
+        xfoil_plot_tab.setLayout(xfoil_plot_layout)
+        self.tabs.addTab(xfoil_plot_tab, "XFOIL Plot")
+
+    def perform_xfoil_plot(self):
+        """Performs the XFOIL plot."""
+        try:
+            reynolds = float(self.xfoil_plot_reynolds_edit.text())
+            alpha = float(self.xfoil_plot_alpha_edit.text())
+        except ValueError:
+            QMessageBox.warning(self, "XFOIL Plot", "Invalid input for Reynolds number or alpha.")
+            return
+
+        selected_items = self.xfoil_airfoil_list.selectedItems()
+        if not selected_items:
+            QMessageBox.warning(self, "XFOIL Plot", "Please select an airfoil.")
+            return
+
+        airfoil_name = selected_items[0].text()
+
+        data = self.airfoil_db_instance.get_xfoil_data(airfoil_name, reynolds, alpha)
+        if data:
+            self.xfoil_plot_ax.clear()
+
+            # Extract and plot CL, CD, CM
+            alpha_values = [d["alpha"] for d in data]
+            cl_values = [d["cl"] for d in data]
+            cd_values = [d["cd"] for d in data]
+            cm_values = [d["cm"] for d in data]
+
+            self.xfoil_plot_ax.plot(alpha_values, cl_values, label="CL")
+            self.xfoil_plot_ax.plot(alpha_values, cd_values, label="CD")
+            self.xfoil_plot_ax.plot(alpha_values, cm_values, label="CM")
+
+            self.xfoil_plot_ax.set_xlabel("Alpha (degrees)")
+            self.xfoil_plot_ax.set_ylabel("Coefficient Value")
+            self.xfoil_plot_ax.grid(True)
+            self.xfoil_plot_ax.legend()
+            self.xfoil_plot_canvas.draw()
+        else:
+            QMessageBox.information(self, "XFOIL Plot", f"No XFOIL data found for {airfoil_name} at Reynolds={reynolds}, Alpha={alpha}.")
+
 
 class PointEditDialog(QDialog):
     def __init__(self, x, y, parent=None):

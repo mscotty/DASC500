@@ -21,10 +21,12 @@ def plot_histogram(data,
                    title_name=None,
                    title_font_size=28,
                    title_font_name='Times New Roman',
+                   x_axis_range=None,
                    x_axis_name=None,
                    x_axis_units=None,
                    x_axis_font_size=24,
                    x_axis_font_name='Times New Roman',
+                   y_axis_range=None,
                    y_axis_name=None,
                    y_axis_font_size=24,
                    y_axis_font_name='Times New Roman'):
@@ -125,6 +127,12 @@ def plot_histogram(data,
         paper_bgcolor="white",
         margin=dict(l=50, r=50, t=50, b=50),
     )
+    if x_axis_range is not None:
+        fig.update_layout(xaxis_range=x_axis_range)
+    
+    if y_axis_range is not None:
+        fig.update_layout(yaxis_range=y_axis_range)
+
 
     # Add grid lines
     fig.update_xaxes(showgrid=True, gridwidth=0.5, gridcolor="lightgray")

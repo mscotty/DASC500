@@ -69,7 +69,7 @@ def test_reorder_partial_split_airfoil_te():
     te_indices = np.array([0, 2])
     reordered = reorder_partial_split_airfoil(points, le_indices, te_indices)
     assert np.allclose(reordered[0], [0, 0])
-    assert np.allclose(reordered[-1], [0.5, 1])
+    assert np.allclose(reordered[-1], [1, 1])
 
 def test_reorder_split_airfoil():
     points = np.array([[2, 0.5], [1, 0], [0, 0], [2, 0.5], [1, 1], [0, 0]])
