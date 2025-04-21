@@ -1,0 +1,78 @@
+{
+  "mission_definition": {
+    "mission_name": "Beavercreek_Park_Survey_Electric",
+    "waypoints": [
+      {
+        "id": "Takeoff",
+        "latitude_deg": 39.725,
+        "longitude_deg": -84.065,
+        "altitude_m_msl": 255.0
+      },
+      {
+        "id": "SurveyPoint_A",
+        "latitude_deg": 39.730,
+        "longitude_deg": -84.070,
+        "altitude_m_msl": 350.0,
+        "target_speed_kts": 25.0
+      },
+      {
+        "id": "SurveyPoint_B",
+        "latitude_deg": 39.730,
+        "longitude_deg": -84.060,
+        "altitude_m_msl": 350.0,
+        "target_speed_kts": 25.0
+      },
+      {
+        "id": "Land",
+        "latitude_deg": 39.725,
+        "longitude_deg": -84.065,
+        "altitude_m_msl": 255.0,
+        "target_speed_kts": 5.0
+      }
+    ]
+  },
+  "uav_configuration": {
+    "uav_id": "AeroSurveyor_E1",
+    "propulsion_type": "electric",
+    "initial_state": {
+      "latitude_deg": 39.725,
+      "longitude_deg": -84.065,
+      "altitude_m_msl": 255.0,
+      "speed_kts": 0.0,
+      "heading_deg": 0.0
+    },
+    "performance_model": {
+      "description": "Electric quad-rotor optimized for aerial survey.",
+      "dry_mass_kg": 8.0,
+      "payload_mass_kg": 1.5,
+      "wing_area_m2": 0.8,
+      "battery_capacity_wh": 1200.0,
+      "initial_charge_wh": 1150.0,
+      "motor_efficiency_model": "lookup_table_v1",
+      "battery_discharge_model": "standard_li-po_curve",
+      "aerodynamic_trim_data_path": "data/aerosurveyor_e1_trim.csv",
+      "operational_limits": {
+        "max_airspeed_kts": 60.0,
+        "min_airspeed_kts": 5.0,
+        "max_g_load": 3.0,
+        "max_aoa_deg": 18.0,
+        "max_bank_angle_deg": 35.0
+      }
+    }
+  },
+  "environment_data": {
+    "terrain_data_path": "data/terrain/beavercreek_area.tif",
+    "no_fly_zone_path": "data/airspace/dayton_nfz.geojson",
+    "wind_model": {
+      "type": "uniform",
+      "speed_kts": 8.0,
+      "direction_deg_from": 290.0
+    },
+    "atmosphere_model": "standard"
+  },
+  "planner_settings": {
+    "optimization_goal": "min_energy",
+    "search_algorithm": "A*",
+    "min_terrain_clearance_m": 60.0
+  }
+}

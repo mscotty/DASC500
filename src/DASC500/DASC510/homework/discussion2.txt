@@ -1,0 +1,912 @@
+# --- uav_planner_objects_detailed.py ---
+
+import json
+from pathlib import Path
+import math # For basic calculations
+import datetime
+import sys
+from enum import Enum, auto
+from typing import Dict, List, Optional, Any, Tuple, Union, Callable
+
+
+# --- Enumeration Classes ---
+class StatusCode(Enum):
+    OK = 0
+    WARNING = 1
+    ERROR = 2
+    UNDEFINED = 3
+    
+    def __str__(self) -> str: 
+        return self.name
+
+class CheckType(Enum):
+    MIN_THRESHOLD = auto(); MAX_THRESHOLD = auto(); EXACT_MATCH = auto(); UNRECOGNIZED = auto()
+
+# Default filenames
+DEFAULT_CONFIG_FILE: str = "uav_config.json"
+DEFAULT_STATE_FILE: str = "uav_system_state_enum.pkl"
+
+# Type Alias
+SpecsDict = Dict[str, Union[str, float, int, bool, Dict]]
+SystemsDict = Dict[str, 'UAVSystem']
+
+# --- Basic Data Structures ---
+class Location:
+    """Represents a geographic location using WGS84 coordinates."""
+    def __init__(self, latitude_deg: float, longitude_deg: float, altitude_m_msl: Optional[float] = None):
+        """
+        Initializes a Location object.
+
+        Args:
+            latitude_deg (float): Latitude in decimal degrees.
+            longitude_deg (float): Longitude in decimal degrees.
+            altitude_m_msl (Optional[float]): Altitude above Mean Sea Level in meters. Defaults to None.
+        """
+        self.latitude_deg: float = latitude_deg
+        self.longitude_deg: float = longitude_deg
+        self.altitude_m_msl: Optional[float] = altitude_m_msl
+
+    def __repr__(self) -> str:
+        alt_str = f"{self.altitude_m_msl:.1f}m" if self.altitude_m_msl is not None else "N/A"
+        return f"Location(lat={self.latitude_deg:.5f}, lon={self.longitude_deg:.5f}, alt={alt_str})"
+
+    def distance_to(self, other: 'Location') -> float:
+        """Placeholder: Calculate approximate distance (meters) between two locations."""
+        # Uses simple equirectangular approximation - replace with Haversine for accuracy
+        # Requires conversion to radians and Earth radius
+        print(f"Calculating distance from {self} to {other}...")
+        lat1, lon1 = math.radians(self.latitude_deg), math.radians(self.longitude_deg)
+        lat2, lon2 = math.radians(other.latitude_deg), math.radians(other.longitude_deg)
+        R = 6371000 # Earth radius in meters
+        x = (lon2 - lon1) * math.cos((lat1 + lat2) / 2)
+        y = (lat2 - lat1)
+        distance = math.sqrt(x*x + y*y) * R
+        return distance
+
+
+class VelocityVector:
+    """Represents velocity."""
+    def __init__(self, speed_kts: float, heading_deg: float):
+        self.speed_kts: float = speed_kts
+        self.heading_deg: float = heading_deg
+        
+    def __repr__(self) -> str: 
+        return f"Velocity(spd={self.speed_kts:.1f}kts, hdg={self.heading_deg:.1f}deg)"
+
+
+class Waypoint:
+    """Represents a mission waypoint with optional constraints[cite: 5, 29]."""
+    def __init__(self, waypoint_id: str, location: Location, target_speed_kts: Optional[float] = None):
+        self.waypoint_id: str = waypoint_id
+        self.location: Location = location
+        self.target_speed_kts: Optional[float] = target_speed_kts
+
+    def __repr__(self) -> str:
+        spd_str = f"{self.target_speed_kts:.1f}kts" if self.target_speed_kts is not None else "N/A"
+        return f"Waypoint(id='{self.waypoint_id}', loc={self.location}, speed={spd_str})"
+
+    def determine_required_conditions(self, uav_state: 'UAVState', environment: 'Environment', uav: 'UAV') -> Dict[str, float]:
+        """
+        Placeholder: Determine required aerodynamic and propulsion conditions
+                     (like lift, drag, thrust) needed to achieve the state
+                     (position, altitude, speed) defined by this waypoint,
+                     considering the environment[cite: 38].
+
+        Args:
+            uav_state (UAVState): The estimated state of the UAV upon arrival.
+            environment (Environment): The environmental conditions.
+            uav (UAV): The UAV platform.
+
+        Returns:
+            Dict[str, float]: Dictionary containing calculated required forces/conditions.
+                              Keys might include 'required_thrust_n', 'required_lift_n', 'aoa_deg', etc.
+        """
+        print(f"[Method] Calculating required conditions at Waypoint {self.waypoint_id}...")
+        # --- Steps for actual implementation ---
+        # 1. Get air density from environment at waypoint altitude.
+        # 2. Determine required lift (approx. UAV weight in level flight).
+        # 3. Use required lift, speed, air density to estimate required CL from lift equation (L = 0.5 * rho * V^2 * S * CL).
+        # 4. Use trim data (uav.get_aero_coefficients) by iterating AoA or using inverse lookup to find AoA for required CL.
+        # 5. With AoA found, get corresponding CD from trim data.
+        # 6. Calculate drag force (D = 0.5 * rho * V^2 * S * CD).
+        # 7. Required thrust = Drag (in steady level flight). Add component for climb/acceleration if needed.
+        # 8. Consider wind effects on required ground speed vs airspeed.
+        # Requires: UAV wing area (S) from performance_model, loaded trim data, environment methods.
+        mock_thrust = uav_state.current_weight_kg * 9.81 * 0.2 # Guess thrust is 20% of weight
+        mock_lift = uav_state.current_weight_kg * 9.81
+        return {"required_thrust_n": mock_thrust, "required_lift_n": mock_lift}
+
+    def check_reachability(self, uav_state: 'UAVState', uav: 'UAV', environment: 'Environment') -> bool:
+        """
+        Placeholder: Check if this waypoint is reachable from the given uav_state,
+                     considering energy reserves, performance limits, and basic distance[cite: 38].
+
+        Args:
+            uav_state (UAVState): The current or previous state of the UAV.
+            uav (UAV): The UAV platform (for performance limits).
+            environment (Environment): The environment (for wind effects).
+
+        Returns:
+            bool: True if potentially reachable, False otherwise.
+        """
+        print(f"[Method] Checking reachability for Waypoint {self.waypoint_id} from state {uav_state}...")
+        # --- Steps for actual implementation ---
+        # 1. Calculate approximate distance and altitude change to this waypoint from uav_state.location.
+        # 2. Estimate minimum energy required for the straight-line path (considering climb/descent, drag). Needs simplified performance model.
+        # 3. Compare estimated energy required with uav_state.remaining_energy.
+        # 4. Perform basic checks against UAV operational limits (e.g., max altitude).
+        # Note: A real planner does this check implicitly by exploring feasible maneuvers.
+        dist_m = uav_state.location.distance_to(self.location)
+        min_energy_estimate = dist_m * 0.1 # Very rough guess: 0.1 energy unit per meter
+        print(f"  Est. distance: {dist_m:.0f} m, Est. min energy: {min_energy_estimate:.1f}, Available: {uav_state.remaining_energy:.1f}")
+        if uav_state.remaining_energy > min_energy_estimate:
+            return True
+        else:
+            print(f"  Waypoint {self.waypoint_id} likely unreachable due to energy.")
+            return False
+
+
+class UAVState:
+    """Represents the physical state of the UAV at a point in time[cite: 15, 36]."""
+    def __init__(self, location: Location, velocity: VelocityVector, current_weight_kg: float, remaining_energy: float):
+        self.location: Location = location
+        self.velocity: VelocityVector = velocity
+        self.current_weight_kg: float = current_weight_kg
+        self.remaining_energy: float # Wh for electric, kg for fuel
+
+    def __repr__(self) -> str:
+        return f"UAVState(loc={self.location}, vel={self.velocity}, w={self.current_weight_kg:.2f}kg, E={self.remaining_energy:.2f})"
+
+    def update_state_after_maneuver(self, maneuver_result: Dict[str, Any]) -> None:
+        """
+        Update the UAV's state based on the results of a completed maneuver segment[cite: 33].
+
+        Args:
+            maneuver_result (Dict[str, Any]): Dictionary containing outcomes like
+                'next_location', 'next_velocity', 'energy_cost', 'fuel_burned_kg', 'duration_s'.
+        """
+        print(f"[Method] Updating UAV state after maneuver...")
+        # --- Steps for actual implementation ---
+        # 1. Update location based on maneuver end point.
+        # 2. Update velocity based on maneuver end speed/heading.
+        # 3. Deduct energy_cost from remaining_energy.
+        # 4. Deduct fuel_burned_kg from current_weight_kg (if applicable).
+        # 5. Validate state (e.g., energy >= 0).
+        self.location = maneuver_result.get('next_location', self.location)
+        self.velocity = maneuver_result.get('next_velocity', self.velocity)
+        energy_cost = maneuver_result.get("energy_cost", 0)
+        fuel_burned = maneuver_result.get("fuel_burned_kg", 0)
+
+        self.remaining_energy -= energy_cost
+        self.current_weight_kg -= fuel_burned
+
+        print(f"  New State: {self}")
+        if self.remaining_energy < 0: print("  WARNING: Negative energy!")
+
+    def calculate_energy_cost(self, maneuver: 'Maneuver', uav: 'UAV', environment: 'Environment', duration_s: float) -> float:
+        """
+        Placeholder: Estimate the energy cost for performing a given maneuver[cite: 23, 36].
+
+        Args:
+            maneuver (Maneuver): The maneuver being performed.
+            uav (UAV): The UAV platform, including its propulsion model.
+            environment (Environment): Environmental conditions.
+            duration_s (float): The duration of the maneuver segment.
+
+        Returns:
+            float: The estimated energy consumed (Wh or kg).
+        """
+        print(f"[Method] Calculating energy cost for {maneuver.maneuver_type} over {duration_s:.1f}s...")
+        # --- Steps for actual implementation ---
+        # 1. Determine average flight conditions during the maneuver (speed, alt, AoA).
+        # 2. Calculate average required thrust using uav.calculate_required_thrust() or similar.
+        # 3. Calculate required power (Power = Thrust * True_Airspeed). Adjust for climb/descent.
+        # 4. If electric: Use motor/propulsion efficiency model to get electrical power draw. Energy = Power * time. Apply battery discharge effects if modeled. [cite: 21, 46]
+        # 5. If fuel: Use fuel consumption model (lookup table/curve based on thrust/power) to get burn rate (kg/s). Fuel = rate * time. [cite: 22, 47]
+        # 6. Return energy cost in appropriate units.
+        # Requires: Detailed propulsion models, efficiency curves, airspeed calculations.
+        avg_power_kw_guess = 5.0 # Placeholder average power in kW
+        if uav.propulsion_type == "electric":
+            energy_wh = (avg_power_kw_guess * 1000 * duration_s / 3600) / 0.85 # Assume 85% efficiency
+            print(f"  Estimated Electric Cost: {energy_wh:.2f} Wh")
+            return energy_wh
+        elif uav.propulsion_type == "fuel":
+            fuel_rate_kg_per_hr_guess = 2.0 # Placeholder fuel burn rate
+            fuel_kg = (fuel_rate_kg_per_hr_guess * duration_s / 3600)
+            print(f"  Estimated Fuel Cost: {fuel_kg:.4f} kg")
+            return fuel_kg
+        else:
+            return 0.0
+
+
+class UAV:
+    """Represents the UAV platform, characteristics, and current state[cite: 36]."""
+    def __init__(self, uav_id: str, propulsion_type: str, performance_model: SpecsDict, initial_state: UAVState):
+        """
+        Initializes the UAV object.
+
+        Args:
+            uav_id (str): Unique identifier for the UAV model.
+            propulsion_type (str): "electric" or "fuel".
+            performance_model (SpecsDict): Dictionary containing performance data (mass, capacities, efficiencies, data paths, limits).
+            initial_state (UAVState): The starting state of the UAV.
+        """
+        self.uav_id: str = uav_id
+        self.propulsion_type: str = propulsion_type
+        self.performance_model: SpecsDict = performance_model
+        self.current_state: UAVState = initial_state
+        self.trim_data: Optional[Any] = None # Loaded aerodynamic data
+        self.load_trim_data() # Attempt to load trim data on init
+
+    def __repr__(self) -> str:
+         return f"UAV(id='{self.uav_id}', type='{self.propulsion_type}', state={self.current_state})"
+
+    def load_trim_data(self) -> None:
+        """
+        Loads and potentially preprocesses aerodynamic trim data from the path
+        specified in the performance model[cite: 24, 39].
+        """
+        trim_data_path_str = self.performance_model.get("aerodynamic_trim_data_path")
+        if not trim_data_path_str:
+            print("Warning: No aerodynamic_trim_data_path specified in performance model.")
+            self.trim_data = None
+            return
+
+        trim_data_path = Path(trim_data_path_str)
+        print(f"[Method] Loading trim data from {trim_data_path}...")
+        if not trim_data_path.is_file():
+             print(f"Warning: Trim data file not found at {trim_data_path}. Cannot load.")
+             self.trim_data = None
+             return
+
+        # --- Steps for actual implementation ---
+        # 1. Use pandas or numpy to load the data (e.g., pd.read_csv).
+        # 2. Parse the structure (e.g., columns for AoA, Speed, Alt, Cl, Cd, Cm, ThrustReq).
+        # 3. Potentially create an interpolator object (e.g., using scipy.interpolate.RegularGridInterpolator or LinearNDInterpolator)
+        #    for efficient lookup during planning.
+        # Requires: pandas, numpy, scipy.interpolate
+        try:
+            # Placeholder: Simulate loading and creating a simple interpolator structure
+            # Real implementation would load actual data here.
+            print(f"  (Simulation) Parsing trim data file...")
+            # Example: self.trim_data = scipy.interpolate.RegularGridInterpolator(...)
+            self.trim_data = {
+                "loaded": True,
+                "path": str(trim_data_path),
+                "lookup": lambda alt, spd, aoa: {"Cl": 0.4 + aoa*0.1, "Cd": 0.05 + aoa*0.01, "Cm": 0.01} # Dummy lookup function
+            }
+            print(f"  Trim data loaded successfully (simulated).")
+        except Exception as e:
+            print(f"Error loading or processing trim data from {trim_data_path}: {e}")
+            self.trim_data = None
+
+
+    def get_aero_coefficients(self, altitude_m: float, speed_kts: float, aoa_deg: float) -> Optional[Dict[str, float]]:
+        """
+        Determine aerodynamic coefficients (Cl, Cd, Cm) for a given flight state
+        by interpolating the loaded trim data[cite: 25, 36, 44].
+
+        Args:
+            altitude_m (float): Current altitude MSL.
+            speed_kts (float): Current true airspeed (or equivalent airspeed, depending on trim data).
+            aoa_deg (float): Angle of Attack in degrees.
+
+        Returns:
+            Optional[Dict[str, float]]: Dictionary with keys 'Cl', 'Cd', 'Cm' and their values,
+                                        or None if trim data is not loaded or state is out of bounds.
+        """
+        if not self.trim_data or not self.trim_data.get("loaded"):
+            print("Warning: Trim data not available for aero coefficient lookup.")
+            return None
+        print(f"[Method] Interpolating trim data for state (alt={altitude_m:.0f}m, spd={speed_kts:.1f}kts, aoa={aoa_deg:.1f}deg)...")
+        # --- Steps for actual implementation ---
+        # 1. Convert inputs (speed, alt) to the units/form expected by the interpolator (e.g., EAS, Mach, Reynolds number).
+        # 2. Call the interpolator object created in load_trim_data with the state variables.
+        # 3. Handle potential out-of-bounds errors from the interpolator.
+        # 4. Return the dictionary of interpolated coefficients.
+        # Requires: scipy.interpolate (or similar), potentially unit conversions.
+        try:
+             # Use the placeholder lookup function
+             coeffs = self.trim_data["lookup"](altitude_m, speed_kts, aoa_deg)
+             print(f"  Interpolated Coeffs (simulated): {coeffs}")
+             return coeffs
+        except Exception as e:
+             print(f"Error during trim data interpolation: {e}")
+             return None
+
+
+    def calculate_required_thrust(self, environment: 'Environment', altitude_m: float, speed_kts: float, flight_path_angle_deg: float = 0.0, bank_angle_deg: float = 0.0) -> Optional[float]:
+        """
+        Placeholder: Determine thrust required to maintain a specific, steady flight condition[cite: 36].
+
+        Args:
+            environment (Environment): To get air density.
+            altitude_m (float): Flight altitude MSL.
+            speed_kts (float): True airspeed.
+            flight_path_angle_deg (float): Climb/descent angle (0 for level flight).
+            bank_angle_deg (float): Bank angle for turns (0 for wings level).
+
+        Returns:
+            Optional[float]: Required thrust in Newtons, or None if calculation fails.
+        """
+        print(f"[Method] Calculating required thrust for condition (alt={altitude_m:.0f}m, spd={speed_kts:.1f}kts, fpa={flight_path_angle_deg:.1f}deg, bank={bank_angle_deg:.1f}deg)...")
+        # --- Steps for actual implementation ---
+        # 1. Get air density from environment.
+        # 2. Calculate required Lift: L = Weight * cos(bank) / cos(fpa) (adjust for vertical equilibrium)
+        # 3. Convert speed to m/s.
+        # 4. Estimate required CL using Lift equation.
+        # 5. Find AoA for this CL using get_aero_coefficients (might need iteration or inverse lookup).
+        # 6. Find corresponding CD at this AoA.
+        # 7. Calculate Drag force.
+        # 8. Calculate required Thrust: T = Drag + Weight * sin(fpa) (adjust for forces along flight path).
+        # Requires: Air density, UAV weight, wing area, loaded trim data, unit conversions.
+        if not self.trim_data: return None
+        try:
+            weight_n = self.current_state.current_weight_kg * 9.81
+            # Very simplified placeholder using fixed drag coefficient assumption
+            rho = environment.get_air_density_kg_m3(altitude_m)
+            speed_mps = speed_kts * 0.514444
+            dynamic_pressure = 0.5 * rho * speed_mps**2
+            wing_area_m2 = self.performance_model.get("wing_area_m2", 1.0) # Need wing area in specs!
+            drag_placeholder = dynamic_pressure * wing_area_m2 * 0.05 # Assuming Cd=0.05
+            thrust_req = drag_placeholder + weight_n * math.sin(math.radians(flight_path_angle_deg))
+            print(f"  Estimated Thrust Req: {thrust_req:.2f} N")
+            return thrust_req
+        except Exception as e:
+            print(f"Error calculating required thrust: {e}")
+            return None
+
+    def update_energy_reserves(self, energy_used: float) -> None:
+        """
+        Reduce fuel/battery charge based on energy usage from a maneuver/segment[cite: 36].
+        Also updates weight if fuel is consumed.
+
+        Args:
+            energy_used (float): Energy consumed (in Wh for electric, kg for fuel).
+        """
+        # This method mainly updates the state object, which is now done
+        # within UAVState.update_state_after_maneuver based on maneuver results.
+        # However, we can keep this as a convenience or for direct updates if needed.
+        print(f"[Method] Updating energy reserves directly. Used: {energy_used}")
+        if self.propulsion_type == "electric":
+            self.current_state.remaining_energy -= energy_used
+        elif self.propulsion_type == "fuel":
+            fuel_burned_kg = energy_used # Assume energy_used is fuel mass for fuel type
+            self.current_state.remaining_energy -= fuel_burned_kg
+            self.current_state.current_weight_kg -= fuel_burned_kg
+        print(f"  New energy level: {self.current_state.remaining_energy}")
+
+
+class Environment:
+    """Represents the operational environment and provides relevant data[cite: 36]."""
+    def __init__(self, terrain_data_path: Optional[str], no_fly_zone_path: Optional[str], wind_model: Dict, atmosphere_model: str = "standard"):
+        self.wind_model: Dict = wind_model
+        self.atmosphere_model: str = atmosphere_model
+        self.terrain_data: Optional[Any] = None # Could hold loaded data or interpolator
+        self.no_fly_zones: Optional[Any] = None # Could hold loaded geometry (e.g., shapely objects)
+        if terrain_data_path: self.load_terrain(Path(terrain_data_path))
+        if no_fly_zone_path: self.load_no_fly_zones(Path(no_fly_zone_path))
+
+    def load_terrain(self, filepath: Path) -> None:
+        """Loads terrain elevation data from a file (e.g., GeoTIFF)[cite: 17, 67]."""
+        print(f"[Method] Loading terrain data from {filepath}...")
+        if not filepath.is_file():
+             print(f"Warning: Terrain file not found at {filepath}. Cannot load.")
+             self.terrain_data = None
+             return
+        # --- Steps for actual implementation ---
+        # 1. Use rasterio or gdal to open the terrain file.
+        # 2. Read the data into a numpy array.
+        # 3. Store the array and georeferencing information (transform, CRS).
+        # 4. Optionally create an interpolator (e.g., scipy.interpolate.RectBivariateSpline) for faster lookups.
+        # Requires: rasterio, gdal, numpy, scipy.interpolate
+        try:
+            # Placeholder: Simulate successful load
+            self.terrain_data = {"loaded": True, "path": str(filepath), "get_elevation": lambda lat, lon: 100.0 + (lat-39.78)*1000} # Dummy lookup
+            print("  Terrain data loaded successfully (simulated).")
+        except Exception as e:
+            print(f"Error loading terrain data from {filepath}: {e}")
+            self.terrain_data = None
+
+    def load_no_fly_zones(self, filepath: Path) -> None:
+        """Loads no-fly zone definitions from a file (e.g., GeoJSON, Shapefile)[cite: 17, 70, 71]."""
+        print(f"[Method] Loading no-fly zones from {filepath}...")
+        if not filepath.is_file():
+             print(f"Warning: No-fly zone file not found at {filepath}. Cannot load.")
+             self.no_fly_zones = None
+             return
+        # --- Steps for actual implementation ---
+        # 1. Use geopandas or fiona/shapely to read the vector file.
+        # 2. Store the geometries (e.g., list of shapely Polygons).
+        # 3. Ensure Coordinate Reference Systems (CRS) match or perform transformations.
+        # Requires: geopandas, shapely, fiona, pyproj
+        try:
+            # Placeholder: Simulate successful load
+            self.no_fly_zones = {"loaded": True, "path": str(filepath), "geometries": []} # Empty list for now
+            print("  No-fly zones loaded successfully (simulated).")
+        except Exception as e:
+            print(f"Error loading no-fly zones from {filepath}: {e}")
+            self.no_fly_zones = None
+
+    def get_elevation_m_msl(self, location: Location) -> float:
+        """
+        Return terrain elevation (meters MSL) at the given coordinates[cite: 17].
+
+        Args:
+            location (Location): The location to query.
+
+        Returns:
+            float: Terrain elevation in meters MSL. Returns 0.0 if data not loaded.
+        """
+        if not self.terrain_data or not self.terrain_data.get("loaded"):
+            # print("Warning: Terrain data not loaded, returning 0.0 elevation.")
+            return 0.0
+        # --- Steps for actual implementation ---
+        # 1. Convert lat/lon to the terrain data's coordinate system/pixel indices.
+        # 2. Query the numpy array or use the interpolator.
+        # 3. Handle edge cases or points outside the data bounds.
+        # Requires: rasterio/gdal (for coordinate transforms) or pre-built interpolator.
+        try:
+            # Use placeholder function
+            elevation = self.terrain_data["get_elevation"](location.latitude_deg, location.longitude_deg)
+            # print(f"[Method] Queried terrain elevation at {location.latitude_deg:.5f}, {location.longitude_deg:.5f}: {elevation:.1f} m")
+            return elevation
+        except Exception as e:
+            print(f"Error querying terrain elevation: {e}")
+            return 0.0
+
+
+    def get_wind_vector(self, altitude_m: float) -> Tuple[float, float]:
+        """
+        Return wind vector (speed_kts, direction_deg_from) at a given altitude[cite: 19, 68].
+
+        Args:
+            altitude_m (float): Altitude MSL to query wind data for.
+
+        Returns:
+            Tuple[float, float]: (Wind speed in knots, Wind direction in degrees FROM).
+        """
+        # --- Steps for actual implementation ---
+        # 1. Based on self.wind_model type:
+        #    - "uniform": Return fixed values.
+        #    - "layered_from_file": Load wind profile data, interpolate to find wind at altitude_m.
+        #    - "none": Return (0, 0).
+        # Requires: numpy/pandas (for layered data), interpolation.
+        # print(f"[Method] Getting wind vector at {altitude_m:.0f}m...")
+        if self.wind_model.get("type") == "uniform":
+            return (self.wind_model.get("speed_kts", 0.0), self.wind_model.get("direction_deg_from", 0.0))
+        # Add logic for layered model here if implemented
+        return (0.0, 0.0) # Default no wind
+
+    def is_in_no_fly_zone(self, location: Location) -> bool:
+        """
+        Check if the location falls within any defined no-fly zone[cite: 18].
+
+        Args:
+            location (Location): The location to check.
+
+        Returns:
+            bool: True if inside an NFZ, False otherwise.
+        """
+        if not self.no_fly_zones or not self.no_fly_zones.get("loaded") or not self.no_fly_zones.get("geometries"):
+            return False
+        # --- Steps for actual implementation ---
+        # 1. Create a shapely Point geometry from the location's lat/lon.
+        # 2. Ensure CRS consistency between point and NFZ polygons.
+        # 3. Iterate through the list of NFZ geometries (self.no_fly_zones["geometries"]).
+        # 4. Use `nfz_polygon.contains(point)` to check for intersection.
+        # Requires: shapely, pyproj (for CRS)
+        # print(f"[Method] Checking NFZ status at {location.latitude_deg:.5f}, {location.longitude_deg:.5f}...")
+        # Placeholder logic:
+        # point = shapely.geometry.Point(location.longitude_deg, location.latitude_deg)
+        # for nfz_poly in self.no_fly_zones["geometries"]:
+        #     if nfz_poly.contains(point):
+        #         print("  Location IS inside a no-fly zone.")
+        #         return True
+        return False # Assume safe for now
+
+    def get_air_density_kg_m3(self, altitude_m: float) -> float:
+        """
+        Calculate air density (kg/m^3) at a given altitude based on the selected model[cite: 20].
+
+        Args:
+            altitude_m (float): Altitude MSL in meters.
+
+        Returns:
+            float: Air density in kg/m^3.
+        """
+        # print(f"[Method] Calculating air density at {altitude_m:.0f}m...")
+        if self.atmosphere_model == "standard":
+            # Simple ISA calculation (valid for troposphere)
+            try:
+                T0 = 288.15 # Sea level standard temperature (K)
+                P0 = 101325 # Sea level standard pressure (Pa)
+                L = 0.0065 # Temperature lapse rate (K/m)
+                R = 287.058 # Specific gas constant for dry air (J/(kg·K))
+                g = 9.80665 # Gravity (m/s^2)
+
+                temp_k = T0 - L * altitude_m
+                # Pressure calculation more complex, using density directly:
+                # rho = P / (R * T) where P = P0 * (1 - L*h/T0)^(g*M/(R*L)) M=molar mass air
+                # Simplified density formula:
+                rho = 1.225 * (temp_k / T0)**((g / (L * R)) - 1)
+                return max(0.01, rho) # Prevent zero or negative density
+            except Exception: # Catch potential math errors at very high altitudes
+                 return 0.01 # Return a minimum density
+        elif self.atmosphere_model == "constant_density":
+            return self.atmosphere_model.get("density_kg_m3", 1.225) # Allow specifying density
+        else: # Default to sea level
+            return 1.225
+
+
+class Maneuver:
+    """Base class for discrete flight maneuvers[cite: 7, 28]."""
+    def __init__(self, maneuver_type: str):
+        self.maneuver_type: str = maneuver_type
+
+    def __repr__(self) -> str: return f"Maneuver(type={self.maneuver_type})"
+
+    def is_feasible(self, current_state: UAVState, uav: UAV, environment: Environment) -> bool:
+        """
+        Placeholder: Check if this specific maneuver type is physically possible
+                     from the current state, considering UAV performance limits.
+
+        Args:
+            current_state (UAVState): The state before the maneuver.
+            uav (UAV): The UAV platform.
+            environment (Environment): Current environmental conditions.
+
+        Returns:
+            bool: True if the maneuver is likely feasible, False otherwise.
+        """
+        print(f"[Method] Checking feasibility of {self.maneuver_type} from {current_state.velocity}...")
+        # --- Steps for actual implementation ---
+        # 1. Check against stall speed (min_airspeed_kts).
+        # 2. Check against Vne (max_airspeed_kts).
+        # 3. Check G-load limits (especially for turns).
+        # 4. Check max/min altitude limits.
+        # 5. Check available thrust vs required thrust for the maneuver (e.g., climb requires excess thrust).
+        # 6. Check bank angle limits for turns.
+        # Requires: UAV operational limits, thrust calculation, potentially maneuver-specific logic.
+        limits = uav.performance_model.get("operational_limits", {})
+        if current_state.velocity.speed_kts < limits.get("min_airspeed_kts", 5.0):
+             print(f"  Feasibility failed: Speed below min {limits.get('min_airspeed_kts', 5.0)} kts")
+             return False
+        if current_state.velocity.speed_kts > limits.get("max_airspeed_kts", 100.0):
+             print(f"  Feasibility failed: Speed above max {limits.get('max_airspeed_kts', 100.0)} kts")
+             return False
+        # Add more checks here
+        return True
+
+    def execute(self, start_state: UAVState, uav: UAV, environment: Environment, **kwargs) -> Tuple[Optional[UAVState], Optional[Dict[str, Any]]]:
+        """
+        Placeholder: Simulate the execution of the maneuver and calculate the resulting state and costs.
+
+        Args:
+            start_state (UAVState): The state at the beginning of the maneuver.
+            uav (UAV): The UAV performing the maneuver.
+            environment (Environment): Environmental conditions.
+            **kwargs: Maneuver-specific parameters (e.g., duration_s, target_altitude, turn_radius_m).
+
+        Returns:
+            Tuple[Optional[UAVState], Optional[Dict[str, Any]]]:
+                - The resulting UAVState after the maneuver (or None if infeasible).
+                - A dictionary of results/costs ('energy_cost', 'fuel_burned_kg', 'duration_s', etc.) (or None).
+        """
+        print(f"[Method] Executing maneuver {self.maneuver_type} from state {start_state}...")
+        if not self.is_feasible(start_state, uav, environment):
+            print("  Maneuver is infeasible.")
+            return None, None
+
+        # --- Steps for actual implementation ---
+        # 1. Determine maneuver parameters (duration, distance, turn rate, climb rate etc.) based on **kwargs or derived goals.
+        # 2. Integrate equations of motion over the maneuver duration/path, considering:
+        #    - Aerodynamics (lift, drag from uav.get_aero_coefficients, potentially varying).
+        #    - Propulsion (required thrust from uav.calculate_required_thrust, potentially varying).
+        #    - Weight changes (fuel burn).
+        #    - Wind effects from environment.get_wind_vector.
+        #    - Control surface limits (implicitly via trim data or explicit checks).
+        # 3. Calculate total energy/fuel consumed using state.calculate_energy_cost (integrating over maneuver).
+        # 4. Determine the final state (location, velocity, weight, energy).
+        # Requires: Physics integration (e.g., simple Euler or Runge-Kutta), detailed models.
+
+        # Placeholder calculation: Simple straight flight for 60s
+        duration_s = kwargs.get("duration_s", 60.0)
+        speed_mps = start_state.velocity.speed_kts * 0.514444
+        distance_m = speed_mps * duration_s
+        heading_rad = math.radians(start_state.velocity.heading_deg)
+
+        # Very basic position update (ignoring wind, assuming constant heading/speed/alt)
+        # Requires proper coordinate conversion library (e.g., pyproj, pymap3d) for real use
+        approx_meters_per_degree_lat = 111132
+        approx_meters_per_degree_lon = approx_meters_per_degree_lat * math.cos(math.radians(start_state.location.latitude_deg))
+
+        delta_lat = (distance_m * math.cos(heading_rad)) / approx_meters_per_degree_lat
+        delta_lon = (distance_m * math.sin(heading_rad)) / approx_meters_per_degree_lon
+
+        next_loc = Location(
+            start_state.location.latitude_deg + delta_lat,
+            start_state.location.longitude_deg + delta_lon,
+            start_state.location.altitude_m_msl # Assume level for this simple placeholder
+        )
+        next_vel = start_state.velocity # Assume constant velocity for placeholder
+
+        # Estimate costs
+        energy_cost = start_state.calculate_energy_cost(self, uav, environment, duration_s)
+        fuel_burned_kg = energy_cost if uav.propulsion_type == "fuel" else 0.0
+
+        # Create next state (weight/energy updated within calculate_energy_cost -> update_state simulation is complex)
+        # For placeholder, let's just calculate cost and assume state update happens elsewhere based on cost
+        next_weight = start_state.current_weight_kg - fuel_burned_kg
+        next_energy = start_state.remaining_energy - energy_cost if uav.propulsion_type == "electric" else start_state.remaining_energy - fuel_burned_kg
+
+        final_state = UAVState(next_loc, next_vel, next_weight, next_energy)
+
+        results = {
+            "energy_cost": energy_cost,
+            "fuel_burned_kg": fuel_burned_kg,
+            "duration_s": duration_s,
+            "next_location": next_loc, # Add results needed by update_state_after_maneuver
+            "next_velocity": next_vel
+        }
+        print(f"  Maneuver execution simulation complete. Results: {results}")
+        return final_state, results
+
+
+# --- FlightPath & PathPlanner (Keep previous structure, methods rely on above implementations) ---
+
+class FlightPath:
+    """Represents a potential or calculated flight path connecting waypoints via maneuvers[cite: 36]."""
+    def __init__(self, waypoints: List[Waypoint]):
+        self.waypoints: List[Waypoint] = waypoints
+        self.maneuver_segments: List[Maneuver] = []
+        self.states: List[UAVState] = [] # State *after* each maneuver/at each waypoint
+        self.total_energy_cost: float = 0.0
+        self.total_distance_m: float = 0.0
+        self.total_flight_time_s: float = 0.0
+        self.is_valid: bool = False # Validity based on constraint checks
+
+    def __repr__(self) -> str:
+        valid_str = "Valid" if self.is_valid else "Invalid"
+        return f"FlightPath(wpts={len(self.waypoints)}, E={self.total_energy_cost:.2f}, T={self.total_flight_time_s:.0f}s, {valid_str})"
+
+    def compute_path_details(self, start_state: UAVState, uav: UAV, environment: Environment) -> bool:
+        """
+        Calculate the full path details by simulating maneuvers between waypoints[cite: 33].
+        Updates the path's attributes (cost, time, states, maneuvers).
+
+        Args:
+            start_state (UAVState): The initial state of the UAV.
+            uav (UAV): The UAV platform.
+            environment (Environment): Environmental conditions.
+
+        Returns:
+            bool: True if the path simulation completed successfully, False otherwise.
+        """
+        print("[Method] Computing full flight path details...")
+        self.states = [start_state]
+        self.maneuver_segments = []
+        self.total_energy_cost = 0.0
+        self.total_flight_time_s = 0.0
+        current_uav_state = start_state
+
+        # --- Demonstrates Loop ---
+        for i in range(len(self.waypoints)):
+            target_waypoint = self.waypoints[i]
+            print(f"  Simulating segment to {target_waypoint.waypoint_id}...")
+
+            # --- Placeholder maneuver selection ---
+            # In reality: Choose best maneuver (Climb, Cruise, Turn etc.) based on planner logic
+            # For placeholder, assume a simple direct flight maneuver (needs refinement)
+            maneuver = Maneuver(f"DirectTo_{target_waypoint.waypoint_id}") # Simple placeholder type
+            self.maneuver_segments.append(maneuver)
+
+            # Estimate duration/parameters for placeholder execute
+            dist_m = current_uav_state.location.distance_to(target_waypoint.location)
+            avg_speed_mps = (current_uav_state.velocity.speed_kts or 30.0) * 0.514444 # Use current or default speed
+            duration_s = dist_m / avg_speed_mps if avg_speed_mps > 0 else 300 # Avoid division by zero
+
+            # Execute the placeholder maneuver
+            next_state, results = maneuver.execute(current_uav_state, uav, environment, duration_s=duration_s)
+
+            # --- Demonstrates Conditional Logic ---
+            if next_state is None or results is None:
+                print(f"  Path computation failed: Maneuver to {target_waypoint.waypoint_id} infeasible.")
+                self.is_valid = False
+                return False # Stop computing if a segment fails
+
+            # Update path totals and state
+            # Note: In placeholder, execute *calculates* the next state, but doesn't *update* the UAV object's state directly.
+            # We update the path's state list and the loop's current_uav_state.
+            self.total_energy_cost += results['energy_cost']
+            self.total_flight_time_s += results['duration_s']
+            self.states.append(next_state)
+            current_uav_state = next_state # Use the calculated next state for the next segment
+
+            # Check intermediate state validity (e.g., energy)
+            if current_uav_state.remaining_energy < 0:
+                 print(f"  Path computation failed: Ran out of energy reaching {target_waypoint.waypoint_id}.")
+                 self.is_valid = False
+                 return False
+
+        print("  Path computation finished.")
+        self.is_valid = True # Mark valid if simulation completes
+        return True
+
+    def check_constraints(self, uav: UAV, environment: Environment, min_clearance: float) -> bool:
+         """
+         Ensure the computed path respects terrain clearance, No-Fly Zones,
+         and ends with sufficient energy reserves[cite: 43, 49, 51].
+
+         Args:
+            uav (UAV): The UAV platform (for limits, though less used here).
+            environment (Environment): For checking terrain, NFZ.
+            min_clearance (float): Minimum required terrain clearance in meters.
+
+         Returns:
+            bool: True if all constraints are met, False otherwise.
+         """
+         print("[Method] Checking flight path constraints...")
+         if not self.states:
+              print("  Cannot check constraints: Path has no states.")
+              return False
+
+         # --- Demonstrates Loop ---
+         for state in self.states:
+             # Check Terrain Clearance
+             terrain_alt = environment.get_elevation_m_msl(state.location)
+             current_alt = state.location.altitude_m_msl or 0.0
+             clearance = current_alt - terrain_alt
+             # --- Demonstrates Conditional ---
+             if clearance < min_clearance:
+                 print(f"  Constraint VIOLATED: Terrain clearance {clearance:.1f}m < {min_clearance}m at {state.location}")
+                 self.is_valid = False
+                 return False
+
+             # Check No-Fly Zone
+             if environment.is_in_no_fly_zone(state.location):
+                 print(f"  Constraint VIOLATED: Entered No-Fly Zone at {state.location}")
+                 self.is_valid = False
+                 return False
+
+         # Check Final Energy
+         final_state = self.states[-1]
+         if final_state.remaining_energy < 0: # Or check against a required reserve
+             print(f"  Constraint VIOLATED: Insufficient final energy ({final_state.remaining_energy:.2f}).")
+             self.is_valid = False
+             return False
+
+         print("  All path constraints passed.")
+         self.is_valid = True
+         return True
+
+
+class PathPlanner:
+    """Orchestrates the flight path planning process using optimization[cite: 14, 36]."""
+    def __init__(self, environment: Environment, settings: SpecsDict):
+        self.environment: Environment = environment
+        self.settings: SpecsDict = settings
+
+    def _generate_maneuver_options(self, from_state: UAVState, to_waypoint: Waypoint, uav: UAV, environment: Environment) -> List[Maneuver]:
+        """Placeholder: Generate possible maneuvers to connect state to waypoint."""
+        print(f"    Generating maneuver options from state to WP {to_waypoint.waypoint_id}...")
+        # In reality: Generate Climb, Cruise, Turn, Glide etc. based on relative positions, altitudes, speeds.
+        # Filter based on basic feasibility (e.g., uav.performance_model limits)
+        # For now, just return a generic placeholder maneuver
+        return [Maneuver(f"GenericDirectTo_{to_waypoint.waypoint_id}")]
+
+    def find_optimal_path(self, uav: UAV, waypoints: List[Waypoint]) -> Optional[FlightPath]:
+        """
+        Find an optimal flight path connecting the waypoints that minimizes cost
+        (e.g., energy, time) and satisfies all constraints[cite: 14, 48].
+
+        Args:
+            uav (UAV): The UAV platform.
+            waypoints (List[Waypoint]): The ordered list of waypoints defining the mission[cite: 30].
+
+        Returns:
+            Optional[FlightPath]: The optimized FlightPath object, or None if no valid path is found.
+        """
+        print("[Method] Searching for the optimal flight path...")
+        # --- Steps for actual implementation ---
+        # 1. Initialize Search: Define start state (from uav.current_state). Set up graph nodes/states if using graph search (A*, Dijkstra)[cite: 41, 48].
+        # 2. Explore Paths: Iteratively expand paths by generating feasible maneuver options between waypoints/nodes (_generate_maneuver_options).
+        # 3. Simulate Maneuvers: For each option, simulate its execution (maneuver.execute) to get the resulting state and cost.
+        # 4. Evaluate Cost: Calculate cumulative cost (energy/time) based on self.settings['optimization_goal'].
+        # 5. Check Constraints: Ensure intermediate states/maneuvers respect terrain, NFZ, performance limits (path.check_constraints or integrated into search).
+        # 6. Optimize: Guide the search towards the minimum cost path using algorithm heuristics (e.g., A* heuristic).
+        # 7. Termination: Stop when the final waypoint is reached with the lowest cost found, or when search space is exhausted.
+        # Requires: Graph library (networkx), search algorithm implementation, detailed maneuver simulation.
+
+        # --- Placeholder Implementation ---
+        # Simulate generating just one candidate path and checking it.
+        candidate_path = FlightPath(waypoints)
+        computation_ok = candidate_path.compute_path_details(uav.current_state, uav, self.environment)
+
+        if not computation_ok:
+             print("Optimal path search failed: Initial path computation unsuccessful.")
+             return None
+
+        constraints_ok = candidate_path.check_constraints(uav, self.environment, self.settings.get("min_terrain_clearance_m", 50.0))
+
+        if constraints_ok:
+             print(f"Optimal path found (simulated) with cost: {candidate_path.total_energy_cost:.2f}")
+             return candidate_path
+        else:
+             print("Optimal path search failed: Candidate path failed constraint checks.")
+             return None
+
+
+# --- Example Usage (Remains the same, but output will be more verbose) ---
+if __name__ == "__main__":
+    print("--- UAV Flight Planner Simulation (Detailed Placeholders) ---")
+
+    # 1. Load Simplified Input Data (Example - Replace with JSON loading)
+    mission_name = "Test_Survey_Mission_V2"
+    waypoints_data = [ # Slightly different waypoints
+        {"id": "WP0", "latitude_deg": 39.780, "longitude_deg": -84.050, "altitude_m_msl": 250},
+        {"id": "WP1", "latitude_deg": 39.785, "longitude_deg": -84.055, "altitude_m_msl": 300},
+        {"id": "WP2", "latitude_deg": 39.780, "longitude_deg": -84.060, "altitude_m_msl": 250},
+    ]
+    # ... (rest of sample data remains the same as previous version) ...
+    uav_config = {
+        "uav_id": "SimDrone_Electric_V2", "propulsion_type": "electric",
+        "initial_state": {"latitude_deg": 39.780, "longitude_deg": -84.050, "altitude_m_msl": 250, "speed_kts": 0, "heading_deg": 90},
+        "performance_model": {
+            "dry_mass_kg": 10.0, "payload_mass_kg": 2.0, "wing_area_m2": 1.0, # Added wing area
+            "battery_capacity_wh": 1000.0, "initial_charge_wh": 950.0,
+            "motor_efficiency_model": "basic_0.85", "aerodynamic_trim_data_path": "data/simdrone_trim.csv", # Dummy path
+            "operational_limits": {"min_airspeed_kts": 15.0, "max_airspeed_kts": 80.0} # Added limits
+        }
+    }
+    env_config = {
+         "terrain_data_path": "data/terrain_grid.tif", "no_fly_zone_path": "data/nfz.geojson",
+         "wind_model": {"type": "uniform", "speed_kts": 5, "direction_deg_from": 270},
+         "atmosphere_model": "standard"
+    }
+    planner_settings = {"optimization_goal": "min_energy", "min_terrain_clearance_m": 50.0}
+
+    # 2. Create Objects
+    waypoints = [Waypoint(wp['id'], Location(wp['latitude_deg'], wp['longitude_deg'], wp['altitude_m_msl'])) for wp in waypoints_data]
+    initial_location = Location( uav_config["initial_state"]["latitude_deg"], uav_config["initial_state"]["longitude_deg"], uav_config["initial_state"]["altitude_m_msl"])
+    initial_velocity = VelocityVector(uav_config["initial_state"]["speed_kts"], uav_config["initial_state"]["heading_deg"])
+    initial_weight = uav_config["performance_model"]["dry_mass_kg"] + uav_config["performance_model"]["payload_mass_kg"]
+    initial_energy = uav_config["performance_model"]["initial_charge_wh"]
+    initial_uav_state = UAVState(initial_location, initial_velocity, initial_weight, initial_energy)
+    uav = UAV( uav_config["uav_id"], uav_config["propulsion_type"], uav_config["performance_model"], initial_uav_state)
+    environment = Environment( env_config["terrain_data_path"], env_config["no_fly_zone_path"], env_config["wind_model"], env_config.get("atmosphere_model", "standard"))
+    planner = PathPlanner(environment, planner_settings)
+
+    print("\n--- Objects Initialized ---")
+    print(f"UAV: {uav}")
+    print(f"Environment Wind: {environment.get_wind_vector(initial_location.altitude_m_msl or 250)}")
+
+    # 3. Run Planner
+    print("\n--- Running Path Planner ---")
+    optimal_flight_path = planner.find_optimal_path(uav, waypoints)
+
+    # 4. Display Results
+    print("\n--- Planning Complete ---")
+    if optimal_flight_path:
+        print(f"Optimal Path Found: {optimal_flight_path}")
+        optimal_flight_path.display_info() # Assumes FlightPath might have a display_info method too
+        # Example: Access intermediate states if needed
+        # if len(optimal_flight_path.states) > 1: print(f" State after first segment: {optimal_flight_path.states[1]}")
+    else:
+        print("Failed to find a valid flight path.")
+
+    print("\n--- Example Method Calls (Detailed Placeholders) ---")
+    if optimal_flight_path and len(optimal_flight_path.waypoints) > 1:
+         # Use the state calculated by the planner for reachability check
+         state_before_wp1 = optimal_flight_path.states[0] # Should be initial state
+         wp1_reachable = optimal_flight_path.waypoints[0].check_reachability(state_before_wp1, uav, environment) # Check WP1 from start
+         print(f"Is WP1 reachable from start? {wp1_reachable}")
+         # Check conditions needed AT WP1 (using the state calculated for arrival at WP1, if available)
+         state_at_wp1 = optimal_flight_path.states[1] if len(optimal_flight_path.states) > 1 else state_before_wp1
+         wp1_conditions = optimal_flight_path.waypoints[0].determine_required_conditions(state_at_wp1, environment, uav)
+         print(f"Conditions required at WP1 (placeholder): {wp1_conditions}")
+
+    aero_coeffs = uav.get_aero_coefficients(300, 50, 3.0) # Example state
+    print(f"Sample Aero Coeffs: {aero_coeffs}")
+    thrust_req = uav.calculate_required_thrust(environment, 300, 50, flight_path_angle_deg=2.0) # Gentle climb
+    print(f"Sample Required Thrust (placeholder): {thrust_req}")

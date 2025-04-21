@@ -26,7 +26,10 @@ dependencies = [
     "shapely",
     "PyQt6",
     "statsmodels",
-    "scikit-learn"
+    "scikit-learn",
+    "graphviz",
+    "jupyter",
+    "openpyxl"
 ]
 
 [project.optional-dependencies]

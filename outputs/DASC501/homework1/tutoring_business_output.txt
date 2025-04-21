@@ -1,0 +1,75 @@
+============================================================
+ Tutoring Business DB Management - Generic Methods Execution 
+ Database file: TutoringBusiness_GenericOOP.db
+ Excel source:  C:\Users\amber\Documents\Mitchell\school\2025\DASC500\DASC500\src\DASC500/../../data/DASC501/tblTutor.xlsx
+ Output Log:    C:\Users\amber\Documents\Mitchell\school\2025\DASC500\DASC500\src\DASC500/../../outputs/DASC501/homework1/tutoring_business_output.txt
+ Execution Time: 2025-04-12 15:35:55.399187
+============================================================
+INFO: Connecting to database: 'TutoringBusiness_GenericOOP.db'...
+SUCCESS: Database connection established.
+
+--- Task 1: Create Database File (Implicit via connect) ---
+
+--- Task 2: Create Table ---
+INFO: Executing SQL command...
+SUCCESS: SQL command executed.
+INFO: Committing transaction...
+SUCCESS: Transaction committed.
+
+--- Task 3: Import Data from Excel ---
+
+--- Importing Data from Excel 'C:\Users\amber\Documents\Mitchell\school\2025\DASC500\DASC500\src\DASC500/../../data/DASC501/tblTutor.xlsx' into 'tblTutor' ---
+INFO: Read 21 rows from 'C:\Users\amber\Documents\Mitchell\school\2025\DASC500\DASC500\src\DASC500/../../data/DASC501/tblTutor.xlsx'.
+INFO: 'HireDate' column processed for YYYY-MM-DD format.
+INFO: Executing bulk insert...
+INFO: Committing transaction...
+SUCCESS: Transaction committed.
+SUCCESS: Data imported into 'tblTutor'. 21 rows affected.
+
+--- Proceeding with Data Queries ---
+
+--- Task 4: Query Tutors Hired After 2017-04-30 ---
+INFO: Executing SELECT query...
+SUCCESS: SELECT query executed. Found 3 records.
+Results:
+FirstName       | LastName        | HireDate
+-----------------------------------------------
+Aaron           | Black           | 2017-05-14
+Larry           | Smith           | 2017-05-21
+Angie           | Hinson          | 2017-05-10
+
+--- Task 5: Query Distinct Tutor Majors ---
+INFO: Executing SELECT query...
+SUCCESS: SELECT query executed. Found 4 records.
+Results (Distinct Majors):
+-------------------------
+Computer Engineering
+Computer Science
+Information Systems
+Mechatronics
+
+--- Task 6: Query Graduate Tutors ---
+INFO: Executing SELECT query...
+SUCCESS: SELECT query executed. Found 8 records.
+Results (Graduate Tutors):
+FirstName       | LastName       
+--------------------------------
+Bob             | Smith          
+Cathy           | Cowler         
+Larry           | Smith          
+Ellen           | Desoto         
+Henry           | Justice        
+Kelly           | Rudd           
+Angie           | Hinson         
+Donald          | Gallager       
+
+--- Task 7: Submit Code and Results (User task) ---
+Output log file generated at: C:\Users\amber\Documents\Mitchell\school\2025\DASC500\DASC500\outputs\DASC501\homework1\tutoring_business_output.txt
+INFO: Exiting context manager...
+INFO: Committing final changes and closing connection...
+SUCCESS: Database connection to 'TutoringBusiness_GenericOOP.db' closed.
+
+=
+=
+ Script execution finished. 
+============================================================

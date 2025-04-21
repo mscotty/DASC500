@@ -1,0 +1,60 @@
+2025-04-20 22:04:02,144 - homework_logger - INFO - --- Starting Homework Script ---
+2025-04-20 22:04:02,144 - homework_logger - INFO - Database file specified: c:\Users\amber\Documents\Mitchell\school\2025\DASC500\DASC500\src\DASC500\DASC501\../../../data/DASC501/unknown2023.db
+2025-04-20 22:04:02,144 - homework_logger - INFO - Target rename path: c:\Users\amber\Documents\Mitchell\school\2025\DASC500\DASC500\src\DASC500\DASC501\../../../outputs/DASC501/homework2/auction_data_2023.db
+2025-04-20 22:04:02,144 - homework_logger - INFO - DatabaseManager log file: c:\Users\amber\Documents\Mitchell\school\2025\DASC500\DASC500\src\DASC500\DASC501\../../../outputs/DASC501/homework2/logger.txt
+2025-04-20 22:04:02,184 - homework_logger - INFO - 
+--- Task 1: Get Table Names ---
+2025-04-20 22:04:02,192 - homework_logger - INFO - Tables found: ['Auction', 'Donation', 'Patron']
+2025-04-20 22:04:02,192 - homework_logger - INFO - 
+--- Task 2: Get Columns for Each Table ---
+2025-04-20 22:04:02,201 - homework_logger - INFO - Retrieved column info for 3 table(s).
+2025-04-20 22:04:02,201 - homework_logger - INFO - 
+--- Task 3: Identify Relationships ---
+2025-04-20 22:04:02,218 - homework_logger - INFO - Relationship analysis complete. Found 2 inferred relationships.
+2025-04-20 22:04:02,218 - homework_logger - INFO - 
+--- Task 4: Execute Simple Query ---
+2025-04-20 22:04:02,228 - homework_logger - INFO - Query 'SELECT * FROM Patron LIMIT 5;' executed. Results:
+2025-04-20 22:04:02,244 - homework_logger - INFO - 
+--- Task 5: Rename Database ---
+2025-04-20 22:04:02,251 - homework_logger - INFO - Database successfully renamed from 'c:\Users\amber\Documents\Mitchell\school\2025\DASC500\DASC500\src\DASC500\DASC501\../../../data/DASC501/unknown2023.db' to 'c:\Users\amber\Documents\Mitchell\school\2025\DASC500\DASC500\src\DASC500\DASC501\../../../outputs/DASC501/homework2/auction_data_2023.db'.
+2025-04-20 22:04:02,251 - homework_logger - INFO - Verified: Renamed file 'c:\Users\amber\Documents\Mitchell\school\2025\DASC500\DASC500\src\DASC500\DASC501\../../../outputs/DASC501/homework2/auction_data_2023.db' exists.
+2025-04-20 22:04:02,251 - homework_logger - INFO - --- Homework Script Finished ---
+- __main__.DatabaseManager - DEBUG - Executing SELECT: SELECT name FROM sqlite_master WHERE type='table'; | Params: None
+2025-04-20 22:04:02,192 - __main__.DatabaseManager - INFO - SELECT query executed successfully. Found 3 records.
+2025-04-20 22:04:02,192 - __main__.DatabaseManager - DEBUG - Returning 3 results as list of Row objects.
+2025-04-20 22:04:02,192 - __main__.DatabaseManager - INFO - Found 3 table(s): ['Auction', 'Donation', 'Patron']
+2025-04-20 22:04:02,196 - __main__.DatabaseManager - DEBUG - Fetching columns for table: Auction...
+2025-04-20 22:04:02,196 - __main__.DatabaseManager - DEBUG - Columns for 'Auction': [('AuctionID', ''), ('DateOfAuction', ''), ('DonationID', ''), ('MinSalePrice', ''), ('ItemSoldAtAuction', '')]
+2025-04-20 22:04:02,196 - __main__.DatabaseManager - DEBUG - Fetching columns for table: Donation...
+2025-04-20 22:04:02,196 - __main__.DatabaseManager - DEBUG - Columns for 'Donation': [('DonationID', ''), ('DonationDate', ''), ('DonationDesc', ''), ('DonationValue', ''), ('CashDonation', ''), ('PatronID', ''), ('AuctionItem', '')]
+2025-04-20 22:04:02,199 - __main__.DatabaseManager - DEBUG - Fetching columns for table: Patron...
+2025-04-20 22:04:02,201 - __main__.DatabaseManager - DEBUG - Columns for 'Patron': [('PatronID', ''), ('Title', ''), ('FirstName', ''), ('LastName', ''), ('Phone', ''), ('Email', '')]
+2025-04-20 22:04:02,201 - __main__.DatabaseManager - INFO - Retrieved column info for 3 table(s).
+2025-04-20 22:04:02,201 - __main__.DatabaseManager - INFO - Identifying foreign key relationships...
+2025-04-20 22:04:02,201 - __main__.DatabaseManager - DEBUG - Executing SQL: PRAGMA foreign_keys = ON; | Params: None
+2025-04-20 22:04:02,201 - __main__.DatabaseManager - DEBUG - SQL executed successfully.
+2025-04-20 22:04:02,207 - __main__.DatabaseManager - INFO - Enabled foreign key support for relationship check.
+2025-04-20 22:04:02,208 - __main__.DatabaseManager - DEBUG - Fetching table names...
+2025-04-20 22:04:02,208 - __main__.DatabaseManager - DEBUG - Executing SELECT: SELECT name FROM sqlite_master WHERE type='table'; | Params: None
+2025-04-20 22:04:02,210 - __main__.DatabaseManager - INFO - SELECT query executed successfully. Found 3 records.
+2025-04-20 22:04:02,210 - __main__.DatabaseManager - DEBUG - Returning 3 results as list of Row objects.
+2025-04-20 22:04:02,210 - __main__.DatabaseManager - INFO - Found 3 table(s): ['Auction', 'Donation', 'Patron']
+2025-04-20 22:04:02,210 - __main__.DatabaseManager - DEBUG - Fetching foreign key definitions using PRAGMA foreign_key_list...
+2025-04-20 22:04:02,210 - __main__.DatabaseManager - DEBUG - Found 1 foreign key(s) originating from table 'Auction'.
+2025-04-20 22:04:02,210 - __main__.DatabaseManager - DEBUG - Found 1 foreign key(s) originating from table 'Donation'.
+2025-04-20 22:04:02,214 - __main__.DatabaseManager - INFO - Inferring relationship types (One-to-Many, Many-to-Many)...
+2025-04-20 22:04:02,214 - __main__.DatabaseManager - DEBUG - Inferred 1:N Relationship: Donation -> Auction
+2025-04-20 22:04:02,214 - __main__.DatabaseManager - DEBUG - Inferred 1:N Relationship: Patron -> Donation
+2025-04-20 22:04:02,216 - __main__.DatabaseManager - INFO - Relationship inference complete. Found 2 potential relationships.
+2025-04-20 22:04:02,216 - __main__.DatabaseManager - INFO - --- Inferred Relationships Summary ---
+2025-04-20 22:04:02,218 - __main__.DatabaseManager - INFO - - Relationship: Donation -> Auction | Type: One-to-Many | Details: Donation (One) -> Auction (Many)
+2025-04-20 22:04:02,218 - __main__.DatabaseManager - INFO - - Relationship: Patron -> Donation | Type: One-to-Many | Details: Patron (One) -> Donation (Many)
+2025-04-20 22:04:02,218 - __main__.DatabaseManager - DEBUG - Executing SELECT: SELECT * FROM Patron LIMIT 5; | Params: None
+2025-04-20 22:04:02,218 - __main__.DatabaseManager - INFO - SELECT query executed successfully. Found 5 records.
+2025-04-20 22:04:02,218 - __main__.DatabaseManager - DEBUG - Returning 5 results as DataFrame.
+2025-04-20 22:04:02,234 - __main__.DatabaseManager - DEBUG - Exiting context manager normally.
+2025-04-20 22:04:02,234 - __main__.DatabaseManager - INFO - Committing final changes (if any) and closing connection...
+2025-04-20 22:04:02,234 - __main__.DatabaseManager - INFO - Database connection to 'c:\Users\amber\Documents\Mitchell\school\2025\DASC500\DASC500\src\DASC500\DASC501\../../../data/DASC501/unknown2023.db' closed.
+2025-04-20 22:04:02,244 - __main__.DatabaseManager - INFO - Attempting to rename database from 'c:\Users\amber\Documents\Mitchell\school\2025\DASC500\DASC500\src\DASC500\DASC501\../../../data/DASC501/unknown2023.db' to 'c:\Users\amber\Documents\Mitchell\school\2025\DASC500\DASC500\src\DASC500\DASC501\../../../outputs/DASC501/homework2/auction_data_2023.db'...
+2025-04-20 22:04:02,244 - __main__.DatabaseManager - DEBUG - Executing os.rename('c:\Users\amber\Documents\Mitchell\school\2025\DASC500\DASC500\src\DASC500\DASC501\../../../data/DASC501/unknown2023.db', 'c:\Users\amber\Documents\Mitchell\school\2025\DASC500\DASC500\src\DASC500\DASC501\../../../outputs/DASC501/homework2/auction_data_2023.db')...
+2025-04-20 22:04:02,249 - __main__.DatabaseManager - INFO - Database successfully renamed to 'c:\Users\amber\Documents\Mitchell\school\2025\DASC500\DASC500\src\DASC500\DASC501\../../../outputs/DASC501/homework2/auction_data_2023.db'

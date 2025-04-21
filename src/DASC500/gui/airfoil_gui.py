@@ -16,6 +16,7 @@ from DASC500.classes.AirfoilSeries import AirfoilSeries
 
 from DASC500.xfoil.fix_airfoil_data import *
 
+
 class AirfoilViewer(QWidget):
     def __init__(self):
         super().__init__()
@@ -767,6 +768,7 @@ class PointEditDialog(QDialog):
 
     def get_values(self):
         return self.x_spinbox.value(), self.y_spinbox.value()
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
