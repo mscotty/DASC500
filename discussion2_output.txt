@@ -37,7 +37,3 @@ Optimal path search failed: Candidate path failed constraint checks.
 
 --- Planning Complete ---
 Failed to find a valid flight path.
-
---- Example User Input ---
-Enter a test floating point value (e.g., 123.45): You entered: 1.0 (as float)
-Value is 100 or less.

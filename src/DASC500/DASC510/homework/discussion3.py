@@ -73,7 +73,6 @@ class VelocityVector:
         return f"Velocity(spd={self.speed_kts:.1f}kts, hdg={self.heading_deg:.1f}deg)"
 
 
-
 class Waypoint:
     def __init__(
         self,
@@ -869,16 +868,7 @@ def main() -> None:
 
 # --- Script Entry Point with Output Redirection ---
 if __name__ == "__main__":
-    # Example user input section to specify the output filename
-    try:
-        output_filename = input("Enter where you want the output sent: ")
-        print(f"You entered: {output_filename}")
-    except ValueError:
-        print("Invalid floating point input entered.")
-
-    if output_filename is None or output_filename == "":
-        # Define the name for your output text file if none is provided
-        output_filename = "discussion2_output.txt"
+    output_filename = "discussion3_output.txt"
 
     # Store the original standard output
     original_stdout = sys.stdout
