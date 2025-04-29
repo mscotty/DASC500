@@ -3,15 +3,19 @@ import os
 
 def redirect_print(filepath, also_to_stdout=False):
     """
-    Redirects all subsequent print statements to the specified file.
+    Redirects all subsequent print statements to the specified file, using UTF-8 encoding.
 
     Args:
         filepath (str): The path to the file where print statements will be written.
         also_to_stdout (bool, optional): If True, print statements will also be
-                                         displayed in the command window. Defaults to False.
-    """ 
+                                        displayed in the command window. Defaults to False.
+    """
     original_stdout = sys.stdout
-    file = open(filepath, 'w')
+    try:
+        file = open(filepath, 'w', encoding='utf-8')  # Specify UTF-8 encoding here
+    except Exception as e:
+        print(f"Error opening file for redirection: {e}")
+        return  # Exit if the file cannot be opened
 
     class DualOutput:
         def __init__(self, file, stdout):
@@ -43,5 +47,6 @@ def restore_print():
     """
     Restores print statements to their default behavior (command window).
     """
-    sys.stdout.close()
+    if hasattr(sys.stdout, 'close'):  # Check if sys.stdout has a close method
+        sys.stdout.close()
     sys.stdout = sys.__stdout__

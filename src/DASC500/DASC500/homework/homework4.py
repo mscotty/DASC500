@@ -5,9 +5,14 @@ from DASC500.utilities.get_top_level_module import get_top_level_module_path
 import statsmodels.api as sm
 
 folder = get_top_level_module_path()
-data_file = os.path.join(folder, "../../data/homework4/mtcars.csv")
-output_folder = os.path.join(folder, "../../outputs/homework4")
+data_file = os.path.join(folder, "../../data/DASC500/homework4/mtcars.csv")
+output_folder = os.path.join(folder, "../../outputs/DASC500/homework4")
 output_logger = os.path.join(output_folder, 'homework4_results.txt')
+
+from DASC500.utilities.print.redirect_print import redirect_print
+
+# Redirect print to output_logger
+redirect_print(output_logger)
 
 data_obj = DataAnalysis(data_file)
 predictor_vars = ["cyl", "disp", "hp", "drat", "wt", "qsec", "vs", "am", "gear", "carb"]

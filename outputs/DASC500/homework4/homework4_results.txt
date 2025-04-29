@@ -1,0 +1,93 @@
+Problem 1
+Total Number of Elements: 32
+Current Train DF Elements: 22
+Current Test DF Elements: 10
+Problem 2
+  Predictor         β0        β1    t-stat       LCL        UCL        R2
+0       cyl  37.733333 -2.802381 -7.965936 -3.536214  -2.068548  0.760353
+1      disp  28.932288 -0.038258 -6.618450 -0.050316  -0.026200  0.686539
+2        hp  29.395893 -0.062887 -5.167042 -0.088274  -0.037499  0.571719
+3      drat  -6.125362  7.434852  3.894368  3.452478  11.417227  0.431270
+4        wt  35.964726 -4.894933 -7.942755 -6.180463  -3.609403  0.759289
+5      qsec   2.642263  0.974488  1.502185 -0.378705   2.327680  0.101389
+6        vs  17.385714  6.914286  3.543804  2.844380  10.984191  0.385722
+7        am  17.092308  6.863248  3.628818  2.918029  10.808467  0.397015
+8      gear   5.429537  3.930249  3.016417  1.212338   6.648161  0.312686
+9      carb  24.456906 -1.566436 -2.622962 -2.812177  -0.320696  0.255950
+Problem 3
+Best Predictor: cyl
+Problem 4
+mpg = beta_0 + beta_1 * cyl
+mpg = 37.733333333333356 + -2.8023809523809526 * cyl
+Problem 5
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                    mpg   R-squared:                       0.905
+Model:                            OLS   Adj. R-squared:                  0.820
+Method:                 Least Squares   F-statistic:                     10.54
+Date:                Mon, 28 Apr 2025   Prob (F-statistic):           0.000273
+Time:                        22:25:12   Log-Likelihood:                -42.185
+No. Observations:                  22   AIC:                             106.4
+Df Residuals:                      11   BIC:                             118.4
+Df Model:                          10                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const        -47.1135     40.319     -1.169      0.267    -135.855      41.628
+cyl            3.7036      2.480      1.493      0.164      -1.756       9.163
+disp           0.0059      0.020      0.299      0.770      -0.038       0.049
+hp            -0.0212      0.026     -0.806      0.437      -0.079       0.037
+drat           4.4426      2.571      1.728      0.112      -1.215      10.101
+wt            -1.1331      2.302     -0.492      0.632      -6.199       3.933
+qsec           0.9279      0.806      1.151      0.274      -0.847       2.703
+vs             3.4352      2.523      1.362      0.201      -2.118       8.988
+am             4.6487      2.841      1.636      0.130      -1.604      10.902
+gear           5.6231      3.097      1.816      0.097      -1.193      12.439
+carb          -2.3622      1.259     -1.877      0.087      -5.132       0.408
+==============================================================================
+Omnibus:                        0.579   Durbin-Watson:                   2.029
+Prob(Omnibus):                  0.749   Jarque-Bera (JB):                0.320
+Skew:                           0.285   Prob(JB):                        0.852
+Kurtosis:                       2.844   Cond. No.                     2.52e+04
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+[2] The condition number is large, 2.52e+04. This might indicate that there are
+strong multicollinearity or other numerical problems.
+Problem 6
+Extra Credit
+
+🔍 **Model Selection Summary**
+📊 Full Model AIC: 106.37, BIC: 118.37
+📉 Parsimonious Model AIC: 102.10, BIC: 105.37
+
+📌 **Final Parsimonious Model Summary**
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                    mpg   R-squared:                       0.839
+Model:                            OLS   Adj. R-squared:                  0.822
+Method:                 Least Squares   F-statistic:                     49.49
+Date:                Mon, 28 Apr 2025   Prob (F-statistic):           2.92e-08
+Time:                        22:25:13   Log-Likelihood:                -48.048
+No. Observations:                  22   AIC:                             102.1
+Df Residuals:                      19   BIC:                             105.4
+Df Model:                           2                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const         38.6173      1.968     19.624      0.000      34.499      42.736
+cyl           -1.5518      0.506     -3.066      0.006      -2.611      -0.492
+wt            -2.6942      0.885     -3.045      0.007      -4.546      -0.843
+==============================================================================
+Omnibus:                        5.423   Durbin-Watson:                   1.732
+Prob(Omnibus):                  0.066   Jarque-Bera (JB):                3.482
+Skew:                           0.932   Prob(JB):                        0.175
+Kurtosis:                       3.568   Cond. No.                         30.0
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+['cyl', 'wt']
