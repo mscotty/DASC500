@@ -1,0 +1,5 @@
+Name, Shorthand, Scaler To Base, Offset to Base, other acceptable labels, more labels as needed
+meters,m,1.0,0,meter
+feet,ft,0.30478512648,0,foot
+inches,in,0.02539876054,0,inch
+kilometers,km,1000.0,0,kilometer
