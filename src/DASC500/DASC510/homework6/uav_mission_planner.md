@@ -1,0 +1,202 @@
+~~~mermaid
+classDiagram
+    direction TD
+
+    %% Helper Enums and Types (Conceptual - not directly drawn in Mermaid unless they are classes)
+    %% UAVStatusEnum, MissionTypeEnum, MissionStatusEnum, ActionTypeEnum, ManeuverTypeEnum
+    %% Point3D, TrimData, AeroCoeffs, UAVState, GridData, WindField, Zone, AirDensityModel, Vector3D, PerformanceMetrics
+
+    class Coordinates {
+        -latitude: double
+        -longitude: double
+        -altitude: double
+        +Coordinates(lat: double, lon: double, alt: double)
+        +getLatitude(): double
+        +getLongitude(): double
+        +getAltitude(): double
+        +calculateDistanceTo(other: Coordinates): double
+    }
+
+    class UAV {
+        <<Abstract>>
+        #uavID: String
+        #modelName: String
+        #currentPosition: Coordinates
+        #currentVelocityKPH: double
+        #currentFuelOrBatteryPercent: double
+        #maxSpeedKPH: double
+        #maxEnduranceHours: double
+        #payloadCapacityKg: double
+        #status: String  % UAVStatusEnum
+        #weightKg: double
+        #dryMassKg: double
+        #centerOfGravity: String % Point3D
+        #aerodynamicTrimData: String % TrimData or reference
+        #efficiencyFactor: double
+        +UAV(id: String, model: String, dryMass: double, maxSpeed: double, maxEndurance: double, payload: double, trimDataRef: String, efficiency: double)
+        +takeOff(): boolean
+        +land(): boolean
+        +flyTo(destination: Coordinates, speedKPH: double): boolean
+        +updateStatus(newStatus: String): void
+        +getCurrentPosition(): Coordinates
+        +updatePosition(newPosition: Coordinates, newVelocityKPH: double): void
+        +reportTelemetry(): String
+        +performManeuver(maneuver: Maneuver, environment: Environment): boolean
+        +determineAerodynamicCoefficients(state: String): String % AeroCoeffs / state: UAVState
+        +determineRequiredThrust(state: String): double % state: UAVState
+        +updateEnergyConsumption(energyJoules: double): void
+        +canReach(target: Coordinates, maneuver: Maneuver, environment: Environment): boolean
+    }
+
+    class ElectricUAV {
+        -batteryCapacityKWh: double
+        -currentChargeKWh: double
+        -motorType: String
+        -numberOfRotors: int
+        +ElectricUAV(id: String, model: String, dryMass: double, maxSpeed: double, maxEndurance: double, payload: double, trimDataRef: String, efficiency: double, batteryCap: double, motor: String, rotors: int)
+        +rechargeBattery(chargeAmountKWh: double): void
+        +getBatteryPercentage(): double
+        +estimateRemainingFlightTimeHours(): double
+        +hover(): boolean
+    }
+
+    class JetPropelledUAV {
+        -fuelCapacityLiters: double
+        -currentFuelLiters: double
+        -fuelType: String
+        -engineThrustKN: double
+        +JetPropelledUAV(id: String, model: String, dryMass: double, maxSpeed: double, maxEndurance: double, payload: double, trimDataRef: String, efficiency: double, fuelCap: double, fuel: String, thrust: double)
+        +refuel(amountLiters: double): void
+        +getFuelPercentage(): double
+        +calculateRangeKm(): double
+    }
+
+    class Waypoint {
+        -waypointID: String
+        -location: Coordinates
+        -sequenceNumber: int
+        -desiredSpeedKPH: double
+        -desiredAltitudeMeters: double
+        -actionAtWaypoint: String % ActionTypeEnum
+        -dwellTimeSeconds: int
+        -expectedFuelUsageJoules: double % Or specific units
+        -requiredThrustNewton: double
+        +Waypoint(id: String, loc: Coordinates, seq: int, speed: double, alt: double, action: String, dwell: int)
+        +getLocation(): Coordinates
+        +getAction(): String
+        +getDesiredSpeedKPH(): double
+        +getDesiredAltitudeMeters(): double
+        +determineRequiredPerformanceMetrics(uav: UAV, env: Environment): String % PerformanceMetrics
+        +canUAVReach(uav: UAV, env: Environment): boolean
+    }
+
+    class Mission {
+        -missionID: String
+        -missionName: String
+        -missionType: String % MissionTypeEnum (e.g., ISR, ATTACK, DELIVERY, FLIGHT_OPTIMIZATION)
+        -status: String % MissionStatusEnum
+        -objective: String
+        #orderedWaypoints: List~Waypoint~
+        #assignedUAVs: List~UAV~
+        -totalEnergyCostJoules: double
+        -totalDistanceTraveledKm: double
+        -totalFlightTimeMinutes: double
+        +Mission(id: String, name: String, type: String, objective: String)
+        +addWaypoint(wp: Waypoint): void
+        +removeWaypoint(waypointID: String): boolean
+        +getRoute(): List~Waypoint~
+        +assignUAV(uav: UAV): boolean
+        +unassignUAV(uavID: String): boolean
+        +getAssignedUAVs(): List~UAV~
+        +startMission(startTime: String): boolean % DateTime
+        +completeMission(endTime: String): void % DateTime
+        +abortMission(reason: String): void
+        +calculateTotalEnergyCost(uav: UAV, env: Environment): double
+        +calculateTotalDistanceKm(): double
+        +validateMissionConstraints(uav: UAV, env: Environment): boolean
+        +optimizePath(planner: PathPlanner, uav: UAV, env: Environment): boolean
+    }
+
+    class Maneuver {
+        <<Abstract>>
+        #maneuverType: String % ManeuverTypeEnum (Cruise, Climb, Dive, Turn, etc.)
+        #deltaAltitudeMeters: double
+        #deltaSpeedKPH: double
+        #headingChangeDegrees: double
+        #durationSecondsOrDistanceKm: double % Value depends on maneuver
+        #energyModel: String % Reference to specific energy model
+        +Maneuver(type: String, dAlt: double, dSpeed: double, dHead: double, durDist: double)
+        +isFeasible(uav: UAV, currentState: String, env: Environment): boolean % currentState: UAVState
+        +calculateEnergyCost(uav: UAV, currentState: String, env: Environment): double % currentState: UAVState
+        +getExpectedTargetState(uav: UAV, currentState: String): String % Returns UAVState / currentState: UAVState
+    }
+
+    class Cruise {
+        +Cruise(durationOrDistance: double)
+    }
+    class Climb {
+        -climbRateMPS: double
+        +Climb(targetDeltaAltitude: double, rate: double)
+    }
+    class Dive {
+        -diveRateMPS: double
+        +Dive(targetDeltaAltitude: double, rate: double)
+    }
+    class TurnManeuver {
+        -turnRadiusMeters: double
+        +TurnManeuver(headingChange: double, radius: double)
+    }
+
+    class Environment {
+        -terrainData: String % GridData or reference
+        -windData: String % WindField or reference
+        -noFlyZones: List~String~ % List of Zone definitions
+        -airDensityModel: String % AirDensityModel reference
+        +Environment(terrainRef: String, windRef: String, noFlyRefs: List~String~, airDensityRef: String)
+        +getElevationAt(coords: Coordinates): double
+        +getWindVectorAt(coords: Coordinates, altitude: double): String % Vector3D
+        +isInNoFlyZone(coords: Coordinates, altitude: double): boolean
+        +getAirDensity(altitude: double): double
+    }
+
+    class PathPlanner {
+        -searchAlgorithmType: String
+        -energyCostFunctionName: String
+        -constraintHandlerName: String % Name of the constraint handling strategy
+        +PathPlanner(algorithm: String, costFunc: String, constraintHandler: String)
+        +generateOptimalPath(mission: Mission, uav: UAV, environment: Environment): List~Waypoint~
+        +computePathEnergyCost(path: List~Waypoint~, uav: UAV, environment: Environment): double
+        +evaluatePathConstraints(path: List~Waypoint~, uav: UAV, environment: Environment): boolean
+    }
+
+    %% Relationships
+    UAV <|-- ElectricUAV
+    UAV <|-- JetPropelledUAV
+
+    Maneuver <|-- Cruise
+    Maneuver <|-- Climb
+    Maneuver <|-- Dive
+    Maneuver <|-- TurnManeuver
+    %% More Maneuver specializations can be added here
+
+    Mission "1" o-- "0..*" Waypoint : containsOrdered
+    Mission "1" -- "1..*" UAV : assignedTo
+
+    Waypoint "1" -- "1" Coordinates : locatedAt
+    UAV "1" -- "1" Coordinates : currentPosition
+
+    %% Dependencies (shown with ..>)
+    PathPlanner ..> Mission : plansFor
+    PathPlanner ..> UAV : considersCapabilitiesOf
+    PathPlanner ..> Environment : usesDataFrom
+    PathPlanner ..> Maneuver : usesModelsOf
+
+    UAV ..> Maneuver : performs
+    Maneuver ..> UAV : requiresStateFrom
+    Maneuver ..> Environment : constrainedBy
+
+    Mission ..> PathPlanner : usesForOptimization
+    Waypoint ..> UAV : requiresPerformanceFrom
+    Waypoint ..> Environment : considersForFeasibility
+
+~~~

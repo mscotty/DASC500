@@ -29,7 +29,9 @@ dependencies = [
     "scikit-learn",
     "graphviz",
     "jupyter",
-    "openpyxl"
+    "openpyxl",
+    "h5py",
+    "lxml"
 ]
 
 [project.optional-dependencies]

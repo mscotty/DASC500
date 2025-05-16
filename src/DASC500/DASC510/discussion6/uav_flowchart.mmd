@@ -1,0 +1,48 @@
+graph TD
+    subgraph UAV Mission Planning Model
+        direction LR
+
+        A[Start Mission Planning] --> B{Select Mission Type};
+
+        subgraph Mission Type: ISR
+            B -- ISR --> C_ISR[Waypoints/POIs <br> Location: Lat, Lon, Alt <br> State: Vel, Fuel, Throttle <br> Mission: Data Priority, Dwell Time, Sensor Type, Coverage Area];
+            C_ISR --> D_ISR{Determine Possible Flight Segments};
+            D_ISR -- Segment <br> Distance, Time, Energy, Risk <br> Stealth Requirement, Sensor Operational Mode --> E_ISR[Next Waypoint/POI <br> Location: Lat, Lon, Alt <br> State: Vel, Fuel, Throttle <br> Mission: Data Priority, Dwell Time, Sensor Type, Coverage Area];
+            E_ISR --> F_ISR{Evaluate Next Possible Segments};
+            F_ISR -- Optimal Segment? (Directional Cost Considered) --> G_ISR[Continue ISR Route];
+            F_ISR -- All Segments Explored? --> H_ISR{ISR Route Complete?};
+            G_ISR --> E_ISR;
+            H_ISR -- Yes --> I_ISR[Evaluate ISR Mission Plan];
+        end
+
+        subgraph Mission Type: One-Way Attack
+            B -- Attack --> C_Attack[Waypoints/POIs <br> Location: Lat, Lon, Alt <br> State: Vel, Fuel, Throttle <br> Mission: Target Priority, Weapon Type, Engagement Criteria, Egress Constraints];
+            C_Attack --> D_Attack{Determine Possible Flight Segments};
+            D_Attack -- Segment <br> Distance, Time, Energy, Risk <br> Threat Level Along Route, Evasion Maneuvers --> E_Attack[Next Waypoint/POI <br> Location: Lat, Lon, Alt <br> State: Vel, Fuel, Throttle <br> Mission: Target Priority, Weapon Type, Engagement Criteria, Egress Constraints];
+            E_Attack --> F_Attack{Evaluate Next Possible Segments};
+            F_Attack -- Optimal Segment? (Directional Cost Considered) --> G_Attack[Continue Attack Route];
+            F_Attack -- Target Reached? --> H_Attack[Engage Target];
+            H_Attack --> I_Attack[Define Egress Route];
+            I_Attack --> J_Attack{Determine Possible Egress Segments};
+            J_Attack -- Egress Segment <br> Distance, Time, Energy, Risk --> K_Attack[Egress Waypoint];
+            K_Attack --> L_Attack{Attack Route Complete?};
+            L_Attack -- Yes --> M_Attack[Evaluate Attack Mission Plan];
+        end
+
+        subgraph Mission Type: Delivery
+            B -- Delivery --> C_Delivery[Waypoints/POIs <br> Location: Lat, Lon, Alt <br> State: Vel, Fuel, Throttle <br> Mission: Delivery Item, Drop-off Method, Recipient Info, Time Window];
+            C_Delivery --> D_Delivery{Determine Possible Flight Segments};
+            D_Delivery -- Segment <br> Distance, Time, Energy, Risk <br> Payload Stability Constraints, Time Sensitivity Penalty --> E_Delivery[Next Waypoint/POI <br> Location: Lat, Lon, Alt <br> State: Vel, Fuel, Throttle <br> Mission: Delivery Item, Drop-off Method, Recipient Info, Time Window];
+            E_Delivery --> F_Delivery{Evaluate Next Possible Segments};
+            F_Delivery -- Optimal Segment? (Directional Cost Considered) --> G_Delivery[Continue Delivery Route];
+            F_Delivery -- Delivery Point Reached? --> H_Delivery[Perform Delivery];
+            G_Delivery --> E_Delivery;
+            H_Delivery --> I_Delivery(Continue to Next Waypoint);
+            I_Delivery --> J_Delivery{Delivery Route Complete?};
+            J_Delivery -- Yes --> K_Delivery[Evaluate Delivery Mission Plan];
+        end
+
+        I_ISR --> N[End Mission Planning];
+        M_Attack --> N;
+        K_Delivery --> N;
+    end

@@ -1,0 +1,47 @@
+[
+  {
+    "Aircraft ID": 1,
+    "Aircraft Type": "F-16 Fighting Falcon",
+    "Maintenance Task": "Engine Inspection",
+    "Date Performed": "2023-09-01",
+    "Time Performed": "09:45 AM",
+    "Technician ID": 201,
+    "Notes": "Engine in good condition"
+  },
+  {
+    "Aircraft ID": 2,
+    "Aircraft Type": "C-17 Globemaster III",
+    "Maintenance Task": "Hydraulic System Check",
+    "Date Performed": "2023-09-02",
+    "Time Performed": "02:30 PM",
+    "Technician ID": 202,
+    "Notes": "Hydraulic system functioning well"
+  },
+  {
+    "Aircraft ID": 3,
+    "Aircraft Type": "B-2 Spirit",
+    "Maintenance Task": "Stealth Coating Inspection",
+    "Date Performed": "2023-09-03",
+    "Time Performed": "11:15 AM",
+    "Technician ID": 203,
+    "Notes": "Stealth coating intact"
+  },
+  {
+    "Aircraft ID": 4,
+    "Aircraft Type": "F-22 Raptor",
+    "Maintenance Task": "Avionics Check",
+    "Date Performed": "2023-09-04",
+    "Time Performed": "08:00 AM",
+    "Technician ID": 204,
+    "Notes": "Avionics systems operational"
+  },
+  {
+    "Aircraft ID": 5,
+    "Aircraft Type": "KC-135 Stratotanker",
+    "Maintenance Task": "Fuel System Inspection",
+    "Date Performed": "2023-09-05",
+    "Time Performed": "03:45 PM",
+    "Technician ID": 205,
+    "Notes": "No fuel system issues found"
+  }
+]

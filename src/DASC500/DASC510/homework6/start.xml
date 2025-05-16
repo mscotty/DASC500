@@ -1,0 +1,67 @@
+<mxGraphModel dx="1800" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+  <root>
+    <mxCell id="0"/>
+    <mxCell id="1" parent="0"/>
+
+    <mxCell id="Coordinates_Class" value="&lt;b&gt;Coordinates&lt;/b&gt;&lt;hr/&gt;- latitude: double&lt;br/&gt;- longitude: double&lt;br/&gt;- altitude: double&lt;hr/&gt;+ Coordinates(lat: double, lon: double, alt: double)&lt;br/&gt;+ getLatitude(): double&lt;br/&gt;+ getLongitude(): double&lt;br/&gt;+ getAltitude(): double&lt;br/&gt;+ setLatitude(latitude: double): void&lt;br/&gt;+ setLongitude(longitude: double): void&lt;br/&gt;+ setAltitude(altitude: double): void&lt;br/&gt;+ calculateDistanceTo(other: Coordinates): double" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;align=left;spacingLeft=4;" vertex="1" parent="1">
+      <mxGeometry x="50" y="500" width="320" height="220" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="UAV_Class" value="&lt;b&gt;&lt;i&gt;UAV&lt;/i&gt;&lt;/b&gt;&lt;hr/&gt;# uavID: String&lt;br/&gt;# modelName: String&lt;br/&gt;# currentPosition: Coordinates&lt;br/&gt;# currentVelocityKPH: double&lt;br/&gt;# currentFuelOrBatteryPercent: double&lt;br/&gt;# maxSpeedKPH: double&lt;br/&gt;# maxEnduranceHours: double&lt;br/&gt;# payloadCapacityKg: double&lt;br/&gt;# status: String&lt;hr/&gt;+ UAV(id: String, model: String, maxSpeed: double, maxEndurance: double, payload: double)&lt;br/&gt;+ takeOff(): boolean&lt;br/&gt;+ land(): boolean&lt;br/&gt;+ flyTo(destination: Coordinates, speedKPH: double): boolean&lt;br/&gt;+ updateStatus(newStatus: String): void&lt;br/&gt;+ getCurrentPosition(): Coordinates&lt;br/&gt;+ updatePosition(newPosition: Coordinates): void&lt;br/&gt;+ getCurrentFuelOrBattery(): double&lt;br/&gt;+ reportTelemetry(): String&lt;br/&gt;+ performManeuver(maneuverType: String, params: Map&amp;lt;String, double&amp;gt;): boolean&lt;br/&gt;+ turn(direction: String, angleDegrees: double): boolean&lt;br/&gt;+ climb(rateMPS: double, targetAltitudeMeters: double): boolean&lt;br/&gt;+ dive(rateMPS: double, targetAltitudeMeters: double): boolean" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;align=left;spacingLeft=4;" vertex="1" parent="1">
+      <mxGeometry x="450" y="40" width="480" height="420" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="ElectricUAV_Class" value="&lt;b&gt;ElectricUAV&lt;/b&gt;&lt;hr/&gt;- batteryCapacityKWh: double&lt;br/&gt;- currentChargeKWh: double&lt;br/&gt;- motorType: String&lt;br/&gt;- numberOfRotors: int&lt;hr/&gt;+ ElectricUAV(id: String, model: String, maxSpeed: double, maxEndurance: double, payload: double, batteryCap: double, motor: String, rotors: int)&lt;br/&gt;+ rechargeBattery(chargeAmountKWh: double): void&lt;br/&gt;+ getBatteryPercentage(): double&lt;br/&gt;+ estimateRemainingFlightTimeHours(): double&lt;br/&gt;+ hover(): boolean" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;align=left;spacingLeft=4;" vertex="1" parent="1">
+      <mxGeometry x="250" y="500" width="460" height="220" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="JetPropelledUAV_Class" value="&lt;b&gt;JetPropelledUAV&lt;/b&gt;&lt;hr/&gt;- fuelCapacityLiters: double&lt;br/&gt;- currentFuelLiters: double&lt;br/&gt;- fuelType: String&lt;br/&gt;- engineThrustKN: double&lt;hr/&gt;+ JetPropelledUAV(id: String, model: String, maxSpeed: double, maxEndurance: double, payload: double, fuelCap: double, fuel: String, thrust: double)&lt;br/&gt;+ refuel(amountLiters: double): void&lt;br/&gt;+ getFuelPercentage(): double&lt;br/&gt;+ calculateRangeKm(): double" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;align=left;spacingLeft=4;" vertex="1" parent="1">
+      <mxGeometry x="750" y="500" width="460" height="200" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="Waypoint_Class" value="&lt;b&gt;Waypoint&lt;/b&gt;&lt;hr/&gt;- waypointID: String&lt;br/&gt;- location: Coordinates&lt;br/&gt;- sequenceNumber: int&lt;br/&gt;- targetArrivalSpeedKPH: double&lt;br/&gt;- actionAtWaypoint: WaypointActionEnum&lt;br/&gt;- dwellTimeSeconds: int&lt;br/&gt;- missionSpecificParams: Map&amp;lt;String, String&amp;gt;&lt;hr/&gt;+ Waypoint(id: String, loc: Coordinates, seq: int, speed: double, action: WaypointActionEnum, dwell: int)&lt;br/&gt;+ getLocation(): Coordinates&lt;br/&gt;+ getAction(): WaypointActionEnum&lt;br/&gt;+ setActionParameters(params: Map&amp;lt;String, String&amp;gt;): void&lt;br/&gt;+ getActionParameters(): Map&amp;lt;String, String&amp;gt;" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;align=left;spacingLeft=4;" vertex="1" parent="1">
+      <mxGeometry x="1000" y="40" width="400" height="280" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="Mission_Class" value="&lt;b&gt;Mission&lt;/b&gt;&lt;hr/&gt;- missionID: String&lt;br/&gt;- missionName: String&lt;br/&gt;- missionType: MissionTypeEnum&lt;br/&gt;- status: MissionStatusEnum&lt;br/&gt;- objective: String&lt;br/&gt;- assignedUAVs: List&amp;lt;UAV&amp;gt;&lt;br/&gt;- route: List&amp;lt;Waypoint&amp;gt;&lt;br/&gt;- plannedStartTime: DateTime&lt;br/&gt;- estimatedDurationMinutes: int&lt;hr/&gt;+ Mission(id: String, name: String, type: MissionTypeEnum, objective: String)&lt;br/&gt;+ addWaypoint(wp: Waypoint): void&lt;br/&gt;+ removeWaypoint(waypointID: String): boolean&lt;br/&gt;+ getRoute(): List&amp;lt;Waypoint&amp;gt;&lt;br/&gt;+ assignUAV(uav: UAV): boolean&lt;br/&gt;+ unassignUAV(uavID: String): boolean&lt;br/&gt;+ getAssignedUAVs(): List&amp;lt;UAV&amp;gt;&lt;br/&gt;+ startMission(startTime: DateTime): boolean&lt;br/&gt;+ completeMission(endTime: DateTime): void&lt;br/&gt;+ abortMission(reason: String): void&lt;br/&gt;+ calculateTotalDistanceKm(): double&lt;br/&gt;+ validateMissionPlan(): boolean" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;align=left;spacingLeft=4;" vertex="1" parent="1">
+      <mxGeometry x="450" y="750" width="480" height="400" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="Inheritance_ElectricUAV_UAV" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="ElectricUAV_Class" target="UAV_Class">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="Inheritance_JetUAV_UAV" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="JetPropelledUAV_Class" target="UAV_Class">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="Composition_Mission_Waypoint" value="1..1&lt;br&gt;has&lt;br&gt;0..*" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=diamondThin;endFill=1;startArrow=none;startFill=0;align=left;verticalAlign=bottom;" edge="1" parent="1" source="Mission_Class" target="Waypoint_Class">
+      <mxGeometry relative="1" as="geometry">
+          <mxPoint x="950" y="400" as="targetPoint"/>
+          <mxPoint x="700" y="740" as="sourcePoint"/>
+      </mxGeometry>
+    </mxCell>
+
+    <mxCell id="Association_Mission_UAV" value="0..1&lt;br&gt;assigned to&lt;br&gt;1..*" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=open;align=left;verticalAlign=bottom;" edge="1" parent="1" source="Mission_Class" target="UAV_Class">
+      <mxGeometry relative="1" as="geometry">
+          <mxPoint x="700" y="470" as="targetPoint"/>
+          <mxPoint x="700" y="740" as="sourcePoint"/>
+      </mxGeometry>
+    </mxCell>
+
+    <mxCell id="Association_Waypoint_Coordinates" value="1..1&lt;br&gt;located at&lt;br&gt;1..1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=open;align=left;verticalAlign=bottom;" edge="1" parent="1" source="Waypoint_Class" target="Coordinates_Class">
+      <mxGeometry relative="1" as="geometry">
+          <mxPoint x="400" y="300" as="targetPoint"/>
+          <mxPoint x="990" y="300" as="sourcePoint"/>
+      </mxGeometry>
+    </mxCell>
+    
+    <mxCell id="Association_UAV_Coordinates" value="1..1&lt;br&gt;has current&lt;br&gt;1..1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=open;align=left;verticalAlign=bottom;" edge="1" parent="1" source="UAV_Class" target="Coordinates_Class">
+      <mxGeometry relative="1" as="geometry">
+          <mxPoint x="420" y="250" as="sourcePoint"/>
+          <mxPoint x="200" y="480" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+
+  </root>
+</mxGraphModel>

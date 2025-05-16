@@ -1,0 +1,99 @@
+2025-05-11 21:53:35,543 - DASC500.classes.DatabaseManager.DatabaseManager - INFO - DatabaseManager:65 - DatabaseManager initialized for DB: 'C:\Users\amber\Documents\Mitchell\school\2025\DASC500\DASC500\src\DASC500\../..\data/DASC501/homework5\airforce_maintenance_homework_20250511_215335.db'
+2025-05-11 21:53:35,543 - DASC500.classes.DatabaseManager.DatabaseManager - INFO - DatabaseManager:101 - Connecting to database: 'C:\Users\amber\Documents\Mitchell\school\2025\DASC500\DASC500\src\DASC500\../..\data/DASC501/homework5\airforce_maintenance_homework_20250511_215335.db'...
+2025-05-11 21:53:35,543 - DASC500.classes.DatabaseManager.DatabaseManager - INFO - DatabaseManager:105 - Database connection established successfully.
+2025-05-11 21:53:35,558 - DASC500.classes.DatabaseManager.DatabaseManager - INFO - DatabaseManager:611 - Unified load: 'C:\Users\amber\Documents\Mitchell\school\2025\DASC500\DASC500\src\DASC500\../..\data/DASC501/homework5\aicraftgroup1.h5' (Type: HDF5) -> Table:'maintenance_log'
+2025-05-11 21:53:35,559 - DASC500.classes.DatabaseManager.DatabaseManager - INFO - DatabaseManager:506 - Reading HDF5: 'C:\Users\amber\Documents\Mitchell\school\2025\DASC500\DASC500\src\DASC500\../..\data/DASC501/homework5\aicraftgroup1.h5' (Key hint: Default/First)
+2025-05-11 21:53:35,760 - DASC500.classes.DatabaseManager.DatabaseManager - INFO - DatabaseManager:515 - No HDF5 key explicitly provided. Using first available key: '/df1'
+2025-05-11 21:53:35,786 - DASC500.classes.DatabaseManager.DatabaseManager - INFO - DatabaseManager:517 - Read 5 rows from HDF5 'C:\Users\amber\Documents\Mitchell\school\2025\DASC500\DASC500\src\DASC500\../..\data/DASC501/homework5\aicraftgroup1.h5', key '/df1'.
+2025-05-11 21:53:35,786 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:82 - Standardized DataFrame columns. New columns: ['Aircraft_ID', 'Aircraft_Type', 'Maintenance_Task', 'Date_Performed', 'Time_Performed', 'Technician_ID', 'Notes']
+2025-05-11 21:53:35,786 - DASC500.classes.DatabaseManager.DatabaseManager - INFO - DatabaseManager:399 - Preparing to load DataFrame into table 'maintenance_log'.
+2025-05-11 21:53:35,786 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:296 - Checking existence of table: maintenance_log
+2025-05-11 21:53:35,786 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:303 - Table 'maintenance_log' exists: False
+2025-05-11 21:53:35,786 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:296 - Checking existence of table: maintenance_log
+2025-05-11 21:53:35,786 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:303 - Table 'maintenance_log' exists: False
+2025-05-11 21:53:35,786 - DASC500.classes.DatabaseManager.DatabaseManager - INFO - DatabaseManager:439 - Table 'maintenance_log' does not exist. Attempting to create with standardized column names.
+2025-05-11 21:53:35,786 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:165 - Executing SQL: CREATE TABLE "maintenance_log" ("Aircraft_ID" INTEGER, "Aircraft_Type" TEXT, "Maintenance_Task" TEXT, "Date_Performed" TEXT, "Time_Performed" TEXT, "T... | Params: None
+2025-05-11 21:53:35,802 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:172 - SQL executed successfully.
+2025-05-11 21:53:35,802 - DASC500.classes.DatabaseManager.DatabaseManager - INFO - DatabaseManager:454 - Table 'maintenance_log' created with columns: ['Aircraft_ID', 'Aircraft_Type', 'Maintenance_Task', 'Date_Performed', 'Time_Performed', 'Technician_ID', 'Notes']
+2025-05-11 21:53:35,802 - DASC500.classes.DatabaseManager.DatabaseManager - INFO - DatabaseManager:492 - Executing bulk insert (INSERT OR IGNORE) with 5 rows into 'maintenance_log'...
+2025-05-11 21:53:35,802 - DASC500.classes.DatabaseManager.DatabaseManager - INFO - DatabaseManager:494 - Bulk insert for 'maintenance_log' prepared (pending commit/rollback by context manager).
+2025-05-11 21:53:35,802 - DASC500.classes.DatabaseManager.DatabaseManager - INFO - DatabaseManager:675 - DataFrame from 'C:\Users\amber\Documents\Mitchell\school\2025\DASC500\DASC500\src\DASC500\../..\data/DASC501/homework5\aicraftgroup1.h5' successfully processed for loading into 'maintenance_log'.
+2025-05-11 21:53:35,802 - DASC500.classes.DatabaseManager.DatabaseManager - INFO - DatabaseManager:611 - Unified load: 'C:\Users\amber\Documents\Mitchell\school\2025\DASC500\DASC500\src\DASC500\../..\data/DASC501/homework5\aicraftgroup2.pkl' (Type: PICKLE) -> Table:'maintenance_log'
+2025-05-11 21:53:35,802 - DASC500.classes.DatabaseManager.DatabaseManager - INFO - DatabaseManager:538 - Reading Pickle: 'C:\Users\amber\Documents\Mitchell\school\2025\DASC500\DASC500\src\DASC500\../..\data/DASC501/homework5\aicraftgroup2.pkl'
+2025-05-11 21:53:35,802 - DASC500.classes.DatabaseManager.DatabaseManager - INFO - DatabaseManager:544 - Read 4 rows from Pickle 'C:\Users\amber\Documents\Mitchell\school\2025\DASC500\DASC500\src\DASC500\../..\data/DASC501/homework5\aicraftgroup2.pkl'.
+2025-05-11 21:53:35,802 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:82 - Standardized DataFrame columns. New columns: ['Aircraft_ID', 'Aircraft_Type', 'Maintenance_Task', 'Date_Performed', 'Time_Performed', 'Technician_ID', 'Notes']
+2025-05-11 21:53:35,802 - DASC500.classes.DatabaseManager.DatabaseManager - INFO - DatabaseManager:399 - Preparing to load DataFrame into table 'maintenance_log'.
+2025-05-11 21:53:35,802 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:296 - Checking existence of table: maintenance_log
+2025-05-11 21:53:35,802 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:303 - Table 'maintenance_log' exists: True
+2025-05-11 21:53:35,802 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:314 - Fetching columns for table: maintenance_log...
+2025-05-11 21:53:35,802 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:296 - Checking existence of table: maintenance_log
+2025-05-11 21:53:35,802 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:303 - Table 'maintenance_log' exists: True
+2025-05-11 21:53:35,802 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:328 - Columns for 'maintenance_log': [('Aircraft_ID', 'INTEGER'), ('Aircraft_Type', 'TEXT'), ('Maintenance_Task', 'TEXT'), ('Date_Performed', 'TEXT'), ('Time_Performed', 'TEXT'), ('Technician_ID', 'INTEGER'), ('Notes', 'TEXT')]
+2025-05-11 21:53:35,802 - DASC500.classes.DatabaseManager.DatabaseManager - INFO - DatabaseManager:492 - Executing bulk insert (INSERT OR IGNORE) with 4 rows into 'maintenance_log'...
+2025-05-11 21:53:35,802 - DASC500.classes.DatabaseManager.DatabaseManager - INFO - DatabaseManager:494 - Bulk insert for 'maintenance_log' prepared (pending commit/rollback by context manager).
+2025-05-11 21:53:35,802 - DASC500.classes.DatabaseManager.DatabaseManager - INFO - DatabaseManager:675 - DataFrame from 'C:\Users\amber\Documents\Mitchell\school\2025\DASC500\DASC500\src\DASC500\../..\data/DASC501/homework5\aicraftgroup2.pkl' successfully processed for loading into 'maintenance_log'.
+2025-05-11 21:53:35,802 - DASC500.classes.DatabaseManager.DatabaseManager - INFO - DatabaseManager:611 - Unified load: 'C:\Users\amber\Documents\Mitchell\school\2025\DASC500\DASC500\src\DASC500\../..\data/DASC501/homework5\aicraftgroup3.xml' (Type: XML) -> Table:'maintenance_log'
+2025-05-11 21:53:35,802 - DASC500.classes.DatabaseManager.DatabaseManager - INFO - DatabaseManager:556 - Reading XML: 'C:\Users\amber\Documents\Mitchell\school\2025\DASC500\DASC500\src\DASC500\../..\data/DASC501/homework5\aicraftgroup3.xml' with options {}
+2025-05-11 21:53:35,802 - DASC500.classes.DatabaseManager.DatabaseManager - WARNING - DatabaseManager:558 - Pandas 'read_xml' often benefits from an 'xpath' argument, especially for complex XML. Consider providing it in 'load_options': {'xml_read_options': {'xpath': './/your_row_element'}}
+2025-05-11 21:53:35,828 - DASC500.classes.DatabaseManager.DatabaseManager - INFO - DatabaseManager:562 - Read 5 rows from XML 'C:\Users\amber\Documents\Mitchell\school\2025\DASC500\DASC500\src\DASC500\../..\data/DASC501/homework5\aicraftgroup3.xml'.
+2025-05-11 21:53:35,828 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:82 - Standardized DataFrame columns. New columns: ['index', 'Aircraft_ID', 'Aircraft_Type', 'Maintenance_Task', 'Date_Performed', 'Time_Performed', 'Technician_ID', 'Notes']
+2025-05-11 21:53:35,828 - DASC500.classes.DatabaseManager.DatabaseManager - INFO - DatabaseManager:399 - Preparing to load DataFrame into table 'maintenance_log'.
+2025-05-11 21:53:35,841 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:296 - Checking existence of table: maintenance_log
+2025-05-11 21:53:35,841 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:303 - Table 'maintenance_log' exists: True
+2025-05-11 21:53:35,841 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:314 - Fetching columns for table: maintenance_log...
+2025-05-11 21:53:35,841 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:296 - Checking existence of table: maintenance_log
+2025-05-11 21:53:35,841 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:303 - Table 'maintenance_log' exists: True
+2025-05-11 21:53:35,841 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:328 - Columns for 'maintenance_log': [('Aircraft_ID', 'INTEGER'), ('Aircraft_Type', 'TEXT'), ('Maintenance_Task', 'TEXT'), ('Date_Performed', 'TEXT'), ('Time_Performed', 'TEXT'), ('Technician_ID', 'INTEGER'), ('Notes', 'TEXT')]
+2025-05-11 21:53:35,841 - DASC500.classes.DatabaseManager.DatabaseManager - WARNING - DatabaseManager:469 - Ignoring DataFrame columns not in existing table 'maintenance_log': ['index']
+2025-05-11 21:53:35,842 - DASC500.classes.DatabaseManager.DatabaseManager - INFO - DatabaseManager:492 - Executing bulk insert (INSERT OR IGNORE) with 5 rows into 'maintenance_log'...
+2025-05-11 21:53:35,842 - DASC500.classes.DatabaseManager.DatabaseManager - INFO - DatabaseManager:494 - Bulk insert for 'maintenance_log' prepared (pending commit/rollback by context manager).
+2025-05-11 21:53:35,842 - DASC500.classes.DatabaseManager.DatabaseManager - INFO - DatabaseManager:675 - DataFrame from 'C:\Users\amber\Documents\Mitchell\school\2025\DASC500\DASC500\src\DASC500\../..\data/DASC501/homework5\aicraftgroup3.xml' successfully processed for loading into 'maintenance_log'.
+2025-05-11 21:53:35,842 - DASC500.classes.DatabaseManager.DatabaseManager - INFO - DatabaseManager:611 - Unified load: 'C:\Users\amber\Documents\Mitchell\school\2025\DASC500\DASC500\src\DASC500\../..\data/DASC501/homework5\aircraftgroup4.json' (Type: JSON) -> Table:'maintenance_log'
+2025-05-11 21:53:35,842 - DASC500.classes.DatabaseManager.DatabaseManager - INFO - DatabaseManager:579 - Reading JSON: 'C:\Users\amber\Documents\Mitchell\school\2025\DASC500\DASC500\src\DASC500\../..\data/DASC501/homework5\aircraftgroup4.json' with options {'orient': 'records'}
+2025-05-11 21:53:35,842 - DASC500.classes.DatabaseManager.DatabaseManager - INFO - DatabaseManager:585 - Read 5 rows from JSON 'C:\Users\amber\Documents\Mitchell\school\2025\DASC500\DASC500\src\DASC500\../..\data/DASC501/homework5\aircraftgroup4.json'.
+2025-05-11 21:53:35,842 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:82 - Standardized DataFrame columns. New columns: ['Aircraft_ID', 'Aircraft_Type', 'Maintenance_Task', 'Date_Performed', 'Time_Performed', 'Technician_ID', 'Notes']
+2025-05-11 21:53:35,842 - DASC500.classes.DatabaseManager.DatabaseManager - INFO - DatabaseManager:399 - Preparing to load DataFrame into table 'maintenance_log'.
+2025-05-11 21:53:35,842 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:296 - Checking existence of table: maintenance_log
+2025-05-11 21:53:35,842 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:303 - Table 'maintenance_log' exists: True
+2025-05-11 21:53:35,842 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:314 - Fetching columns for table: maintenance_log...
+2025-05-11 21:53:35,842 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:296 - Checking existence of table: maintenance_log
+2025-05-11 21:53:35,842 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:303 - Table 'maintenance_log' exists: True
+2025-05-11 21:53:35,842 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:328 - Columns for 'maintenance_log': [('Aircraft_ID', 'INTEGER'), ('Aircraft_Type', 'TEXT'), ('Maintenance_Task', 'TEXT'), ('Date_Performed', 'TEXT'), ('Time_Performed', 'TEXT'), ('Technician_ID', 'INTEGER'), ('Notes', 'TEXT')]
+2025-05-11 21:53:35,842 - DASC500.classes.DatabaseManager.DatabaseManager - INFO - DatabaseManager:492 - Executing bulk insert (INSERT OR IGNORE) with 5 rows into 'maintenance_log'...
+2025-05-11 21:53:35,842 - DASC500.classes.DatabaseManager.DatabaseManager - INFO - DatabaseManager:494 - Bulk insert for 'maintenance_log' prepared (pending commit/rollback by context manager).
+2025-05-11 21:53:35,842 - DASC500.classes.DatabaseManager.DatabaseManager - INFO - DatabaseManager:675 - DataFrame from 'C:\Users\amber\Documents\Mitchell\school\2025\DASC500\DASC500\src\DASC500\../..\data/DASC501/homework5\aircraftgroup4.json' successfully processed for loading into 'maintenance_log'.
+2025-05-11 21:53:35,842 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:296 - Checking existence of table: maintenance_log
+2025-05-11 21:53:35,842 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:303 - Table 'maintenance_log' exists: True
+2025-05-11 21:53:35,842 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:314 - Fetching columns for table: maintenance_log...
+2025-05-11 21:53:35,842 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:296 - Checking existence of table: maintenance_log
+2025-05-11 21:53:35,842 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:303 - Table 'maintenance_log' exists: True
+2025-05-11 21:53:35,842 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:328 - Columns for 'maintenance_log': [('Aircraft_ID', 'INTEGER'), ('Aircraft_Type', 'TEXT'), ('Maintenance_Task', 'TEXT'), ('Date_Performed', 'TEXT'), ('Time_Performed', 'TEXT'), ('Technician_ID', 'INTEGER'), ('Notes', 'TEXT')]
+2025-05-11 21:53:35,842 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:165 - Executing SQL: ALTER TABLE "maintenance_log" ADD COLUMN "aircraft_image" BLOB; | Params: None
+2025-05-11 21:53:35,856 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:172 - SQL executed successfully.
+2025-05-11 21:53:35,857 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:296 - Checking existence of table: maintenance_log
+2025-05-11 21:53:35,857 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:303 - Table 'maintenance_log' exists: True
+2025-05-11 21:53:35,857 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:314 - Fetching columns for table: maintenance_log...
+2025-05-11 21:53:35,857 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:296 - Checking existence of table: maintenance_log
+2025-05-11 21:53:35,857 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:303 - Table 'maintenance_log' exists: True
+2025-05-11 21:53:35,857 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:328 - Columns for 'maintenance_log': [('Aircraft_ID', 'INTEGER'), ('Aircraft_Type', 'TEXT'), ('Maintenance_Task', 'TEXT'), ('Date_Performed', 'TEXT'), ('Time_Performed', 'TEXT'), ('Technician_ID', 'INTEGER'), ('Notes', 'TEXT'), ('aircraft_image', 'BLOB')]
+2025-05-11 21:53:35,858 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:165 - Executing SQL: 
+                            UPDATE "maintenance_log" 
+                            SET "aircraft_image" = ? 
+                            WHERE rowid =... | Params: (<memory at 0x0000021EF52CBB80>, 'F-16 Fighting Falcon')
+2025-05-11 21:53:35,859 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:172 - SQL executed successfully.
+2025-05-11 21:53:35,859 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:165 - Executing SQL: 
+                            UPDATE "maintenance_log" 
+                            SET "aircraft_image" = ? 
+                            WHERE rowid =... | Params: (<memory at 0x0000021EF52CBB80>, 'B-2 Spirit')
+2025-05-11 21:53:35,859 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:172 - SQL executed successfully.
+2025-05-11 21:53:35,859 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:296 - Checking existence of table: maintenance_log
+2025-05-11 21:53:35,859 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:303 - Table 'maintenance_log' exists: True
+2025-05-11 21:53:35,859 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:251 - Executing SELECT: SELECT * FROM "maintenance_log" LIMIT 10; | Params: None
+2025-05-11 21:53:35,859 - DASC500.classes.DatabaseManager.DatabaseManager - INFO - DatabaseManager:259 - SELECT query executed successfully. Found 10 records.
+2025-05-11 21:53:35,859 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:274 - Returning 10 results as DataFrame.
+2025-05-11 21:53:35,892 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:251 - Executing SELECT: SELECT "Aircraft_Type", LENGTH("aircraft_image") as image_size FROM "maintenance_log" WHERE "aircraft_image" IS NOT NULL; | Params: None
+2025-05-11 21:53:35,892 - DASC500.classes.DatabaseManager.DatabaseManager - INFO - DatabaseManager:259 - SELECT query executed successfully. Found 2 records.
+2025-05-11 21:53:35,892 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:274 - Returning 2 results as DataFrame.
+2025-05-11 21:53:35,892 - DASC500.classes.DatabaseManager.DatabaseManager - DEBUG - DatabaseManager:150 - Exiting context manager normally. Committing.
+2025-05-11 21:53:35,909 - DASC500.classes.DatabaseManager.DatabaseManager - INFO - DatabaseManager:118 - Committing final changes (if any) and closing connection...
+2025-05-11 21:53:35,909 - DASC500.classes.DatabaseManager.DatabaseManager - INFO - DatabaseManager:122 - Database connection to 'C:\Users\amber\Documents\Mitchell\school\2025\DASC500\DASC500\src\DASC500\../..\data/DASC501/homework5\airforce_maintenance_homework_20250511_215335.db' closed.
