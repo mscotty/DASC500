@@ -1,0 +1,107 @@
+country_of_operator_owner,size_category,Growth_1990s_to_2000s_pct,Growth_2000s_to_2010s_pct,Growth_2010s_to_2020s_pct
+Algeria,Large,0.0,0.0,-100.0
+Algeria,Small,0.0,0.0,-100.0
+Angola,Large,0.0,0.0,0.0
+Argentina,Medium,0.0,0.0,-100.0
+Argentina,Small,0.0,0.0,700.0
+Australia,Large,0.0,0.0,-100.0
+Australia,Small,0.0,0.0,-100.0
+Azerbaijan,Large,0.0,0.0,-100.0
+Bangladesh,Large,0.0,0.0,-100.0
+Brazil,Large,0.0,0.0,-100.0
+Brazil,Small,-100.0,0.0,0.0
+Canada,Large,0.0,-50.0,-100.0
+Canada,Medium,0.0,0.0,-100.0
+Canada,Small,0.0,0.0,100.0
+Chile,Small,0.0,0.0,0.0
+China,Large,0.0,375.0,-42.10526315789473
+China,Medium,0.0,0.0,-50.0
+China,Small,0.0,775.0,60.0
+China/Brazil,Medium,0.0,0.0,-100.0
+China/France,Small,0.0,0.0,-100.0
+China/Italy,Medium,0.0,0.0,-100.0
+Czech Republic,Small,0.0,0.0,0.0
+Denmark,Small,0.0,0.0,-100.0
+ESA,Large,-100.0,0.0,-100.0
+ESA,Medium,0.0,100.0,-66.66666666666666
+ESA,Small,0.0,100.0,150.0
+Ecuador,Small,0.0,0.0,-100.0
+Egypt,Large,0.0,0.0,0.0
+Estonia,Small,0.0,0.0,0.0
+Finland,Small,0.0,0.0,-100.0
+France,Large,0.0,-100.0,0.0
+France,Medium,0.0,0.0,-100.0
+France,Small,0.0,-100.0,0.0
+France/Belgium/Sweden,Medium,0.0,0.0,-100.0
+France/Israel,Small,0.0,0.0,-100.0
+France/Italy,Large,0.0,0.0,-100.0
+Germany,Large,0.0,-100.0,0.0
+Germany,Medium,0.0,-100.0,0.0
+Germany,Small,0.0,0.0,-20.0
+Greece,Large,0.0,0.0,-100.0
+India,Large,0.0,0.0,-100.0
+India,Medium,0.0,350.0,-88.88888888888889
+India,Small,0.0,0.0,-100.0
+India/France,Medium,0.0,0.0,-100.0
+Indonesia,Large,0.0,0.0,-100.0
+Indonesia,Small,0.0,-100.0,0.0
+Iran,Medium,0.0,0.0,0.0
+Iran,Small,0.0,0.0,0.0
+Israel,Large,0.0,0.0,-100.0
+Israel,Small,0.0,300.0,-75.0
+Italy,Large,0.0,-100.0,0.0
+Italy,Medium,0.0,-50.0,-100.0
+Italy,Small,0.0,0.0,-50.0
+Japan,Large,0.0,250.0,-100.0
+Japan,Medium,0.0,0.0,-66.66666666666666
+Japan,Small,0.0,0.0,166.66666666666669
+Japan/Singapore,Small,0.0,0.0,-100.0
+Jordan,Small,0.0,0.0,-100.0
+Kazakhstan,Small,0.0,0.0,-100.0
+Lithuania,Small,0.0,0.0,-100.0
+Luxembourg,Large,100.0,250.0,-100.0
+Luxembourg,Medium,0.0,0.0,0.0
+Luxembourg,Small,0.0,0.0,0.0
+Malaysia,Large,0.0,0.0,-100.0
+Mexico,Large,0.0,0.0,-100.0
+Morocco,Medium,0.0,0.0,-100.0
+Morocco/Germany,Small,0.0,-100.0,0.0
+Multinational,Large,0.0,50.0,-83.33333333333334
+Multinational,Medium,0.0,0.0,-100.0
+Netherlands,Large,0.0,-100.0,0.0
+Netherlands,Small,0.0,0.0,-100.0
+Norway,Large,0.0,-100.0,0.0
+Norway,Small,0.0,0.0,-50.0
+Pakistan,Large,0.0,0.0,-100.0
+Pakistan,Medium,0.0,0.0,-100.0
+Pakistan,Small,0.0,0.0,-100.0
+Russia,Large,0.0,900.0,-80.0
+Russia,Medium,0.0,0.0,-81.25
+Russia,Small,0.0,200.0,-50.0
+Saudi Arabia,Small,0.0,0.0,-100.0
+Slovenia,Small,0.0,0.0,0.0
+South Korea,Large,0.0,0.0,-100.0
+South Korea,Small,0.0,0.0,-100.0
+Spain,Large,0.0,0.0,-100.0
+Spain,Small,0.0,0.0,-50.0
+Sudan,Small,0.0,0.0,-100.0
+Sweden,Small,0.0,0.0,-100.0
+Switzerland,Small,0.0,0.0,0.0
+Thailand,Large,0.0,0.0,-100.0
+Thailand,Medium,0.0,-100.0,0.0
+Thailand,Small,0.0,0.0,0.0
+Turkey,Large,0.0,-100.0,0.0
+Turkey,Medium,0.0,0.0,-100.0
+USA,Large,262.5,0.0,-68.96551724137932
+USA,Medium,350.0,222.22222222222223,-86.20689655172413
+USA,Small,-83.33333333333334,7550.0,739.2156862745098
+USA/Canada,Large,-100.0,0.0,0.0
+USA/Japan,Large,0.0,-100.0,0.0
+USA/Japan/Brazil,Large,0.0,-100.0,0.0
+United Arab Emirates,Large,0.0,-100.0,0.0
+United Arab Emirates,Medium,0.0,0.0,0.0
+United Kingdom,Large,0.0,0.0,-100.0
+United Kingdom,Medium,-100.0,0.0,-100.0
+United Kingdom,Small,0.0,0.0,2740.0
+Venezuela,Medium,0.0,0.0,-100.0
+Vietnam,Small,0.0,0.0,-100.0

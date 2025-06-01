@@ -1,0 +1,107 @@
+country_of_operator_owner,size_category,1990s,2000s,2010s,2020s
+Algeria,Large,0,0,1,0
+Algeria,Small,0,0,1,0
+Angola,Large,0,0,0,1
+Argentina,Medium,0,0,1,0
+Argentina,Small,0,0,2,16
+Australia,Large,0,2,2,0
+Australia,Small,0,0,3,0
+Azerbaijan,Large,0,0,1,0
+Bangladesh,Large,0,0,1,0
+Brazil,Large,0,0,2,0
+Brazil,Small,1,0,0,1
+Canada,Large,0,2,1,0
+Canada,Medium,0,0,3,0
+Canada,Small,0,1,1,2
+Chile,Small,0,0,0,3
+China,Large,0,4,19,11
+China,Medium,0,0,18,9
+China,Small,0,4,35,56
+China/Brazil,Medium,0,0,1,0
+China/France,Small,0,0,1,0
+China/Italy,Medium,0,0,1,0
+Czech Republic,Small,0,0,1,1
+Denmark,Small,0,0,2,0
+ESA,Large,1,0,2,0
+ESA,Medium,0,3,6,2
+ESA,Small,0,1,2,5
+Ecuador,Small,0,0,1,0
+Egypt,Large,0,0,1,1
+Estonia,Small,0,0,0,1
+Finland,Small,0,0,5,0
+France,Large,0,1,0,0
+France,Medium,0,0,1,0
+France,Small,0,2,0,1
+France/Belgium/Sweden,Medium,0,0,1,0
+France/Israel,Small,0,0,1,0
+France/Italy,Large,0,0,1,0
+Germany,Large,0,1,0,0
+Germany,Medium,0,2,0,1
+Germany,Small,0,0,5,4
+Greece,Large,0,1,1,0
+India,Large,0,0,8,0
+India,Medium,0,2,9,1
+India,Small,0,0,4,0
+India/France,Medium,0,0,1,0
+Indonesia,Large,0,0,1,0
+Indonesia,Small,0,1,0,0
+Iran,Medium,0,0,0,1
+Iran,Small,0,0,0,1
+Israel,Large,0,0,1,0
+Israel,Small,0,1,4,1
+Italy,Large,0,1,0,0
+Italy,Medium,0,2,1,0
+Italy,Small,0,0,2,1
+Japan,Large,0,2,7,0
+Japan,Medium,0,0,3,1
+Japan,Small,0,0,3,8
+Japan/Singapore,Small,0,0,1,0
+Jordan,Small,0,0,1,0
+Kazakhstan,Small,0,0,2,0
+Lithuania,Small,0,0,2,0
+Luxembourg,Large,1,2,7,0
+Luxembourg,Medium,0,0,0,2
+Luxembourg,Small,0,0,0,4
+Malaysia,Large,0,0,1,0
+Mexico,Large,0,0,1,0
+Morocco,Medium,0,0,1,0
+Morocco/Germany,Small,0,1,0,0
+Multinational,Large,0,8,12,2
+Multinational,Medium,0,0,2,0
+Netherlands,Large,0,3,0,0
+Netherlands,Small,0,0,1,0
+Norway,Large,0,1,0,0
+Norway,Small,0,0,2,1
+Pakistan,Large,0,0,1,0
+Pakistan,Medium,0,0,1,0
+Pakistan,Small,0,0,1,0
+Russia,Large,0,1,10,2
+Russia,Medium,0,0,16,3
+Russia,Small,0,4,12,6
+Saudi Arabia,Small,0,0,2,0
+Slovenia,Small,0,0,0,2
+South Korea,Large,0,0,2,0
+South Korea,Small,0,0,1,0
+Spain,Large,0,3,3,0
+Spain,Small,0,0,2,1
+Sudan,Small,0,0,1,0
+Sweden,Small,0,0,1,0
+Switzerland,Small,0,0,0,1
+Thailand,Large,0,1,1,0
+Thailand,Medium,0,1,0,0
+Thailand,Small,0,0,1,1
+Turkey,Large,0,1,0,1
+Turkey,Medium,0,0,1,0
+USA,Large,8,29,29,9
+USA,Medium,2,9,29,4
+USA,Small,12,2,153,1284
+USA/Canada,Large,1,0,0,0
+USA/Japan,Large,0,1,0,0
+USA/Japan/Brazil,Large,0,1,0,0
+United Arab Emirates,Large,0,1,0,0
+United Arab Emirates,Medium,0,0,0,1
+United Kingdom,Large,0,4,4,0
+United Kingdom,Medium,1,0,12,0
+United Kingdom,Small,0,0,5,142
+Venezuela,Medium,0,0,1,0
+Vietnam,Small,0,0,1,0
