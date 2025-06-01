@@ -112,6 +112,7 @@ def part1():
 
 # ------------ PART 2 ------------
 import os
+import sys
 import sqlite3
 import pandas as pd
 import numpy as np
@@ -120,17 +121,48 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
 
-def initialize_spark():
-    """Initialize Spark session"""
+# Set environment variables before importing pyspark
+os.environ['PYSPARK_PYTHON'] = sys.executable
+os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
+os.environ['PYTHONHASHSEED'] = '0'
+
+def initialize_spark_robust():
+    """Initialize Spark session with robust Windows configuration"""
+    import os
+    import tempfile
+    
+    # Set environment variables for better Windows compatibility
+    os.environ['PYSPARK_PYTHON'] = sys.executable
+    os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
+    os.environ['PYTHONHASHSEED'] = '0'
+    
+    # Create temp directory for Spark
+    temp_dir = tempfile.mkdtemp()
+    
     spark = SparkSession.builder \
         .appName("MilitaryBasesAnalysis") \
         .config("spark.sql.adaptive.enabled", "true") \
         .config("spark.sql.adaptive.coalescePartitions.enabled", "true") \
-        .getOrCreate()
+        .config("spark.driver.host", "localhost") \
+        .config("spark.driver.bindAddress", "127.0.0.1") \
+        .config("spark.python.worker.reuse", "false") \
+        .config("spark.python.worker.timeout", "600") \
+        .config("spark.sql.execution.arrow.pyspark.enabled", "false") \
+        .config("spark.serializer", "org.apache.spark.serializer.KryoSerializer") \
+        .config("spark.local.dir", temp_dir) \
+        .config("spark.driver.maxResultSize", "1g") \
+        .config("spark.executor.heartbeatInterval", "60s") \
+        .config("spark.network.timeout", "600s") \
+        .config("spark.sql.execution.pyspark.udf.faulthandler.enabled", "true") \
+        .config("spark.python.worker.faulthandler.enabled", "true") \
+        .config("spark.driver.memory", "2g") \
+        .config("spark.executor.memory", "1g") \
+        .config("spark.sql.shuffle.partitions", "4") \
+        .master("local[1]") \
+        .getOrCreate()  # Use only 1 core to avoid worker issues
     
-    # Set log level to reduce verbose output
-    spark.sparkContext.setLogLevel("WARN")
-    script_logger.info("Spark session initialized successfully")
+    spark.sparkContext.setLogLevel("ERROR")  # Reduce logging noise
+    script_logger.info("Spark session initialized with robust Windows configuration")
     return spark
 
 def load_data_from_database():
@@ -146,6 +178,49 @@ def load_data_from_database():
         if df_pandas is None or df_pandas.empty:
             script_logger.error(f"Failed to load data from table '{TABLE_NAME}' or table is empty")
             return None
+        
+        # Clean all column names - replace spaces with underscores
+        df_pandas.columns = df_pandas.columns.str.replace(' ', '_', regex=False)
+        
+        # ADD REGION COLUMN BASED ON STATE/TERRITORY
+        def assign_region(state):
+            """Assign region based on state/territory"""
+            if pd.isna(state):
+                return "Unknown"
+            
+            state = str(state).upper().strip()
+            
+            # Define regional mappings
+            west_states = ['CA', 'OR', 'WA', 'NV', 'ID', 'UT', 'AZ', 'MT', 'WY', 'CO', 'NM', 'AK', 'HI']
+            south_states = ['TX', 'OK', 'AR', 'LA', 'MS', 'AL', 'TN', 'KY', 'WV', 'VA', 'NC', 'SC', 'GA', 'FL', 'DE', 'MD', 'DC']
+            midwest_states = ['ND', 'SD', 'NE', 'KS', 'MN', 'IA', 'MO', 'WI', 'IL', 'IN', 'MI', 'OH']
+            northeast_states = ['ME', 'NH', 'VT', 'MA', 'RI', 'CT', 'NY', 'NJ', 'PA']
+            
+            if state in west_states:
+                return "West"
+            elif state in south_states:
+                return "South" 
+            elif state in midwest_states:
+                return "Midwest"
+            elif state in northeast_states:
+                return "Northeast"
+            else:
+                return "Other"
+        
+        # Apply region mapping - check for common state column names
+        state_column = None
+        for col in df_pandas.columns:
+            if 'state' in col.lower() or 'terr' in col.lower():
+                state_column = col
+                break
+        
+        if state_column:
+            df_pandas['Region'] = df_pandas[state_column].apply(assign_region)
+            script_logger.info(f"Added Region column based on {state_column}")
+        else:
+            # If no state column found, assign a default region
+            df_pandas['Region'] = "Unknown"
+            script_logger.warning("No state column found, assigned 'Unknown' to all regions")
             
         script_logger.info(f"Successfully loaded {len(df_pandas)} rows from database")
         script_logger.info(f"Columns: {df_pandas.columns.tolist()}")
@@ -155,105 +230,74 @@ def load_data_from_database():
         script_logger.error(f"Error loading data from database: {e}")
         return None
 
-def create_sample_data():
-    """Create sample military bases data for demonstration"""
-    script_logger.info("Creating sample military bases data")
-    
-    # Sample data based on your table structure
-    sample_data = [
-        ("Base Alpha", "Army", "Active", "California", "USA", 15.5, 120.3, 2500.0, 2480.5),
-        ("Naval Station Beta", "Navy", "Active", "Florida", "USA", 22.1, 185.7, 3200.1, 3180.2),
-        ("Air Force Gamma", "Air Force", "Active", "Texas", "USA", 18.3, 145.2, 2800.5, 2775.8),
-        ("Marine Base Delta", "Marines", "Active", "North Carolina", "USA", 12.8, 98.4, 1950.2, 1925.1),
-        ("Joint Base Echo", "Joint", "Active", "Virginia", "USA", 25.6, 210.8, 4100.3, 4075.6),
-        ("Reserve Station Foxtrot", "Army", "Reserve", "Ohio", "USA", 8.2, 65.1, 1200.0, 1185.5),
-        ("Training Base Golf", "Air Force", "Training", "Nevada", "USA", 35.2, 285.6, 5500.2, 5475.8),
-        ("Depot Hotel", "Navy", "Maintenance", "Washington", "USA", 14.1, 108.7, 2100.1, 2085.3),
-        ("Forward Base India", "Army", "Active", "Alaska", "USA", 28.9, 245.3, 4750.5, 4725.2),
-        ("Air Station Juliet", "Air Force", "Active", "Hawaii", "USA", 19.7, 158.4, 3050.8, 3025.1),
-        ("Naval Yard Kilo", "Navy", "Active", "Maine", "USA", 11.5, 88.2, 1750.3, 1730.6),
-        ("Training Center Lima", "Marines", "Training", "South Carolina", "USA", 16.8, 132.5, 2650.7, 2625.4),
-        ("Joint Facility Mike", "Joint", "Active", "Colorado", "USA", 21.3, 172.9, 3350.2, 3325.8),
-        ("Reserve Base November", "Army", "Reserve", "Georgia", "USA", 9.6, 75.8, 1450.5, 1430.2),
-        ("Air Defense Oscar", "Air Force", "Active", "New Mexico", "USA", 13.2, 102.1, 2000.8, 1985.5)
-    ]
-    
-    columns = ["Site_Name", "COMPONENT", "Oper_Stat", "State_Terr", "COUNTRY", 
-               "PERIMETER", "AREA", "Shape_Leng", "Shape_Area"]
-    
-    df_pandas = pd.DataFrame(sample_data, columns=columns)
-    
-    # Add some additional columns for more interesting analysis
-    df_pandas['Base_Size_Category'] = pd.cut(df_pandas['AREA'], 
-                                           bins=[0, 100, 200, 300, float('inf')], 
-                                           labels=['Small', 'Medium', 'Large', 'Very Large'])
-    
-    df_pandas['Region'] = df_pandas['State_Terr'].map({
-        'California': 'West', 'Nevada': 'West', 'Washington': 'West', 'Alaska': 'West', 'Hawaii': 'West',
-        'Texas': 'South', 'Florida': 'South', 'North Carolina': 'South', 'Virginia': 'South', 
-        'South Carolina': 'South', 'Georgia': 'South', 'New Mexico': 'South',
-        'Ohio': 'Midwest', 'Colorado': 'West', 'Maine': 'Northeast'
-    })
-    
-    return df_pandas
-
 def task_a_spark_sql_queries(spark, df_spark):
-    """Task A: Perform Spark SQL queries"""
+    """Task A: Perform Spark SQL queries with error handling"""
     script_logger.info("=== TASK A: SPARK SQL QUERIES ===")
     
     # Register DataFrame as temporary view
     df_spark.createOrReplaceTempView("military_bases")
     script_logger.info("Registered DataFrame as temporary view 'military_bases'")
     
-    # Query 1: Grouping and aggregation - Average area by component and operational status
-    script_logger.info("\n--- Query 1: Average area by component and operational status ---")
-    query1 = """
-    SELECT 
-        COMPONENT,
-        Oper_Stat,
-        COUNT(*) as base_count,
-        ROUND(AVG(AREA), 2) as avg_area,
-        ROUND(AVG(PERIMETER), 2) as avg_perimeter,
-        ROUND(MAX(AREA), 2) as max_area,
-        ROUND(MIN(AREA), 2) as min_area
-    FROM military_bases 
-    GROUP BY COMPONENT, Oper_Stat
-    ORDER BY avg_area DESC
-    """
+    try:
+        # First, let's see what data we have
+        script_logger.info("Checking data structure...")
+        spark.sql("SELECT COUNT(*) as total_count FROM military_bases").show()
+        spark.sql("SELECT DISTINCT COMPONENT FROM military_bases LIMIT 10").show()
+        
+        # Query 1: Simplified aggregation to avoid worker crashes
+        script_logger.info("\n--- Query 1: Average area by component (simplified) ---")
+        query1 = """
+        SELECT 
+            COMPONENT,
+            COUNT(*) as base_count,
+            ROUND(AVG(CAST(AREA as DOUBLE)), 2) as avg_area,
+            ROUND(MAX(CAST(AREA as DOUBLE)), 2) as max_area,
+            ROUND(MIN(CAST(AREA as DOUBLE)), 2) as min_area
+        FROM military_bases 
+        WHERE AREA IS NOT NULL AND COMPONENT IS NOT NULL
+        GROUP BY COMPONENT
+        ORDER BY avg_area DESC
+        """
+        
+        result1 = spark.sql(query1)
+        script_logger.info("Query 1 results:")
+        result1.collect()  # Use collect() instead of show() for small results
+        result1.show(10, truncate=False)
+        
+    except Exception as e:
+        script_logger.error(f"Error in Query 1: {e}")
+        result1 = None
     
-    result1 = spark.sql(query1)
-    result1.show(truncate=False)
-    
-    # Query 2: Complex filtering with CASE WHEN and multiple conditions
-    script_logger.info("\n--- Query 2: Complex filtering with CASE WHEN ---")
-    query2 = """
-    SELECT 
-        Site_Name,
-        COMPONENT,
-        State_Terr,
-        Region,
-        AREA,
-        CASE 
-            WHEN AREA > 250 THEN 'Very Large'
-            WHEN AREA > 150 THEN 'Large'
-            WHEN AREA > 100 THEN 'Medium'
-            ELSE 'Small'
-        END as size_category,
-        CASE 
-            WHEN COMPONENT = 'Joint' THEN 'Multi-Service'
-            WHEN COMPONENT IN ('Army', 'Navy', 'Air Force', 'Marines') THEN 'Single-Service'
-            ELSE 'Other'
-        END as service_type,
-        ROUND(AREA / PERIMETER, 2) as area_to_perimeter_ratio
-    FROM military_bases 
-    WHERE AREA > 100 
-        AND Oper_Stat = 'Active'
-        AND Region IS NOT NULL
-    ORDER BY AREA DESC, COMPONENT
-    """
-    
-    result2 = spark.sql(query2)
-    result2.show(truncate=False)
+    try:
+        # Query 2: Even simpler query to avoid complexity
+        script_logger.info("\n--- Query 2: Basic filtering and case statements ---")
+        query2 = """
+        SELECT 
+            Site_Name,
+            COMPONENT,
+            CAST(AREA as DOUBLE) as area_numeric,
+            CASE 
+                WHEN CAST(AREA as DOUBLE) > 250 THEN 'Very Large'
+                WHEN CAST(AREA as DOUBLE) > 150 THEN 'Large'
+                WHEN CAST(AREA as DOUBLE) > 100 THEN 'Medium'
+                ELSE 'Small'
+            END as size_category
+        FROM military_bases 
+        WHERE AREA IS NOT NULL 
+            AND CAST(AREA as DOUBLE) > 100 
+            AND Oper_Stat = 'Active'
+        ORDER BY CAST(AREA as DOUBLE) DESC
+        LIMIT 20
+        """
+        
+        result2 = spark.sql(query2)
+        script_logger.info("Query 2 results:")
+        result2.collect()  # Collect first to ensure it works
+        result2.show(10, truncate=False)
+        
+    except Exception as e:
+        script_logger.error(f"Error in Query 2: {e}")
+        result2 = None
     
     return result1, result2
 
@@ -261,94 +305,147 @@ def task_b_dataframe_operations(spark, df_spark):
     """Task B: Use PySpark DataFrame functions"""
     script_logger.info("\n=== TASK B: PYSPARK DATAFRAME OPERATIONS ===")
     
-    # B1: Filtering and transformation on columns
-    script_logger.info("\n--- B1: Filtering and Transformation ---")
-    
-    # Filter active bases with area > 100 and add transformed columns
-    filtered_df = df_spark.filter(
-        (col("Oper_Stat") == "Active") & 
-        (col("AREA") > 100)
-    ).withColumn(
-        "area_category", 
-        when(col("AREA") > 250, "Very Large")
-        .when(col("AREA") > 150, "Large") 
-        .when(col("AREA") > 100, "Medium")
-        .otherwise("Small")
-    ).withColumn(
-        "area_efficiency",
-        round(col("AREA") / col("PERIMETER"), 3)
-    ).withColumn(
-        "is_joint_base",
-        col("COMPONENT") == "Joint"
-    ).withColumn(
-        "base_priority",
-        when(col("COMPONENT") == "Joint", 1)
-        .when(col("area_category") == "Very Large", 2)
-        .when(col("COMPONENT").isin(["Army", "Navy", "Air Force"]), 3)
-        .otherwise(4)
-    )
-    
-    script_logger.info("Filtered and transformed data:")
-    filtered_df.select("Site_Name", "COMPONENT", "AREA", "area_category", 
-                      "area_efficiency", "is_joint_base", "base_priority").show(truncate=False)
-    
-    # B2: Grouping and aggregation
-    script_logger.info("\n--- B2: Grouping and Aggregation ---")
-    
-    aggregated_df = df_spark.groupBy("COMPONENT", "Region").agg(
-        count("*").alias("base_count"),
-        round(avg("AREA"), 2).alias("avg_area"),
-        round(avg("PERIMETER"), 2).alias("avg_perimeter"),
-        max("AREA").alias("max_area"),
-        min("AREA").alias("min_area"),
-        round(stddev("AREA"), 2).alias("area_std_dev"),
-        round(sum("AREA"), 2).alias("total_area")
-    ).orderBy(desc("total_area"))
-    
-    script_logger.info("Grouped and aggregated data:")
-    aggregated_df.show(truncate=False)
-    
-    # B3: Join two datasets
-    script_logger.info("\n--- B3: Join Operations ---")
-    
-    # Create a second dataset with regional information
-    regional_data = [
-        ("West", "Pacific", 5, 850000),
-        ("South", "Atlantic/Gulf", 8, 1200000), 
-        ("Midwest", "Great Lakes", 2, 180000),
-        ("Northeast", "Atlantic", 1, 95000)
-    ]
-    
-    regional_schema = StructType([
-        StructField("Region", StringType(), True),
-        StructField("Coast_Type", StringType(), True),
-        StructField("Region_Base_Count", IntegerType(), True),
-        StructField("Region_Population", IntegerType(), True)
-    ])
-    
-    regional_df = spark.createDataFrame(regional_data, regional_schema)
-    
-    script_logger.info("Regional information dataset:")
-    regional_df.show()
-    
-    # Perform inner join
-    joined_df = df_spark.join(regional_df, "Region", "inner")
-    
-    # Add calculated columns after join
-    final_df = joined_df.withColumn(
-        "population_per_base_ratio",
-        round(col("Region_Population") / col("Region_Base_Count"), 0)
-    ).withColumn(
-        "base_density_score",  
-        round(col("AREA") / col("Region_Population") * 1000000, 4)
-    )
-    
-    script_logger.info("Joined data with calculated metrics:")
-    final_df.select("Site_Name", "COMPONENT", "Region", "Coast_Type", 
-                   "AREA", "Region_Population", "population_per_base_ratio", 
-                   "base_density_score").show(truncate=False)
-    
-    return filtered_df, aggregated_df, final_df
+    try:
+        # B1: Filtering and transformation on columns
+        script_logger.info("\n--- B1: Filtering and Transformation ---")
+        
+        # Filter active bases with area > 100 and add transformed columns
+        filtered_df = df_spark.filter(
+            (col("Oper_Stat") == "Active") & 
+            (col("AREA") > 100)
+        ).withColumn(
+            "area_category", 
+            when(col("AREA") > 250, "Very Large")
+            .when(col("AREA") > 150, "Large") 
+            .when(col("AREA") > 100, "Medium")
+            .otherwise("Small")
+        ).withColumn(
+            "area_efficiency",
+            round(col("AREA") / col("PERIMETER"), 3)
+        ).withColumn(
+            "is_joint_base",
+            col("COMPONENT") == "Joint"
+        ).withColumn(
+            "base_priority",
+            when(col("COMPONENT") == "Joint", 1)
+            .when(col("area_category") == "Very Large", 2)
+            .when(col("COMPONENT").isin(["Army", "Navy", "Air Force"]), 3)
+            .otherwise(4)
+        )
+        
+        script_logger.info("Filtered and transformed data:")
+        try:
+            filtered_df.select("Site_Name", "COMPONENT", "AREA", "area_category", 
+                              "area_efficiency", "is_joint_base", "base_priority").show(5, truncate=False)
+        except Exception as e:
+            script_logger.error(f"Error showing filtered data: {e}")
+            # Try showing just basic info
+            script_logger.info(f"Filtered dataset has {filtered_df.count()} rows")
+        
+        # B2: Grouping and aggregation with safer approach
+        script_logger.info("\n--- B2: Grouping and Aggregation ---")
+        
+        try:
+            # Check if Region column exists and has non-null values
+            region_count = df_spark.filter(col("Region").isNotNull()).count()
+            script_logger.info(f"Records with non-null Region: {region_count}")
+            
+            if region_count > 0:
+                aggregated_df = df_spark.groupBy("COMPONENT", "Region").agg(
+                    count("*").alias("base_count"),
+                    round(avg("AREA"), 2).alias("avg_area"),
+                    round(avg("PERIMETER"), 2).alias("avg_perimeter"),
+                    max("AREA").alias("max_area"),
+                    min("AREA").alias("min_area"),
+                    round(stddev("AREA"), 2).alias("area_std_dev"),
+                    round(sum("AREA"), 2).alias("total_area")
+                ).orderBy(desc("total_area"))
+            else:
+                # Fallback: Group by COMPONENT only
+                script_logger.warning("No valid Region data found, grouping by COMPONENT only")
+                aggregated_df = df_spark.groupBy("COMPONENT").agg(
+                    count("*").alias("base_count"),
+                    round(avg("AREA"), 2).alias("avg_area"),
+                    round(avg("PERIMETER"), 2).alias("avg_perimeter"),
+                    max("AREA").alias("max_area"),
+                    min("AREA").alias("min_area"),
+                    round(stddev("AREA"), 2).alias("area_std_dev"),
+                    round(sum("AREA"), 2).alias("total_area")
+                ).orderBy(desc("total_area"))
+            
+            script_logger.info("Grouped and aggregated data:")
+            # Use limit to avoid potential memory issues
+            aggregated_df.limit(10).show(truncate=False)
+            
+        except Exception as e:
+            script_logger.error(f"Error in aggregation: {e}")
+            # Create a simple fallback aggregation
+            aggregated_df = df_spark.groupBy("COMPONENT").count().orderBy(desc("count"))
+            script_logger.info("Fallback aggregation - count by component:")
+            aggregated_df.show()
+        
+        # B3: Join operations with safer approach
+        script_logger.info("\n--- B3: Join Operations ---")
+        
+        try:
+            # Create a simpler regional dataset that matches what we actually have
+            unique_regions = [row['Region'] for row in df_spark.select("Region").distinct().collect()]
+            script_logger.info(f"Unique regions in data: {unique_regions}")
+            
+            # Create regional data that matches our actual regions
+            regional_data = []
+            for region in unique_regions:
+                if region == "West":
+                    regional_data.append((region, "Pacific", 5, 850000))
+                elif region == "South":
+                    regional_data.append((region, "Atlantic/Gulf", 8, 1200000))
+                elif region == "Midwest":
+                    regional_data.append((region, "Great Lakes", 2, 180000))
+                elif region == "Northeast":
+                    regional_data.append((region, "Atlantic", 1, 95000))
+                else:
+                    regional_data.append((region, "Unknown", 1, 100000))
+            
+            regional_schema = StructType([
+                StructField("Region", StringType(), True),
+                StructField("Coast_Type", StringType(), True),
+                StructField("Region_Base_Count", IntegerType(), True),
+                StructField("Region_Population", IntegerType(), True)
+            ])
+            
+            regional_df = spark.createDataFrame(regional_data, regional_schema)
+            
+            script_logger.info("Regional information dataset:")
+            regional_df.show()
+            
+            # Perform inner join
+            joined_df = df_spark.join(regional_df, "Region", "inner")
+            
+            # Add calculated columns after join
+            final_df = joined_df.withColumn(
+                "population_per_base_ratio",
+                round(col("Region_Population") / col("Region_Base_Count"), 0)
+            ).withColumn(
+                "base_density_score",  
+                round(col("AREA") / col("Region_Population") * 1000000, 4)
+            )
+            
+            script_logger.info("Joined data with calculated metrics:")
+            final_df.select("Site_Name", "COMPONENT", "Region", "Coast_Type", 
+                           "AREA", "Region_Population", "population_per_base_ratio", 
+                           "base_density_score").limit(10).show(truncate=False)
+            
+        except Exception as e:
+            script_logger.error(f"Error in join operations: {e}")
+            # Return the original dataframe as fallback
+            final_df = df_spark
+        
+        return filtered_df, aggregated_df, final_df
+        
+    except Exception as e:
+        script_logger.error(f"Error in task_b_dataframe_operations: {e}")
+        # Return the original dataframe for all outputs as fallback
+        return df_spark, df_spark, df_spark
 
 def generate_summary_statistics(df_spark):
     """Generate comprehensive summary statistics"""
@@ -372,7 +469,7 @@ def part2():
     script_logger.info("Starting PySpark Military Bases Analysis")
     
     # Initialize Spark
-    spark = initialize_spark()
+    spark = initialize_spark_robust()
     
     try:
         # Try to load data from database first
@@ -380,8 +477,8 @@ def part2():
         
         # If database loading fails, use sample data
         if df_pandas is None:
-            script_logger.info("Using sample data for demonstration")
-            df_pandas = create_sample_data()
+            script_logger.info("Error loading data from database. Stopping execution.")
+            raise ValueError("Failed to load data from database. Stopping execution.")
         
         # Convert to Spark DataFrame
         df_spark = spark.createDataFrame(df_pandas)
