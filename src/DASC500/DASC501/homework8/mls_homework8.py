@@ -121,9 +121,19 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
 
+#sys.path.append(r'D:\Mitchell\School\2025_Winter\DASC500\github\DASC500\.venv9\Scripts')
+sys.path.append(r'C:\Program Files\Java\jdk-17\bin')
+
 # Set environment variables before importing pyspark
-os.environ['PYSPARK_PYTHON'] = sys.executable
-os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
+"""import shutil
+python_path = r'D:\Mitchell\School\2025_Winter\DASC500\github\DASC500\.venv9\Scripts\python.exe'
+#python_path = shutil.which("python")
+if python_path and os.path.exists(python_path):
+    os.environ['PYSPARK_PYTHON'] = python_path
+    os.environ['PYSPARK_DRIVER_PYTHON'] = python_path
+else:
+    raise EnvironmentError("No valid Python executable found for Spark workers.")"""
+
 os.environ['PYTHONHASHSEED'] = '0'
 
 def initialize_spark_robust():
@@ -132,8 +142,8 @@ def initialize_spark_robust():
     import tempfile
     
     # Set environment variables for better Windows compatibility
-    os.environ['PYSPARK_PYTHON'] = sys.executable
-    os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
+    """os.environ['PYSPARK_PYTHON'] = sys.executable
+    os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable"""
     os.environ['PYTHONHASHSEED'] = '0'
     
     # Create temp directory for Spark
@@ -150,14 +160,14 @@ def initialize_spark_robust():
         .config("spark.sql.execution.arrow.pyspark.enabled", "false") \
         .config("spark.serializer", "org.apache.spark.serializer.KryoSerializer") \
         .config("spark.local.dir", temp_dir) \
-        .config("spark.driver.maxResultSize", "1g") \
+        .config("spark.driver.maxResultSize", "8g") \
         .config("spark.executor.heartbeatInterval", "60s") \
         .config("spark.network.timeout", "600s") \
         .config("spark.sql.execution.pyspark.udf.faulthandler.enabled", "true") \
         .config("spark.python.worker.faulthandler.enabled", "true") \
-        .config("spark.driver.memory", "2g") \
-        .config("spark.executor.memory", "1g") \
-        .config("spark.sql.shuffle.partitions", "4") \
+        .config("spark.driver.memory", "8g") \
+        .config("spark.executor.memory", "8g") \
+        .config("spark.sql.shuffle.partitions", "8") \
         .master("local[1]") \
         .getOrCreate()  # Use only 1 core to avoid worker issues
     
@@ -165,8 +175,9 @@ def initialize_spark_robust():
     script_logger.info("Spark session initialized with robust Windows configuration")
     return spark
 
+
 def load_data_from_database():
-    """Load military bases data from SQLite database"""
+    """Load military bases data from SQLite database with comprehensive cleanup"""
     db_manager = DatabaseManager(db_path=DB_PATH)
     df_pandas = None
     
@@ -179,56 +190,282 @@ def load_data_from_database():
             script_logger.error(f"Failed to load data from table '{TABLE_NAME}' or table is empty")
             return None
         
-        # Clean all column names - replace spaces with underscores
-        df_pandas.columns = df_pandas.columns.str.replace(' ', '_', regex=False)
+        script_logger.info(f"Raw data loaded: {len(df_pandas)} rows, {len(df_pandas.columns)} columns")
         
-        # ADD REGION COLUMN BASED ON STATE/TERRITORY
+        # COMPREHENSIVE DATA CLEANUP
+        
+        # 1. Clean column names - replace spaces with underscores and normalize
+        original_columns = df_pandas.columns.tolist()
+        df_pandas.columns = df_pandas.columns.str.replace(' ', '_', regex=False)
+        df_pandas.columns = df_pandas.columns.str.replace('-', '_', regex=False)
+        df_pandas.columns = df_pandas.columns.str.strip()
+        script_logger.info(f"Cleaned column names from {original_columns} to {df_pandas.columns.tolist()}")
+        
+        # 2. Clean ALL string columns - strip whitespace and handle empty strings
+        string_columns = df_pandas.select_dtypes(include=['object']).columns
+        for col in string_columns:
+            if col in df_pandas.columns:
+                # Convert to string first, then strip whitespace
+                df_pandas[col] = df_pandas[col].astype(str).str.strip()
+                # Replace 'nan', 'None', empty strings with actual NaN
+                df_pandas[col] = df_pandas[col].replace(['nan', 'None', '', '  ', 'null', 'NULL'], np.nan)
+                # For remaining strings, limit length to prevent serialization issues
+                df_pandas[col] = df_pandas[col].apply(lambda x: x[:500] if isinstance(x, str) and len(x) > 500 else x)
+                
+        script_logger.info(f"Cleaned {len(string_columns)} string columns: {string_columns.tolist()}")
+        
+        # 3. Handle specific problematic columns (Geo columns often cause issues)
+        geo_columns = ['Geo_Point', 'Geo_Shape']
+        for col in geo_columns:
+            if col in df_pandas.columns:
+                # Convert complex geo data to simple string representation
+                df_pandas[col] = df_pandas[col].astype(str)
+                # Truncate extremely long geo strings that might cause serialization issues
+                df_pandas[col] = df_pandas[col].apply(lambda x: x[:200] + "..." if len(str(x)) > 200 else str(x))
+                script_logger.info(f"Cleaned geo column {col}")
+        
+        # 4. Clean and validate numeric columns
+        numeric_columns = ['OBJECTID_1', 'OBJECTID', 'PERIMETER', 'AREA', 'Shape_Leng', 'Shape_Area']
+        for col in numeric_columns:
+            if col in df_pandas.columns:
+                # Convert to numeric, coercing errors to NaN
+                original_dtype = df_pandas[col].dtype
+                df_pandas[col] = pd.to_numeric(df_pandas[col], errors='coerce')
+                
+                # Handle infinite values
+                df_pandas[col] = df_pandas[col].replace([np.inf, -np.inf], np.nan)
+                
+                # Cap extremely large values that might cause issues
+                if col in ['AREA', 'PERIMETER', 'Shape_Area', 'Shape_Leng']:
+                    max_reasonable = df_pandas[col].quantile(0.99) * 10  # 10x the 99th percentile
+                    df_pandas[col] = df_pandas[col].clip(upper=max_reasonable)
+                
+                script_logger.info(f"Cleaned numeric column {col}: {original_dtype} -> {df_pandas[col].dtype}")
+        
+        # 5. Handle Joint_Base column specifically
+        if "Joint_Base" in df_pandas.columns:
+            df_pandas["Joint_Base"] = df_pandas["Joint_Base"].fillna("N/A").astype(str)
+            df_pandas["Joint_Base"] = df_pandas["Joint_Base"].str.strip()
+            script_logger.info("Cleaned Joint_Base column")
+        
+        # 6. Add Region column with robust state mapping
         def assign_region(state):
-            """Assign region based on state/territory"""
-            if pd.isna(state):
+            """Assign region based on state/territory with robust handling"""
+            if pd.isna(state) or state == 'nan' or state == '':
                 return "Unknown"
             
-            state = str(state).upper().strip()
+            state = str(state).strip()
             
-            # Define regional mappings
-            west_states = ['CA', 'OR', 'WA', 'NV', 'ID', 'UT', 'AZ', 'MT', 'WY', 'CO', 'NM', 'AK', 'HI']
-            south_states = ['TX', 'OK', 'AR', 'LA', 'MS', 'AL', 'TN', 'KY', 'WV', 'VA', 'NC', 'SC', 'GA', 'FL', 'DE', 'MD', 'DC']
-            midwest_states = ['ND', 'SD', 'NE', 'KS', 'MN', 'IA', 'MO', 'WI', 'IL', 'IN', 'MI', 'OH']
-            northeast_states = ['ME', 'NH', 'VT', 'MA', 'RI', 'CT', 'NY', 'NJ', 'PA']
+            # Define regional mappings - handle both abbreviations and full names
+            west_mapping = {
+                'CA': 'West', 'California': 'West',
+                'OR': 'West', 'Oregon': 'West', 
+                'WA': 'West', 'Washington': 'West',
+                'NV': 'West', 'Nevada': 'West',
+                'ID': 'West', 'Idaho': 'West',
+                'UT': 'West', 'Utah': 'West',
+                'AZ': 'West', 'Arizona': 'West',
+                'MT': 'West', 'Montana': 'West',
+                'WY': 'West', 'Wyoming': 'West',
+                'CO': 'West', 'Colorado': 'West',
+                'NM': 'West', 'New Mexico': 'West',
+                'AK': 'West', 'Alaska': 'West',
+                'HI': 'West', 'Hawaii': 'West'
+            }
             
-            if state in west_states:
-                return "West"
-            elif state in south_states:
-                return "South" 
-            elif state in midwest_states:
-                return "Midwest"
-            elif state in northeast_states:
-                return "Northeast"
-            else:
-                return "Other"
+            south_mapping = {
+                'TX': 'South', 'Texas': 'South',
+                'OK': 'South', 'Oklahoma': 'South',
+                'AR': 'South', 'Arkansas': 'South',
+                'LA': 'South', 'Louisiana': 'South',
+                'MS': 'South', 'Mississippi': 'South',
+                'AL': 'South', 'Alabama': 'South',
+                'TN': 'South', 'Tennessee': 'South',
+                'KY': 'South', 'Kentucky': 'South',
+                'WV': 'South', 'West Virginia': 'South',
+                'VA': 'South', 'Virginia': 'South',
+                'NC': 'South', 'North Carolina': 'South',
+                'SC': 'South', 'South Carolina': 'South',
+                'GA': 'South', 'Georgia': 'South',
+                'FL': 'South', 'Florida': 'South',
+                'DE': 'South', 'Delaware': 'South',
+                'MD': 'South', 'Maryland': 'South',
+                'DC': 'South', 'District of Columbia': 'South'
+            }
+            
+            midwest_mapping = {
+                'ND': 'Midwest', 'North Dakota': 'Midwest',
+                'SD': 'Midwest', 'South Dakota': 'Midwest',
+                'NE': 'Midwest', 'Nebraska': 'Midwest',
+                'KS': 'Midwest', 'Kansas': 'Midwest',
+                'MN': 'Midwest', 'Minnesota': 'Midwest',
+                'IA': 'Midwest', 'Iowa': 'Midwest',
+                'MO': 'Midwest', 'Missouri': 'Midwest',
+                'WI': 'Midwest', 'Wisconsin': 'Midwest',
+                'IL': 'Midwest', 'Illinois': 'Midwest',
+                'IN': 'Midwest', 'Indiana': 'Midwest',
+                'MI': 'Midwest', 'Michigan': 'Midwest',
+                'OH': 'Midwest', 'Ohio': 'Midwest'
+            }
+            
+            northeast_mapping = {
+                'ME': 'Northeast', 'Maine': 'Northeast',
+                'NH': 'Northeast', 'New Hampshire': 'Northeast',
+                'VT': 'Northeast', 'Vermont': 'Northeast',
+                'MA': 'Northeast', 'Massachusetts': 'Northeast',
+                'RI': 'Northeast', 'Rhode Island': 'Northeast',
+                'CT': 'Northeast', 'Connecticut': 'Northeast',
+                'NY': 'Northeast', 'New York': 'Northeast',
+                'NJ': 'Northeast', 'New Jersey': 'Northeast',
+                'PA': 'Northeast', 'Pennsylvania': 'Northeast'
+            }
+            
+            # Combine all mappings
+            all_mappings = {**west_mapping, **south_mapping, **midwest_mapping, **northeast_mapping}
+            
+            # Try exact match first
+            if state in all_mappings:
+                return all_mappings[state]
+            
+            # Try case-insensitive match
+            for key, value in all_mappings.items():
+                if state.lower() == key.lower():
+                    return value
+            
+            # Handle territories and other cases
+            territories = ['PR', 'Puerto Rico', 'GU', 'Guam', 'VI', 'US Virgin Islands', 
+                          'AS', 'American Samoa', 'MP', 'Northern Mariana Islands']
+            if any(state.lower() == t.lower() for t in territories):
+                return "Territory"
+            
+            return "Other"
         
-        # Apply region mapping - check for common state column names
+        # Apply region mapping - check for state column
         state_column = None
-        for col in df_pandas.columns:
-            if 'state' in col.lower() or 'terr' in col.lower():
+        possible_state_columns = ['State_Terr', 'State', 'STATE', 'state', 'Territory', 'TERRITORY']
+        for col in possible_state_columns:
+            if col in df_pandas.columns:
                 state_column = col
                 break
         
         if state_column:
             df_pandas['Region'] = df_pandas[state_column].apply(assign_region)
             script_logger.info(f"Added Region column based on {state_column}")
+            region_counts = df_pandas['Region'].value_counts()
+            script_logger.info(f"Region distribution: {region_counts.to_dict()}")
         else:
-            # If no state column found, assign a default region
             df_pandas['Region'] = "Unknown"
             script_logger.warning("No state column found, assigned 'Unknown' to all regions")
-            
-        script_logger.info(f"Successfully loaded {len(df_pandas)} rows from database")
-        script_logger.info(f"Columns: {df_pandas.columns.tolist()}")
+        
+        # 7. Final data validation and cleanup
+        # Remove any rows that are completely empty
+        df_pandas = df_pandas.dropna(how='all')
+        
+        # Ensure all object columns are properly stringified and not too long
+        for col in df_pandas.select_dtypes(include=['object']).columns:
+            df_pandas[col] = df_pandas[col].astype(str)
+            df_pandas[col] = df_pandas[col].apply(lambda x: x[:300] if len(str(x)) > 300 else x)
+        
+        # Log final data statistics
+        script_logger.info(f"Final cleaned data: {len(df_pandas)} rows, {len(df_pandas.columns)} columns")
+        script_logger.info(f"Memory usage: {df_pandas.memory_usage(deep=True).sum() / 1024**2:.2f} MB")
+        script_logger.info(f"Null value counts by column:")
+        null_counts = df_pandas.isnull().sum()
+        for col, count in null_counts.items():
+            if count > 0:
+                script_logger.info(f"  {col}: {count} nulls ({count/len(df_pandas)*100:.1f}%)")
+        
         return df_pandas
         
     except Exception as e:
         script_logger.error(f"Error loading data from database: {e}")
         return None
+
+def create_spark_dataframe_robust(spark, df_pandas):
+    """Create Spark DataFrame with robust schema and additional safeguards"""
+    script_logger.info("Converting pandas DataFrame to Spark DataFrame with robust schema")
+    
+    try:
+        # Further cleanup before Spark conversion
+        script_logger.info("Performing final cleanup before Spark conversion...")
+        
+        # 1. Handle any remaining problematic values
+        df_clean = df_pandas.copy()
+        
+        # 2. Replace any remaining problematic string values
+        string_cols = df_clean.select_dtypes(include=['object']).columns
+        for col in string_cols:
+            # Replace any remaining problematic values
+            df_clean[col] = df_clean[col].replace(['inf', '-inf', 'infinity', '-infinity'], 'Unknown')
+            # Ensure no None strings
+            df_clean[col] = df_clean[col].fillna('Unknown')
+        
+        # 3. Handle numeric columns - ensure no inf values
+        numeric_cols = df_clean.select_dtypes(include=[np.number]).columns
+        for col in numeric_cols:
+            df_clean[col] = df_clean[col].replace([np.inf, -np.inf], np.nan)
+            # Fill remaining NaN with reasonable defaults
+            if col in ['AREA', 'PERIMETER', 'Shape_Area', 'Shape_Leng']:
+                df_clean[col] = df_clean[col].fillna(0.0)
+            else:
+                df_clean[col] = df_clean[col].fillna(0)
+        
+        # 4. Create explicit schema to avoid inference issues
+        from pyspark.sql.types import StructType, StructField, StringType, IntegerType, DoubleType
+        
+        schema_fields = []
+        
+        # Define schema based on actual columns present
+        for col in df_clean.columns:
+            if col in ['OBJECTID_1', 'OBJECTID']:
+                schema_fields.append(StructField(col, IntegerType(), True))
+            elif col in ['PERIMETER', 'AREA', 'Shape_Leng', 'Shape_Area']:
+                schema_fields.append(StructField(col, DoubleType(), True))
+            else:
+                schema_fields.append(StructField(col, StringType(), True))
+        
+        schema = StructType(schema_fields)
+        
+        script_logger.info(f"Created schema with {len(schema_fields)} fields")
+        
+        # 5. Convert data types to match schema
+        for field in schema.fields:
+            col_name = field.name
+            if col_name in df_clean.columns:
+                if isinstance(field.dataType, IntegerType):
+                    df_clean[col_name] = df_clean[col_name].astype('Int64')  # Nullable integer
+                elif isinstance(field.dataType, DoubleType):
+                    df_clean[col_name] = df_clean[col_name].astype('float64')
+                else:  # StringType
+                    df_clean[col_name] = df_clean[col_name].astype('str')
+        
+        # 6. Sample the data for testing if it's very large
+        if len(df_clean) > 10000:
+            script_logger.warning(f"Large dataset detected ({len(df_clean)} rows). Consider sampling for testing.")
+            # Uncomment the next line if you want to sample for testing
+            # df_clean = df_clean.sample(n=5000, random_state=42)
+        
+        # 7. Create Spark DataFrame with explicit schema
+        df_spark = spark.createDataFrame(df_clean, schema=schema)
+        
+        # 8. Immediately cache and force evaluation to catch any issues early
+        df_spark = df_spark.cache()
+        count = df_spark.count()  # Force evaluation
+        script_logger.info(f"Successfully created Spark DataFrame with {count} rows")
+        
+        # 9. Repartition for better performance (optional)
+        optimal_partitions = max(1, min(8, count // 1000))  # Roughly 1000 rows per partition, max 8 partitions
+        if optimal_partitions > 1:
+            df_spark = df_spark.repartition(optimal_partitions)
+            script_logger.info(f"Repartitioned DataFrame to {optimal_partitions} partitions")
+        
+        return df_spark
+        
+    except Exception as e:
+        script_logger.error(f"Error creating Spark DataFrame: {e}")
+        script_logger.error(f"DataFrame shape: {df_pandas.shape}")
+        script_logger.error(f"DataFrame dtypes: {df_pandas.dtypes}")
+        raise
 
 def task_a_spark_sql_queries(spark, df_spark):
     """Task A: Perform Spark SQL queries with error handling"""
@@ -253,7 +490,12 @@ def task_a_spark_sql_queries(spark, df_spark):
             ROUND(AVG(CAST(AREA as DOUBLE)), 2) as avg_area,
             ROUND(MAX(CAST(AREA as DOUBLE)), 2) as max_area,
             ROUND(MIN(CAST(AREA as DOUBLE)), 2) as min_area
-        FROM military_bases 
+        FROM (
+            SELECT * FROM military_bases 
+            WHERE AREA IS NOT NULL 
+            AND COMPONENT IS NOT NULL 
+            AND CAST(AREA AS DOUBLE) IS NOT NULL
+        )
         WHERE AREA IS NOT NULL AND COMPONENT IS NOT NULL
         GROUP BY COMPONENT
         ORDER BY avg_area DESC
@@ -261,9 +503,10 @@ def task_a_spark_sql_queries(spark, df_spark):
         
         result1 = spark.sql(query1)
         script_logger.info("Query 1 results:")
-        result1.collect()  # Use collect() instead of show() for small results
-        result1.show(10, truncate=False)
-        
+        rows = result1.collect()
+        for row in rows:
+            print(row)
+
     except Exception as e:
         script_logger.error(f"Error in Query 1: {e}")
         result1 = None
@@ -292,8 +535,9 @@ def task_a_spark_sql_queries(spark, df_spark):
         
         result2 = spark.sql(query2)
         script_logger.info("Query 2 results:")
-        result2.collect()  # Collect first to ensure it works
-        result2.show(10, truncate=False)
+        rows = result2.collect()  # Collect first to ensure it works
+        for row in rows:
+            print(row)
         
     except Exception as e:
         script_logger.error(f"Error in Query 2: {e}")
@@ -465,6 +709,74 @@ def generate_summary_statistics(df_spark):
     numerical_stats.show()
 
 def part2():
+    """Main function to execute all tasks with enhanced data cleanup"""
+    script_logger.info("Starting PySpark Military Bases Analysis with Enhanced Data Cleanup")
+    
+    # Initialize Spark with even more conservative settings
+    spark = initialize_spark_robust()
+    
+    try:
+        # Load data with comprehensive cleanup
+        df_pandas = load_data_from_database()
+        
+        if df_pandas is None:
+            script_logger.error("Failed to load data from database. Stopping execution.")
+            return
+        
+        # Convert to Spark DataFrame with robust handling
+        df_spark = create_spark_dataframe_robust(spark, df_pandas)
+        
+        # Show schema and sample data
+        script_logger.info("\n--- DataFrame Schema ---")
+        df_spark.printSchema()
+        
+        script_logger.info("\n--- Sample Data (First 3 rows) ---")
+        df_spark.show(3, truncate=True)
+        
+        # Test basic operations before proceeding
+        script_logger.info("Testing basic operations...")
+        try:
+            total_count = df_spark.count()
+            script_logger.info(f"Total records: {total_count}")
+            
+            # Test a simple aggregation
+            component_counts = df_spark.groupBy("COMPONENT").count().collect()
+            script_logger.info(f"Component distribution: {[(row['COMPONENT'], row['count']) for row in component_counts]}")
+            
+        except Exception as e:
+            script_logger.error(f"Basic operations test failed: {e}")
+            # Try with even simpler operations
+            try:
+                script_logger.info("Trying simplified operations...")
+                df_spark.select("Site_Name", "COMPONENT").limit(5).show()
+            except Exception as e2:
+                script_logger.error(f"Even simplified operations failed: {e2}")
+                return
+        
+        # If we get here, basic operations work, proceed with tasks
+        script_logger.info("Basic operations successful, proceeding with full analysis...")
+        
+        # Execute Task A: Spark SQL queries
+        result1, result2 = task_a_spark_sql_queries(spark, df_spark)
+        
+        # Execute Task B: DataFrame operations
+        filtered_df, aggregated_df, joined_df = task_b_dataframe_operations(spark, df_spark)
+        
+        # Generate summary statistics
+        generate_summary_statistics(df_spark)
+        
+        script_logger.info("\n=== ANALYSIS COMPLETE ===")
+        script_logger.info("All tasks completed successfully!")
+        
+    except Exception as e:
+        script_logger.error(f"An error occurred during analysis: {e}", exc_info=True)
+        
+    finally:
+        # Clean up Spark session  
+        spark.stop()
+        script_logger.info("Spark session stopped")
+
+def part2_old():
     """Main function to execute all tasks"""
     script_logger.info("Starting PySpark Military Bases Analysis")
     
@@ -481,7 +793,27 @@ def part2():
             raise ValueError("Failed to load data from database. Stopping execution.")
         
         # Convert to Spark DataFrame
-        df_spark = spark.createDataFrame(df_pandas)
+        from pyspark.sql.types import StringType, StructType, IntegerType, DoubleType, StructField
+
+        schema = StructType([
+            StructField("Geo_Point", StringType(), True),
+            StructField("Geo_Shape", StringType(), True),
+            StructField("OBJECTID_1", IntegerType(), True),
+            StructField("OBJECTID", IntegerType(), True),
+            StructField("COMPONENT", StringType(), True),
+            StructField("Site_Name", StringType(), True),
+            StructField("Joint_Base", StringType(), True),
+            StructField("State_Terr", StringType(), True),
+            StructField("COUNTRY", StringType(), True),
+            StructField("Oper_Stat", StringType(), True),
+            StructField("PERIMETER", DoubleType(), True),
+            StructField("AREA", DoubleType(), True),
+            StructField("Shape_Leng", DoubleType(), True),
+            StructField("Shape_Area", DoubleType(), True),
+            StructField("Region", StringType(), True),
+        ])
+
+        df_spark = spark.createDataFrame(df_pandas, schema=schema)
         script_logger.info("Converted pandas DataFrame to Spark DataFrame")
         
         # Show schema and sample data
@@ -517,5 +849,5 @@ def part2():
 
 if __name__ == "__main__":
     # Add a top-level import for sys, used in the modified outlier_detection.py
-    part1()
+    #part1()
     part2()

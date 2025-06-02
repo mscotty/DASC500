@@ -31,7 +31,9 @@ dependencies = [
     "jupyter",
     "openpyxl",
     "h5py",
-    "lxml"
+    "lxml",
+    "matplotlib_venn",
+    "pyspark"
 ]
 
 [project.optional-dependencies]
