@@ -413,7 +413,7 @@ if health_df is not None:
         plot_path_1 = os.path.join(output_dir, "life_expectancy_trends_by_region.png")
         plt.savefig(plot_path_1, dpi=300, bbox_inches='tight')
         print(f"Enhanced Visualization 1 saved to {plot_path_1}")
-        plt.show()
+        plt.close()
     else:
         print("No data available for life expectancy trends visualization.")
     
@@ -573,7 +573,7 @@ if health_df is not None:
             plot_path_2 = os.path.join(output_dir, "gdp_vs_life_expectancy_advanced.png")
             plt.savefig(plot_path_2, dpi=300, bbox_inches='tight')
             print(f"Enhanced Visualization 2 saved to {plot_path_2}")
-            plt.show()
+            plt.()
         else:
             print("No data available for GDP vs Life Expectancy plot after cleaning.")
     else:
@@ -695,7 +695,7 @@ if health_df is not None:
             plot_path_3 = os.path.join(output_dir, "health_indicators_by_region.png")
             plt.savefig(plot_path_3, dpi=300, bbox_inches='tight')
             print(f"Enhanced Visualization 3 saved to {plot_path_3}")
-            plt.show()
+            plt.()
         else:
             print("No data available for health indicators by region after cleaning.")
     else:
@@ -787,7 +787,7 @@ if health_df is not None:
             plot_path_4 = os.path.join(output_dir, "enhanced_correlation_heatmap.png")
             plt.savefig(plot_path_4, dpi=300, bbox_inches='tight')
             print(f"Enhanced Visualization 4 saved to {plot_path_4}")
-            plt.show()
+            plt.()
             
             # Create a second figure with hierarchical clustering of correlations
             plt.figure(figsize=(14, 12))
@@ -813,7 +813,7 @@ if health_df is not None:
             plot_path_4b = os.path.join(output_dir, "clustered_correlation_heatmap.png")
             clustered_corr.savefig(plot_path_4b, dpi=300, bbox_inches='tight')
             print(f"Clustered Correlation Heatmap saved to {plot_path_4b}")
-            plt.show()
+            plt.()
         else:
             print("No data available for correlation analysis after cleaning.")
     else:
@@ -996,7 +996,7 @@ if health_df is not None:
                 plot_path_5 = os.path.join(output_dir, "gender_gap_life_expectancy.png")
                 plt.savefig(plot_path_5, dpi=300, bbox_inches='tight')
                 print(f"Enhanced Visualization 5 saved to {plot_path_5}")
-                plt.show()
+                plt.()
             else:
                 print("No data available for gender gap analysis after cleaning.")
         else:
@@ -1269,7 +1269,7 @@ if health_df is not None:
             plot_path_6 = os.path.join(output_dir, "health_resource_allocation.png")
             plt.savefig(plot_path_6, dpi=300, bbox_inches='tight')
             print(f"Enhanced Visualization 6 saved to {plot_path_6}")
-            plt.show()
+            plt.()
         else:
             print("No data available for health resource allocation analysis after cleaning.")
     else:
@@ -1466,7 +1466,7 @@ try:
         model_path = os.path.join(output_dir, "life_expectancy_model_features.png")
         plt.savefig(model_path, dpi=300, bbox_inches='tight')
         print(f"\nFeature importance plot saved to {model_path}")
-        plt.show()
+        plt.()
         
         # Create a scatter plot of predicted vs actual values
         plt.figure(figsize=(10, 8))
@@ -1497,7 +1497,7 @@ try:
         prediction_path = os.path.join(output_dir, "life_expectancy_predictions.png")
         plt.savefig(prediction_path, dpi=300, bbox_inches='tight')
         print(f"Prediction plot saved to {prediction_path}")
-        plt.show()
+        plt.()
     else:
         print("Insufficient data for modeling after cleaning.")
 except Exception as e:
@@ -1704,12 +1704,13 @@ try:
         )
         
         plt.tight_layout()
+        plt.set_cmap('gist_ncar')
         
         # Save the plot
         ts_path = os.path.join(output_dir, "life_expectancy_projections.png")
         plt.savefig(ts_path, dpi=300, bbox_inches='tight')
         print(f"Time series projection plot saved to {ts_path}")
-        plt.show()
+        plt.()
         
         # Create a more advanced visualization with confidence intervals
         plt.figure(figsize=(16, 12))
@@ -1846,7 +1847,7 @@ try:
         ts_advanced_path = os.path.join(output_dir, "life_expectancy_advanced_projections.png")
         plt.savefig(ts_advanced_path, dpi=300, bbox_inches='tight')
         print(f"Advanced time series projection plot saved to {ts_advanced_path}")
-        plt.show()
+        plt.()
     else:
         print("No data available for time series analysis after cleaning.")
 except Exception as e:
@@ -1912,7 +1913,7 @@ try:
             elbow_path = os.path.join(output_dir, "cluster_elbow_curve.png")
             plt.savefig(elbow_path, dpi=300, bbox_inches='tight')
             print(f"Elbow curve plot saved to {elbow_path}")
-            plt.show()
+            plt.()
             
             # Choose optimal number of clusters (simple approach: look for elbow)
             # For demonstration, we'll use k=4
@@ -2045,7 +2046,7 @@ try:
             cluster_path = os.path.join(output_dir, "country_clusters_pca.png")
             plt.savefig(cluster_path, dpi=300, bbox_inches='tight')
             print(f"Cluster visualization saved to {cluster_path}")
-            plt.show()
+            plt.()
             
             # Create radar charts to visualize cluster profiles
             from matplotlib.path import Path
@@ -2184,7 +2185,7 @@ try:
             radar_path = os.path.join(output_dir, "cluster_profiles_radar.png")
             plt.savefig(radar_path, dpi=300, bbox_inches='tight')
             print(f"Cluster profiles radar chart saved to {radar_path}")
-            plt.show()
+            plt.()
             
             # Create a comprehensive cluster summary table
             cluster_summary = pd.DataFrame(index=range(k_optimal))
