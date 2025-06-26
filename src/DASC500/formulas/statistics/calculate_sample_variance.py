@@ -1,15 +1,20 @@
 import numpy as np
 import pandas as pd
 
+
 def calculate_sample_variance(data):
     """
-    Manually calculates the mean and sample variance of a NumPy array or Pandas Series.
+    Calculate the sample variance of a NumPy array or Pandas Series.
 
-    Parameters:
+    Args:
         data (np.ndarray or pd.Series): Input data.
 
     Returns:
-        tuple: sample_variance 
+        float: The sample variance of the data.
+
+    Raises:
+        TypeError: If the input is not a NumPy array or Pandas Series.
+        ValueError: If the input contains fewer than two data points.
     """
     if not isinstance(data, (np.ndarray, pd.Series)):
         raise TypeError("Input must be a NumPy array or Pandas Series")
@@ -18,5 +23,5 @@ def calculate_sample_variance(data):
     if n < 2:
         raise ValueError("Sample variance requires at least two data points")
 
-    mean = sum(data) / n
-    return sum((x - mean) ** 2 for x in data) / (n - 1)  # Sample variance formula
+    mean = float(np.sum(data)) / n  # Explicitly use NumPy's sum and force float division
+    return float(np.sum((x - mean) ** 2 for x in data)) / (n - 1)  # Sample variance formula

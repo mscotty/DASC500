@@ -1,8 +1,8 @@
 import numpy as np
 
-def freedman_diaconis_rule(data):
+def rice_rule(data):
     """
-    Calculate bin width and bin count using the Freedman-Diaconis Rule.
+    Compute bin width and bin count using Rice Rule.
 
     Args:
         data (np.ndarray): Numeric data for histogram binning.
@@ -19,8 +19,6 @@ def freedman_diaconis_rule(data):
     if data.size == 0:
         raise ValueError("Input data must not be empty.")
 
-    q25, q75 = np.percentile(data, [25, 75])  # Interquartile range (IQR)
-    iqr = q75 - q25
-    bin_width = 2 * iqr / (len(data) ** (1/3))  # Freedman-Diaconis formula
-    bin_count = max(1, int((data.max() - data.min()) / bin_width))  # Avoid 0 bins
+    bin_count = int(2 * (len(data) ** (1/3)))
+    bin_width = (data.max() - data.min()) / bin_count
     return bin_width, bin_count

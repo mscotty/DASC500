@@ -1,17 +1,25 @@
 import numpy as np
 import scipy.stats as stats
+import pandas as pd # Import pandas
 
 def hypothesis_test(sample, mu_0=30.55, alpha=0.05):
     """
-    Conducts a two-tailed t-test for the sample mean.
+    Conduct a two-tailed t-test for the sample mean.
 
-    Parameters:
-        sample (np.ndarray or pd.Series): Sample data
-        mu_0 (float): Hypothesized population mean
-        alpha (float): Significance level (default 5%)
+    Args:
+        sample (np.ndarray or pd.Series): Sample data.
+        mu_0 (float, optional): Hypothesized population mean (default: 30.55).
+        alpha (float, optional): Significance level (default: 0.05).
 
     Returns:
-        dict: Test statistic (W), critical value, p-value, and conclusion
+        dict: A dictionary containing the test results.
+              Returns a string message if there is insufficient data.
+
+        The dictionary includes the following keys:
+            "Test Statistic (W)": Test statistic.
+            "Critical Value": Critical value for the t-distribution.
+            "p-value": p-value of the test.
+            "Conclusion": Conclusion of the hypothesis test.
     """
     n = len(sample)
     if n < 2:

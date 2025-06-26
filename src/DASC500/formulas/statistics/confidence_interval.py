@@ -1,25 +1,40 @@
 import numpy as np
 import scipy.stats as stats
+import pandas as pd
 
 
 def calculate_confidence_interval(data, confidence=0.95):
     """
-    Compute confidence intervals for the mean and variance of each numerical column in a Pandas DataFrame.
+    Compute confidence intervals for the mean and variance.
 
-    Parameters:
-        df (pd.DataFrame): Input DataFrame with numerical columns.
-        confidence (float): Confidence level (default 0.95 for 95%).
+    Args:
+        data (pd.Series or np.ndarray): Input data.
+        confidence (float, optional): Confidence level (default: 0.95).
 
     Returns:
-        dict: Confidence intervals for mean and variance of each column.
+        dict: A dictionary containing the calculated statistics and confidence intervals.
+              Returns None if the input data has fewer than 2 data points.
+
+        The dictionary includes the following keys:
+            "mean": Sample mean.
+            "mean_CI": Confidence interval for the mean (tuple).
+            "variance": Sample variance.
+            "variance_CI": Confidence interval for the variance (tuple).
+
+    Raises:
+        TypeError: If the input data is not a Pandas Series or NumPy array.
     """
+
+    if not isinstance(data, (pd.Series, np.ndarray)):
+        raise TypeError("Input data must be a Pandas Series or NumPy array.")
+
     results = {}
     alpha = 1 - confidence
-    data = data.dropna().values  # Remove NaN values
+    data = data.dropna().values if isinstance(data, pd.Series) else data  # Remove NaN values if Series
     n = len(data)
 
     if n < 2:
-        return
+        return None # Return None if not enough data
 
     # Sample mean and sample variance
     mean = np.mean(data)
