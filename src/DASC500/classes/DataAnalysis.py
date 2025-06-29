@@ -14,10 +14,10 @@ from DASC500.formulas.statistics.confidence_interval import (
 )
 from DASC500.formulas.statistics.hypothesis_test import hypothesis_test
 
-from DASC500.models.build_linear_regression_model import linear_regression_model
-from DASC500.models.build_mult_linear_regression_model import multiple_linear_regression
+from DASC500.models.build_linear_regression_model import build_linear_regression_model
+from DASC500.models.build_mult_linear_regression_model import build_multiple_linear_regression_model
 from DASC500.models.build_parsimonious_regression_model import (
-    stepwise_parsimonious_regression,
+    build_stepwise_parsimonious_regression_model,
 )
 
 from DASC500.plotting.plot_histogram import plot_histogram
@@ -34,6 +34,9 @@ from DASC500.plotting.plot_line_chart import plot_line_chart
 from DASC500.plotting.plot_heatmap import plot_heatmap
 from DASC500.plotting.plot_radar_chart import plot_radar_chart
 from DASC500.plotting.visualize_regression_models import visualize_regression_models
+from DASC500.plotting.bar_graph import plot_bar_chart
+from DASC500.plotting.box_plot import plot_box
+from DASC500.plotting.scatter_plot import plot_scatter
 
 
 # -------------------------------------
@@ -265,6 +268,85 @@ class DataAnalysis:
         model, vars, vif = stepwise_parsimonious_regression(self.df, *args, **kwargs)
         self.parsimonious_model = {"final_model": model, "used_vars": vars, "vif": vif}
 
+    def calculate_relative_frequency(self, category_col):
+        """
+        Calculates the relative frequency of each unique value in a column.
+
+        Args:
+            category_col (str): The name of the column with categorical data.
+
+        Returns:
+            pd.Series: A Series containing the relative frequencies, indexed by category.
+        """
+        if category_col not in self.df.columns:
+            raise ValueError(f"Column '{category_col}' not found in the DataFrame.")
+        
+        return self.df[category_col].value_counts(normalize=True)
+
+    def categorize_by_bin(self, source_col, new_col_name, bins, labels, right_inclusive=True, inplace=True):
+        """
+        Creates a new categorical column by binning a numerical column.
+
+        Args:
+            source_col (str): The name of the numerical column to bin.
+            new_col_name (str): The name for the new categorical column.
+            bins (list): A list of bin edges.
+            labels (list): A list of labels for the bins. Must be one less than the number of bin edges.
+            right_inclusive (bool, optional): Whether the bins should be right-inclusive. Defaults to True.
+            inplace (bool, optional): Whether to modify the current DataFrame or return a new one. Defaults to True.
+
+        Returns:
+            DataAnalysis or pd.DataFrame: If inplace is True, returns self with modified df; 
+                                        otherwise returns the modified DataFrame.
+        """
+        binned_data = pd.cut(
+            self.df[source_col], 
+            bins=bins, 
+            labels=labels, 
+            right=right_inclusive, 
+            include_lowest=True
+        )
+        
+        if inplace:
+            self.df[new_col_name] = binned_data
+            return self
+        else:
+            result_df = self.df.copy()
+            result_df[new_col_name] = binned_data
+            return result_df
+
+    def filter_by_threshold(self, value_col, threshold, comparison='absolute', inplace=False):
+        """
+        Filters the DataFrame based on a value in a column exceeding a threshold.
+
+        Args:
+            value_col (str): The name of the column to check.
+            threshold (int or float): The threshold value.
+            comparison (str, optional): How to compare. Options: 'absolute', 'greater', 'less'. 
+                                    Defaults to 'absolute'.
+            inplace (bool, optional): Whether to modify the current DataFrame or return a new one.
+                                    Defaults to False.
+
+        Returns:
+            DataAnalysis or pd.DataFrame: If inplace is True, returns self with modified df; 
+                                        otherwise returns the filtered DataFrame.
+        """
+        if comparison == 'absolute':
+            filtered_df = self.df[abs(self.df[value_col]) > threshold]
+        elif comparison == 'greater':
+            filtered_df = self.df[self.df[value_col] > threshold]
+        elif comparison == 'less':
+            filtered_df = self.df[self.df[value_col] < threshold]
+        else:
+            raise ValueError("Comparison must be one of 'absolute', 'greater', or 'less'.")
+        
+        if inplace:
+            self.df = filtered_df
+            return self
+        else:
+            return filtered_df
+
+
     def plot_histograms_per_col(self, key_in=None, **kwargs):
         """
         Create and save histograms for numeric columns.
@@ -353,6 +435,67 @@ class DataAnalysis:
             **kwargs: Additional arguments for the plotting function.
         """
         plot_radar_chart(self.df, **kwargs)
+    
+    def plot_bar_chart(self, **kwargs):
+        """
+        Plot a bar chart using the DataFrame.
+
+        Args:
+            **kwargs: Additional arguments for the bar chart plotting function.
+            
+        Key Arguments:
+            x_column (str): Column name for the x-axis (categories).
+            y_column (str): Column name for the y-axis (values).
+            output_dir (str, optional): Directory to save the plot as a PNG file.
+            output_name (str, optional): Custom file name for the saved plot.
+            orientation (str, optional): Bar orientation: 'v' for vertical, 'h' for horizontal.
+            color (str, optional): Color for the bars.
+            bar_width (float, optional): Width of the bars.
+            title_name (str, optional): Custom title for the chart.
+            show_values (bool, optional): Whether to display values on top of bars.
+        """
+        plot_bar_chart(self.df, **kwargs)
+
+    def plot_box(self, **kwargs):
+        """
+        Plot a box plot of the specified data, optionally grouped by a categorical variable.
+
+        Args:
+            **kwargs: Additional arguments for the box plot plotting function.
+            
+        Key Arguments:
+            value_column (str): Column name for the values to be represented in the box plot.
+            group_column (str, optional): Optional column name for grouping the data.
+            output_dir (str, optional): Directory to save the plot as a PNG file.
+            output_name (str, optional): Custom file name for the saved plot.
+            box_color (str, optional): Color for the box plot when not grouped.
+            box_colors (list, optional): List of colors for the box plots when grouped.
+            show_points (bool, optional): Whether to display individual data points.
+            notched (bool, optional): Whether to display notched box plots.
+        """
+        plot_box(self.df, **kwargs)
+
+    def plot_scatter(self, **kwargs):
+        """
+        Plot a scatter plot of the specified data columns.
+
+        Args:
+            **kwargs: Additional arguments for the scatter plot plotting function.
+            
+        Key Arguments:
+            x_column (str): Column name for the x-axis.
+            y_column (str): Column name for the y-axis.
+            color_column (str, optional): Optional column name for coloring points.
+            size_column (str, optional): Optional column name for sizing points.
+            output_dir (str, optional): Directory to save the plot as a PNG file.
+            output_name (str, optional): Custom file name for the saved plot.
+            marker_color (str, optional): Color for the markers when not using color_column.
+            marker_size (int, optional): Size of the markers when not using size_column.
+            add_trendline (bool, optional): Whether to add a linear trendline.
+            show_r2 (bool, optional): Whether to display R² value with the trendline.
+        """
+        plot_scatter(self.df, **kwargs)
+
 
     def vis_reg_models(self, *args, **kwargs):
         """

@@ -1,0 +1,35 @@
+
+==================================================
+Solving Problem 1: The Meaning of Life
+==================================================
+
+(a) Calculated Relative Frequencies:
+                 Topic  Relative Frequency
+0               Family              0.2758
+1              Friends              0.1156
+2  Material Well-being              0.1021
+3               Career              0.1009
+4           Challenges              0.1098
+5         Spirituality              0.0963
+6              Society              0.0809
+7               Health              0.0663
+8              Hobbies              0.0524
+
+(b) Generating bar graph of Relative Frequencies...
+
+(c) Checking if the top three topics account for over half of responses...
+The top three topics are: ['Family', 'Friends', 'Challenges']
+Combined frequency of top three: 1301
+Total respondents: 2596
+Proportion from top three: 0.5012
+Conclusion: The data supports the conclusion.
+
+==================================================
+Solving Problem 2: Board Game Weights
+==================================================
+Error: 'bgg2022.csv' not found at D:/bgg2022.csv. Please place it in the same directory.
+
+==================================================
+Solving Problem 3: Baseball Hall-of-Famers
+==================================================
+Error: 'hofbatting.csv' not found at D:\hofbatting.csv. Please place it in the same directory.
