@@ -133,14 +133,44 @@ class DataAnalysis:
             value["first_quartile"] = self.df[key].quantile(0.25)
             value["third_quartile"] = self.df[key].quantile(0.75)
 
-    def print_stats(self, file=None):
-        """!
-        @brief Print or save statistics of numeric columns.
+    def print_stats(self, columns=None, file=None):
+        """
+        Print or save statistics of specified numeric columns.
 
         Args:
-        - file (str): File path to save stats. If None, prints to console.
+            columns (str, list, optional): Column name(s) to print stats for. 
+                                          If None, prints all numeric columns.
+            file (str, optional): File path to save stats. If None, prints to console.
         """
-        for key, value in self.num_headers.items():
+        # Handle different input types for columns parameter
+        if columns is None:
+            # Use all numeric columns if none specified
+            columns_to_print = self.num_headers.keys()
+        elif isinstance(columns, str):
+            # Handle single column name as string
+            if columns in self.num_headers:
+                columns_to_print = [columns]
+            else:
+                print(f"Warning: Column '{columns}' is not a numeric column or doesn't exist.")
+                return
+        elif isinstance(columns, (list, tuple)):
+            # Handle list of column names
+            columns_to_print = []
+            for col in columns:
+                if col in self.num_headers:
+                    columns_to_print.append(col)
+                else:
+                    print(f"Warning: Column '{col}' is not a numeric column or doesn't exist.")
+        else:
+            raise TypeError("'columns' must be a string, list, tuple, or None")
+        
+        # Open the file once if writing to a file
+        if file is not None:
+            f = open(file, "a+")
+        
+        # Print stats for each selected column
+        for key in columns_to_print:
+            value = self.num_headers[key]
             # Build the string with all metrics
             stats_string = (
                 f"Calculated metrics for {key}\n"
@@ -159,8 +189,12 @@ class DataAnalysis:
             if file is None:
                 print(stats_string)
             else:
-                with open(file, "a+") as f:
-                    f.write(stats_string)
+                f.write(stats_string)
+        
+        # Close the file if it was opened
+        if file is not None:
+            f.close()
+
 
     def calculate_pearson_corr_coeff(self, col1_name, col2_name):
         """!

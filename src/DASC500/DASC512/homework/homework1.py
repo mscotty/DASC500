@@ -15,7 +15,6 @@ import pandas as pd
 import numpy as np
 
 from DASC500.classes.DataAnalysis import DataAnalysis
-from DASC500.plotting.scatter_plot import plot_scatter
 from DASC500.utilities.get_top_level_module import get_project_root
 from DASC500.utilities.print.redirect_print import redirect_print
 
@@ -236,7 +235,7 @@ def solve_problem_3():
         print(f"Error: 'hofbatting.csv' not found at {data_file}. Please place it in the same directory.")
         return
 
-    # Define eras based on the homework
+    # Define eras based on the data
     era_bins = [0, 1900, 1919, 1941, 1960, 1976, 1993, 2005, 2100]
     era_labels = ["19th Century", "Dead Ball", "Live Ball", "Integration", 
                   "Expansion", "Free Agency", "Steroid Era", "Post-Steroid Era"]
