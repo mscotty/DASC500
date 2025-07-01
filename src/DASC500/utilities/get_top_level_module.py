@@ -85,6 +85,28 @@ def get_project_root():
     finally:
         del frame
 
+def get_project_root_jupyter():
+    """Alternative version for Jupyter notebooks"""
+    import os
+    
+    current_path = os.getcwd()  # Start from current working directory
+    print(f"Starting from: {current_path}")
+    
+    root_indicators = ['setup.py', 'pyproject.toml', '.git', '.gitignore', 
+                      'README.md', 'requirements.txt']
+    
+    while current_path and current_path != os.path.dirname(current_path):
+        for indicator in root_indicators:
+            indicator_path = os.path.join(current_path, indicator)
+            if os.path.exists(indicator_path):
+                print(f"Found indicator: {indicator} at {current_path}")
+                return current_path
+        current_path = os.path.dirname(current_path)
+    
+    print("No project root found")
+    return None
+
+
 def get_module_path(module_name=None):
     """
     Returns the directory path of a specified module or the calling module.

@@ -71,82 +71,82 @@ def plot_box(
         return _plot_box_plotly(
             data,
             value_column,
-            group_column,
-            output_dir,
-            output_name,
-            box_color,
-            box_colors,
-            show_points,
-            point_size,
-            notched,
-            title_name,
-            title_font_size,
-            title_font_name,
-            x_axis_name,
-            x_axis_font_size,
-            x_axis_font_name,
-            y_axis_name,
-            y_axis_font_size,
-            y_axis_font_name,
-            show_mean,
-            show_outliers,
-            orientation,
+            group_column=group_column,
+            output_dir=output_dir,
+            output_name=output_name,
+            box_color=box_color,
+            box_colors=box_colors,
+            show_points=show_points,
+            point_size=point_size,
+            notched=notched,
+            title_name=title_name,
+            title_font_size=title_font_size,
+            title_font_name=title_font_name,
+            x_axis_name=x_axis_name,
+            x_axis_font_size=x_axis_font_size,
+            x_axis_font_name=x_axis_font_name,
+            y_axis_name=y_axis_name,
+            y_axis_font_size=y_axis_font_size,
+            y_axis_font_name=y_axis_font_name,
+            show_mean=show_mean,
+            show_outliers=show_outliers,
+            orientation=orientation,
         )
     elif style.lower() in ["seaborn", "sns"]:
         return _plot_box_seaborn(
             data,
             value_column,
-            group_column,
-            output_dir,
-            output_name,
-            box_color,
-            box_colors,
-            show_points,
-            notched,
-            title_name,
-            title_font_size,
-            title_font_name,
-            x_axis_name,
-            x_axis_font_size,
-            x_axis_font_name,
-            y_axis_name,
-            y_axis_font_size,
-            y_axis_font_name,
-            show_mean,
-            show_outliers,
-            box_width,
-            orientation,
-            fig_width,
-            fig_height,
-            dpi,
+            group_column=group_column,
+            output_dir=output_dir,
+            output_name=output_name,
+            box_color=box_color,
+            box_colors=box_colors,
+            show_points=show_points,
+            notched=notched,
+            title_name=title_name,
+            title_font_size=title_font_size,
+            title_font_name=title_font_name,
+            x_axis_name=x_axis_name,
+            x_axis_font_size=x_axis_font_size,
+            x_axis_font_name=x_axis_font_name,
+            y_axis_name=y_axis_name,
+            y_axis_font_size=y_axis_font_size,
+            y_axis_font_name=y_axis_font_name,
+            show_mean=show_mean,
+            show_outliers=show_outliers,
+            box_width=box_width,
+            orientation=orientation,
+            fig_width=fig_width,
+            fig_height=fig_height,
+            dpi=dpi,
         )
     elif style.lower() in ["matplotlib", "mpl"]:
         return _plot_box_matplotlib(
             data,
             value_column,
-            group_column,
-            output_dir,
-            output_name,
-            box_color,
-            box_colors,
-            show_points,
-            notched,
-            title_name,
-            title_font_size,
-            title_font_name,
-            x_axis_name,
-            x_axis_font_size,
-            x_axis_font_name,
-            y_axis_name,
-            y_axis_font_size,
-            y_axis_font_name,
-            show_mean,
-            show_outliers,
-            box_width,
-            orientation,
-            fig_width,
-            fig_height,
-            dpi,
+            group_column=group_column,
+            output_dir=output_dir,
+            output_name=output_name,
+            box_color=box_color,
+            box_colors=box_colors,
+            show_points=show_points,
+            notched=notched,
+            title_name=title_name,
+            title_font_size=title_font_size,
+            title_font_name=title_font_name,
+            x_axis_name=x_axis_name,
+            x_axis_font_size=x_axis_font_size,
+            x_axis_font_name=x_axis_font_name,
+            y_axis_name=y_axis_name,
+            y_axis_font_size=y_axis_font_size,
+            y_axis_font_name=y_axis_font_name,
+            show_mean=show_mean,
+            show_outliers=show_outliers,
+            box_width=box_width,
+            orientation=orientation,
+            fig_width=fig_width,
+            fig_height=fig_height,
+            dpi=dpi,
         )
     else:
         raise ValueError(
@@ -176,13 +176,13 @@ def _plot_box_plotly(
     y_axis_font_name="Times New Roman",
     show_mean=True,
     show_outliers=True,
-    orientation="vertical",
+    orientation="horizontal",
 ):
     """Helper function to create a Plotly box plot."""
     fig = go.Figure()
 
-    # Point display mode
-    point_mode = "all" if show_points else "outliers" if show_outliers else False
+    # Point display mode - modified to only show outliers
+    point_mode = "outliers" if show_outliers else False
 
     # Determine orientation
     is_vertical = orientation.lower() in ["vertical", "v"]
@@ -213,6 +213,7 @@ def _plot_box_plotly(
                     line=dict(color="black", width=1),
                     fillcolor=box_color,
                     boxpoints=point_mode,
+                    orientation='h',  # Explicitly set horizontal orientation
                 )
             )
     # Grouped box plot
@@ -258,6 +259,7 @@ def _plot_box_plotly(
                         line=dict(color="black", width=1),
                         fillcolor=color,
                         boxpoints=point_mode,
+                        orientation='h',  # Explicitly set horizontal orientation
                     )
                 )
 
@@ -272,6 +274,14 @@ def _plot_box_plotly(
         y_title_text = (
             x_axis_name if x_axis_name else (group_column if group_column else "")
         )
+
+    # Adjust the figure dimensions based on orientation
+    if is_vertical:
+        width = 800
+        height = 600
+    else:
+        width = 1000  # Wider for horizontal orientation
+        height = 400 if group_column is None else 100 + 80 * len(data[group_column].unique())  # Dynamic height based on groups
 
     fig.update_layout(
         title=dict(
@@ -303,8 +313,9 @@ def _plot_box_plotly(
         font=dict(family="Times New Roman", size=14),
         plot_bgcolor="white",
         paper_bgcolor="white",
-        margin=dict(l=50, r=50, t=50, b=50),
-        boxmode="group",  # Group boxes together
+        margin=dict(l=100 if group_column and not is_vertical else 50, r=50, t=80, b=50),
+        width=width,
+        height=height,
     )
 
     # Add grid lines
@@ -325,7 +336,7 @@ def _plot_box_plotly(
                 + ".png"
             ),
         )
-        fig.write_image(file_path, format="png", width=800, height=600)
+        fig.write_image(file_path, format="png", width=width, height=height)
     else:
         fig.show()
 
@@ -338,7 +349,7 @@ def _plot_box_seaborn(
     group_column=None,
     output_dir=None,
     output_name=None,
-    box_color="skyblue",
+    box_color="Paired",
     box_colors=None,
     show_points=True,
     point_size=4,
@@ -483,7 +494,7 @@ def _plot_box_matplotlib(
     group_column=None,
     output_dir=None,
     output_name=None,
-    box_color="skyblue",
+    box_color="Paired",
     box_colors=None,
     show_points=True,
     point_size=4,

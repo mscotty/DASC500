@@ -29,3 +29,46 @@ Solving Problem 2: Board Game Weights
 ==================================================
 
 (a) Generating box plot for all game review scores...
+
+(b) Analysis of Review Score Skewness:
+Based on the box plot from (a), the median is closer to the third quartile (Q3),
+and the lower whisker is longer than the upper whisker. This indicates that the
+distribution of game review scores is left-skewed (negatively skewed).
+
+(c) Generating grouped box plots for game weights...
+
+(d) Calculating percentage of Non-Family games heavier than 75% of Family games...
+The 75th percentile (Q3) weight for Family games is: 1.97
+Number of Non-Family games heavier than 1.97: 10172
+Total number of Non-Family games: 18806
+Result: Approximately 54.09% of Non-Family games are heavier than 75% of Family games.
+
+==================================================
+Solving Problem 3: Baseball Hall-of-Famers
+==================================================
+
+(a) Generating bar graph of Hall of Famers by era...
+
+(b) The era that has produced the most Hall of Famers is the 'Live Ball' era.
+
+(c) Generating histogram of Mid-Career year by decade...
+Using custom bin edges with 14 bins
+
+(d) Generating scatterplot of OBP vs. SLG...
+
+(e) Analysis of Outliers in OBP vs. SLG plot:
+Yes, there are outliers. For example, the player in the bottom-right, with a much higher OBP
+than expected for his SLG, is: Ray Schalk
+
+Detecting outliers based on OBP-SLG difference with a 95% threshold...
+
+Detecting outliers based on IQR with a 1.5 threshold...
+
+Generating scatterplot of OBP vs. SLG with outliers labeled...
+
+(f) Generating scatterplot of Standardized OPS vs. Mid-Career Year...
+
+(g) Identifying Hall of Famers with standardized OPS greater than 3...
+The following players have an absolute standardized OPS value greater than 3:
+- Babe Ruth
+- Josh Gibson

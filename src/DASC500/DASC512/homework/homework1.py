@@ -76,6 +76,7 @@ def solve_problem_1():
 
 def solve_problem_2():
     """Solves all parts of Problem 2."""
+    
     print("\n" + "="*50)
     print("Solving Problem 2: Board Game Weights")
     print("="*50)
@@ -97,6 +98,8 @@ def solve_problem_2():
         value_column='AveRating',
         title_name='Distribution of Board Game Review Scores',
         y_axis_name='Average User Rating (1-10)',
+        orientation='horizontal',
+        show_outliers=True,
         output_dir=OUTPUT_FOLDER,
         output_name='box_plot_board_game_scores.png'
     )
@@ -117,6 +120,7 @@ def solve_problem_2():
         group_column='IsFamilyGame',
         title_name='Game Weight by Family Game Classification',
         y_axis_name='Average Game Weight (1-5)',
+        style='seaborn',
         output_dir=OUTPUT_FOLDER,
         output_name='box_plot_game_weight.png'
     )
@@ -143,6 +147,80 @@ def solve_problem_2():
 
 def solve_problem_3():
     """Solves all parts of Problem 3."""
+    def detect_custom_outliers_obp_slg(data, threshold_percentile=90):
+        """
+        Custom outlier detection for OBP vs SLG analysis.
+        Identifies players with high OBP but unexpectedly low SLG.
+        
+        @param[in] data DataFrame containing OBP and SLG columns.
+        @param[in] threshold_percentile Percentile threshold for OBP-SLG difference.
+        @return Boolean mask indicating outlier rows.
+        """
+        # Calculate OBP - SLG difference
+        obp_minus_slg = data['OBP'] - data['SLG']
+        
+        # Find outliers: high OBP-SLG difference (top percentile)
+        threshold = obp_minus_slg.quantile(threshold_percentile / 100)
+        outlier_mask = obp_minus_slg >= threshold
+        
+        return outlier_mask
+    
+    def detect_outliers_iqr(data, columns, threshold=1.5):
+        """
+        Detect outliers using the Interquartile Range (IQR) method.
+        
+        @param[in] data DataFrame containing the data.
+        @param[in] columns List of column names to check for outliers.
+        @param[in] threshold Multiplier for IQR (default 1.5).
+        @return Boolean mask indicating outlier rows.
+        """
+        outlier_mask = np.zeros(len(data), dtype=bool)
+        
+        for col in columns:
+            Q1 = data[col].quantile(0.25)
+            Q3 = data[col].quantile(0.75)
+            IQR = Q3 - Q1
+            lower_bound = Q1 - threshold * IQR
+            upper_bound = Q3 + threshold * IQR
+            outlier_mask |= (data[col] < lower_bound) | (data[col] > upper_bound)
+        
+        return outlier_mask
+
+
+    def detect_outliers_zscore(data, columns, threshold=2.0):
+        """
+        Detect outliers using the Z-score method.
+        
+        @param[in] data DataFrame containing the data.
+        @param[in] columns List of column names to check for outliers.
+        @param[in] threshold Z-score threshold (default 2.0).
+        @return Boolean mask indicating outlier rows.
+        """
+        from scipy.stats import zscore
+        outlier_mask = np.zeros(len(data), dtype=bool)
+        
+        for col in columns:
+            z_scores = np.abs(zscore(data[col].dropna()))
+            # Handle case where column has NaN values
+            col_outliers = np.zeros(len(data), dtype=bool)
+            col_outliers[data[col].notna()] = z_scores > threshold
+            outlier_mask |= col_outliers
+        
+        return outlier_mask
+    
+    def combine_outliers_union(*outlier_masks):
+        """
+        Combine multiple outlier detection results using UNION (OR operation).
+        A point is considered an outlier if ANY method identifies it as an outlier.
+        
+        @param[in] *outlier_masks Variable number of boolean masks from outlier detection methods.
+        @return Combined boolean mask.
+        """
+        combined_mask = np.zeros(len(outlier_masks[0]), dtype=bool)
+        for mask in outlier_masks:
+            combined_mask |= mask
+        return combined_mask
+    
     print("\n" + "="*50)
     print("Solving Problem 3: Baseball Hall-of-Famers")
     print("="*50)
@@ -156,7 +234,7 @@ def solve_problem_3():
         print(f"Error: 'hofbatting.csv' not found at {data_file}. Please place it in the same directory.")
         return
 
-    # Define eras based on the homework
+    # Define eras based on the data
     era_bins = [0, 1900, 1919, 1941, 1960, 1976, 1993, 2005, 2100]
     era_labels = ["19th Century", "Dead Ball", "Live Ball", "Integration", 
                   "Expansion", "Free Agency", "Steroid Era", "Post-Steroid Era"]
@@ -222,6 +300,28 @@ def solve_problem_3():
     bottom_right_outlier = analysis.df.loc[analysis.df['OBP_minus_SLG'].idxmax()]
     print(f"Yes, there are outliers. For example, the player in the bottom-right, with a much higher OBP")
     print(f"than expected for his SLG, is: {bottom_right_outlier['Name']}")
+    
+    print("\nDetecting outliers based on OBP-SLG difference with a 95% threshold...")
+    custom_outliers = detect_custom_outliers_obp_slg(analysis.df, threshold_percentile=98)
+    
+    print("\nDetecting outliers based on IQR with a 1.5 threshold...")
+    iqr_outliers = detect_outliers_iqr(analysis.df, ['OBP', 'SLG'], threshold=1.5)
+    
+    # Combine using union (most outliers)
+    combined_outliers = combine_outliers_union(custom_outliers, iqr_outliers)
+    print("\nGenerating scatterplot of OBP vs. SLG with outliers labeled...")
+    analysis.plot_scatter(
+        x_column='OBP',
+        y_column='SLG',
+        label_column='Name',
+        label_points=combined_outliers,
+        labeled_points_name='Outliers',
+        title_name='OBP vs SLG Analysis',
+        x_axis_name='On-Base Percentage (OBP)',
+        y_axis_name='Slugging Percentage (SLG)',
+        output_dir=OUTPUT_FOLDER,
+        output_name='scatter_plot_obp_vs_slg_w_outliers.png'
+    )
 
     # (f) Create a scatterplot with standardized OPS on the y-axis
     print("\n(f) Generating scatterplot of Standardized OPS vs. Mid-Career Year...")
@@ -244,6 +344,18 @@ def solve_problem_3():
     print("The following players have an absolute standardized OPS value greater than 3:")
     for name in ops_outliers['Name']:
         print(f"- {name}")
+    analysis.plot_scatter(
+        x_column='midCareer',
+        y_column='OPS_zscore',
+        label_column='Name',
+        label_points=ops_outliers,
+        labeled_points_name='Outliers',
+        title_name='Standardized OPS vs. Mid-Career Year',
+        x_axis_name='Mid-Career Year',
+        y_axis_name='On-base Plus Slugging (OPS) Z-Score',
+        output_dir=OUTPUT_FOLDER,
+        output_name='scatter_plot_ops_standard_vs_mid_w_outliers.png'
+    )
 
 
 if __name__ == '__main__':
