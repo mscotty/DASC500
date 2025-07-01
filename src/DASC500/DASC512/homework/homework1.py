@@ -97,7 +97,6 @@ def solve_problem_2():
         value_column='AveRating',
         title_name='Distribution of Board Game Review Scores',
         y_axis_name='Average User Rating (1-10)',
-        style='seaborn',
         output_dir=OUTPUT_FOLDER,
         output_name='box_plot_board_game_scores.png'
     )
@@ -118,7 +117,6 @@ def solve_problem_2():
         group_column='IsFamilyGame',
         title_name='Game Weight by Family Game Classification',
         y_axis_name='Average Game Weight (1-5)',
-        style='seaborn',
         output_dir=OUTPUT_FOLDER,
         output_name='box_plot_game_weight.png'
     )

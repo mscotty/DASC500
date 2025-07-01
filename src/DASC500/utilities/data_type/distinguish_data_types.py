@@ -1,111 +1,72 @@
-import os
 import pandas as pd
-from typing import Union, Dict
+import numpy as np
+from typing import Dict, Union, List, Tuple, Optional
 
-def distinguish_data_types(input):
-    """!
-    @brief Check a pandas dataframe for the types of data it stores.
-    
-    Analyzes each column in a DataFrame to determine if it contains numeric or other data types.
-    Primarily focused on distinguishing between numeric (int/float) and non-numeric data.
-    
-    @param input: Either a pandas DataFrame or a path to a CSV file
-    @return: Dictionary mapping column names to their data types ('Numeric' or specific type)
+
+def distinguish_data_types(df: pd.DataFrame) -> Dict[str, str]:
     """
-    # Handle DataFrame input
-    if isinstance(input, pd.DataFrame):
-        df = input
-    # Handle file path input
-    elif isinstance(input, str):
-        if os.path.exists(input):
-            df = pd.read_csv(input)
-        else:
-            raise FileNotFoundError(f'The provided file {input} does not exist.')
-    else:
-        raise TypeError("Input must be a pandas DataFrame or a valid file path")
+    Analyze a DataFrame to categorize columns into specific data types.
     
-    # Initialize a dictionary to store the column types
+    This function examines each column and categorizes it as:
+    - 'Numeric': For continuous numerical data
+    - 'Categorical': For nominal categorical data with limited unique values
+    - 'Ordinal': For ordered categorical data
+    - 'DateTime': For date/time data
+    - 'Binary': For binary/boolean data (including 0/1 or True/False)
+    - 'Text': For free-form text data
+    
+    Args:
+        df: pandas DataFrame to analyze
+        
+    Returns:
+        Dict mapping column names to their identified data type
+    """
     column_types = {}
     
     for column in df.columns:
-        # First check if column is entirely empty
+        # Skip columns that are entirely empty
         if df[column].isna().all():
-            column_types[column] = 'String'
+            column_types[column] = 'Text'
             continue
-            
-        # Check if the column contains boolean values
-        if pd.api.types.is_bool_dtype(df[column]):
-            column_types[column] = 'String'  # Classify booleans as non-numeric
-            continue
-            
-        # Check if all values in the column can be numeric using pandas built-in function
+        
+        # Get non-null values for analysis
+        non_null_values = df[column].dropna()
+        
+        # Identify if the column is already numeric
         if pd.api.types.is_numeric_dtype(df[column]):
-            # Additional check to exclude boolean columns that might be stored as 0/1
-            if not all(value in [0, 1, 0.0, 1.0] for value in df[column].dropna().unique()):
-                column_types[column] = 'Numeric'
+            # Check if binary (0/1)
+            unique_values = set(non_null_values.unique())
+            if len(unique_values) <= 2 and unique_values.issubset({0, 1, 0.0, 1.0, True, False}):
+                column_types[column] = 'Binary'
+            # Check if categorical (few unique values compared to total)
+            elif len(unique_values) <= min(10, len(non_null_values) * 0.05):
+                column_types[column] = 'Categorical'
             else:
-                # If all values are 0/1, check if it might be a boolean column
-                if len(df[column].dropna().unique()) <= 2:
-                    column_types[column] = 'String'  # Treat potential boolean as non-numeric
-                else:
-                    column_types[column] = 'Numeric'
+                column_types[column] = 'Numeric'
+        
+        # Check for datetime
+        elif pd.api.types.is_datetime64_dtype(df[column]) or _is_convertible_to_datetime(non_null_values):
+            column_types[column] = 'DateTime'
+        
+        # Check for boolean or binary string values
+        elif all(isinstance(v, (bool)) or (isinstance(v, str) and v.lower() in ['true', 'false', 'yes', 'no', 't', 'f', 'y', 'n']) for v in non_null_values):
+            column_types[column] = 'Binary'
+        
+        # Check for potential categorical (few unique values)
+        elif len(non_null_values.unique()) <= min(20, len(non_null_values) * 0.1):
+            column_types[column] = 'Categorical'
+        
+        # Default to text for everything else
         else:
-            # If that built-in function fails, rely on checking each individual value
-            non_na_values = df[column].dropna()
-            
-            # Check for string representations of booleans
-            if all(isinstance(value, str) and value.lower() in ['true', 'false'] for value in non_na_values):
-                column_types[column] = 'String'
-            elif all(_is_numeric(value) and not _is_boolean(value) for value in non_na_values):
-                column_types[column] = 'Numeric'
-            else:
-                column_types[column] = 'String'
+            column_types[column] = 'Text'
     
     return column_types
 
-def _is_numeric(value):
-    """
-    Check if a value is numeric or can be converted to a numeric value.
-    Excludes boolean values.
-    
-    @param value: The value to check
-    @return: True if the value is numeric or can be converted to numeric, False otherwise
-    """
-    # Explicitly exclude boolean values
-    if isinstance(value, bool):
-        return False
-    
-    if isinstance(value, (int, float)):
-        return True
-    
-    if isinstance(value, str):
-        # Check if it's a string representation of a boolean
-        if value.lower() in ['true', 'false']:
-            return False
-            
-        # Try to convert to float
-        try:
-            float(value)
-            return True
-        except (ValueError, TypeError):
-            return False
-    
-    return False
 
-def _is_boolean(value):
-    """
-    Check if a value is a boolean or can be interpreted as a boolean.
-    
-    @param value: The value to check
-    @return: True if the value is a boolean or can be interpreted as boolean, False otherwise
-    """
-    if isinstance(value, bool):
+def _is_convertible_to_datetime(series: pd.Series) -> bool:
+    """Check if a series can be converted to datetime format"""
+    try:
+        pd.to_datetime(series, errors='raise')
         return True
-        
-    if isinstance(value, (int, float)):
-        return value in [0, 1, 0.0, 1.0]
-        
-    if isinstance(value, str):
-        return value.lower() in ['true', 'false']
-        
-    return False
+    except (ValueError, TypeError):
+        return False

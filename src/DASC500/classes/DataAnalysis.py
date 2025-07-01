@@ -1,6 +1,7 @@
 import os
 from copy import deepcopy
 import warnings
+from typing import Dict, Union, List, Tuple, Optional
 
 import pandas as pd
 import numpy as np
@@ -47,8 +48,8 @@ class DataAnalysis:
         """
         Initialize the DataAnalysis object by loading a CSV file
         or using an existing DataFrame. Calculates initial stats
-        and identifies numeric columns.
-
+        and identifies column data types.
+        
         Args:
             file (str, optional): Path to the CSV file.
             dataframe (pd.DataFrame, optional): Existing DataFrame.
@@ -60,78 +61,191 @@ class DataAnalysis:
             self.df_original = dataframe
         else:
             raise ValueError("Need a valid file or dataframe.")
+        
         self.df_test = None
-        self.df = deepcopy(self.df_original)
-        self.determine_numeric_col()
+        self.df = self.df_original.copy()
+        
+        # Analyze data types and store them
+        self.analyze_data_types()
+        
+        # Calculate statistics for numeric columns
         self.calculate_stats()
-
-    def downsample_dataframe(self, new_size=None, frac=None, random_state=None):
+    
+    def analyze_data_types(self):
         """
-        Downsample a DataFrame to a specified number of rows.
-
-        Parameters:
-            df (pd.DataFrame): The original DataFrame.
-            new_size (int): The desired number of rows in the downsampled DataFrame.
-            random_state (int, optional): Random seed for reproducibility.
-
-        Returns:
-            pd.DataFrame: The downsampled DataFrame.
+        Analyze and categorize the data types of all columns in the DataFrame.
+        This enhances the previous determine_numeric_col functionality.
         """
-        if new_size is None and frac is None:
-            raise ValueError(
-                "Must provide either a new_size or a frac to downsample data."
-            )
-        elif new_size is not None and frac is not None:
-            raise ValueError(
-                "Cannot provide both new_size and frac, only one is supported."
-            )
-        if new_size is not None and new_size > len(self.df_original):
-            warnings.warn(
-                f"{new_size} provided is outside of the data's supported range: 1-{len(self.df_original)}"
-            )
-            self.df = (
-                self.df_original.copy()
-            )  # Return original if the requested size is too large
-        elif frac is not None and frac > 1:
-            warnings.warn(
-                f"INPUT:WARNING: fraction input was greater than supported, defaulting to 1"
-            )
-            self.df = (
-                self.df_original.copy()
-            )  # Return original if the requested size is too large
-
-        if frac is None:
-            self.df = self.df_original.sample(n=new_size, random_state=random_state)
-        elif new_size is None:
-            self.df = self.df_original.sample(frac=frac, random_state=random_state)
-
-        self.df_test = self.df_original.drop(self.df.index)
-
+        # Get detailed data types
+        self.column_types = distinguish_data_types(self.df)
+        
+        # Store columns by type for easy access
+        self.numeric_columns = [col for col, type in self.column_types.items() if type == 'Numeric']
+        self.categorical_columns = [col for col, type in self.column_types.items() if type == 'Categorical']
+        self.binary_columns = [col for col, type in self.column_types.items() if type == 'Binary']
+        self.datetime_columns = [col for col, type in self.column_types.items() if type == 'DateTime']
+        self.text_columns = [col for col, type in self.column_types.items() if type == 'Text']
+        
+        # For backward compatibility with existing code
+        self.num_headers = {header: {} for header in self.numeric_columns}
+        
+        # Automatic type conversion for better analysis
+        self._convert_column_types()
+    
+    def _convert_column_types(self):
+        """
+        Convert DataFrame columns to appropriate types based on the identified data types.
+        This improves data processing and visualization capabilities.
+        """
+        # Convert numeric columns to float or int when possible
+        for col in self.numeric_columns:
+            try:
+                # Check if all values are integers
+                if all(pd.notna(val) and float(val).is_integer() for val in self.df[col].dropna()):
+                    self.df[col] = pd.to_numeric(self.df[col], errors='coerce').astype('Int64')  # Int64 handles NaN
+                else:
+                    self.df[col] = pd.to_numeric(self.df[col], errors='coerce')
+            except:
+                # If conversion fails, keep as is
+                pass
+        
+        # Convert datetime columns
+        for col in self.datetime_columns:
+            try:
+                self.df[col] = pd.to_datetime(self.df[col], errors='coerce')
+            except:
+                pass
+        
+        # Convert binary columns to boolean where appropriate
+        for col in self.binary_columns:
+            try:
+                # For text-based boolean values
+                if self.df[col].dtype == 'object':
+                    # Map common boolean representations to True/False
+                    bool_map = {'true': True, 'false': False, 'yes': True, 'no': False, 
+                                't': True, 'f': False, 'y': True, 'n': False,
+                                '1': True, '0': False, 1: True, 0: False}
+                    
+                    self.df[col] = self.df[col].apply(
+                        lambda x: bool_map.get(str(x).lower(), None) if pd.notna(x) else None
+                    )
+                # For numeric 0/1 values
+                elif pd.api.types.is_numeric_dtype(self.df[col]):
+                    self.df[col] = self.df[col].map({1: True, 0: False})
+            except:
+                pass
+    
     def determine_numeric_col(self):
         """
-        Identify numeric columns in the DataFrame and store them.
+        Legacy method for backward compatibility.
+        Now just calls analyze_data_types.
         """
-        self.col_types = distinguish_data_types(self.df)
-        col_types = np.array(list(self.col_types.values()))
-        headers = np.array(self.df.columns)
-        num_headers = headers[col_types == "Numeric"]
-        self.num_headers = {header: {} for header in num_headers}
-
+        self.analyze_data_types()
+    
     def calculate_stats(self):
         """
         Calculate and store statistics (mean, median, variance, etc.)
         for numeric columns in the DataFrame.
         """
-        for key, value in self.num_headers.items():
-            value["mean"] = self.df[key].mean()
-            value["median"] = self.df[key].median()
-            value["mode"] = self.df[key].mode(dropna=True)
-            value["pop_variance"] = self.df[key].var(ddof=0)
-            value["pop_std"] = self.df[key].std(ddof=0)
-            value["sample_variance"] = self.df[key].var()
-            value["sample_std"] = self.df[key].std()
-            value["first_quartile"] = self.df[key].quantile(0.25)
-            value["third_quartile"] = self.df[key].quantile(0.75)
+        for key in self.numeric_columns:
+            self.num_headers[key] = {
+                "mean": self.df[key].mean(),
+                "median": self.df[key].median(),
+                "mode": self.df[key].mode(dropna=True),
+                "pop_variance": self.df[key].var(ddof=0),
+                "pop_std": self.df[key].std(ddof=0),
+                "sample_variance": self.df[key].var(),
+                "sample_std": self.df[key].std(),
+                "first_quartile": self.df[key].quantile(0.25),
+                "third_quartile": self.df[key].quantile(0.75),
+                "min": self.df[key].min(),
+                "max": self.df[key].max(),
+                "skewness": self.df[key].skew(),
+                "kurtosis": self.df[key].kurt()
+            }
+    
+    def get_columns_by_type(self, data_type: str) -> List[str]:
+        """
+        Get a list of column names that match the specified data type.
+        
+        Args:
+            data_type: Type of columns to retrieve ('Numeric', 'Categorical', 
+                       'Binary', 'DateTime', 'Text', or 'All')
+                       
+        Returns:
+            List of column names matching the specified type
+        """
+        if data_type.lower() == 'all':
+            return list(self.df.columns)
+        
+        return [col for col, type in self.column_types.items() 
+                if type.lower() == data_type.lower()]
+    
+    def summarize_data(self) -> Dict[str, Dict]:
+        """
+        Generate a comprehensive summary of the DataFrame.
+        
+        Returns:
+            Dictionary with summary statistics for each column type
+        """
+        summary = {
+            'dataset_info': {
+                'rows': len(self.df),
+                'columns': len(self.df.columns),
+                'memory_usage': self.df.memory_usage(deep=True).sum() / (1024 * 1024),  # in MB
+                'missing_cells': self.df.isna().sum().sum(),
+                'missing_percentage': (self.df.isna().sum().sum() / (len(self.df) * len(self.df.columns))) * 100
+            },
+            'column_types': {
+                'numeric': len(self.numeric_columns),
+                'categorical': len(self.categorical_columns),
+                'binary': len(self.binary_columns),
+                'datetime': len(self.datetime_columns),
+                'text': len(self.text_columns)
+            },
+            'columns': {}
+        }
+        
+        # Add column-specific summaries
+        for col in self.df.columns:
+            col_type = self.column_types[col]
+            missing = self.df[col].isna().sum()
+            missing_pct = (missing / len(self.df)) * 100
+            
+            col_summary = {
+                'type': col_type,
+                'missing': missing,
+                'missing_percentage': missing_pct
+            }
+            
+            # Add type-specific statistics
+            if col_type == 'Numeric':
+                col_summary.update({
+                    'mean': self.df[col].mean(),
+                    'median': self.df[col].median(),
+                    'std': self.df[col].std(),
+                    'min': self.df[col].min(),
+                    'max': self.df[col].max(),
+                    'unique_values': len(self.df[col].unique())
+                })
+            elif col_type in ['Categorical', 'Binary']:
+                value_counts = self.df[col].value_counts().to_dict()
+                col_summary.update({
+                    'unique_values': len(value_counts),
+                    'most_common': self.df[col].value_counts().index[0] if not self.df[col].value_counts().empty else None,
+                    'distribution': value_counts
+                })
+            elif col_type == 'DateTime':
+                col_summary.update({
+                    'min_date': self.df[col].min(),
+                    'max_date': self.df[col].max(),
+                    'range_days': (self.df[col].max() - self.df[col].min()).days 
+                        if not pd.isna(self.df[col].max()) and not pd.isna(self.df[col].min()) else None
+                })
+            
+            summary['columns'][col] = col_summary
+        
+        return summary
 
     def print_stats(self, file=None):
         """!
