@@ -1,0 +1,411 @@
+﻿Player,Team,League,AtBats,Hits,BattingAvg
+Pavin Smith,Arizona Diamondbacks,NL,191,36,0.188
+José Herrera,Arizona Diamondbacks,NL,101,21,0.208
+Nick Ahmed,Arizona Diamondbacks,NL,198,42,0.212
+Evan Longoria,Arizona Diamondbacks,NL,211,47,0.223
+Alek Thomas,Arizona Diamondbacks,NL,374,86,0.23
+Jake McCarthy,Arizona Diamondbacks,NL,276,67,0.243
+Geraldo Perdomo,Arizona Diamondbacks,NL,407,100,0.246
+Emmanuel Rivera,Arizona Diamondbacks,NL,257,67,0.261
+Gabriel Moreno,Arizona Diamondbacks,NL,341,97,0.284
+Christian Walker,Arizona Diamondbacks,NL,582,150,0.258
+Lourdes Gurriel Jr.,Arizona Diamondbacks,NL,551,144,0.261
+Ketel Marte,Arizona Diamondbacks,NL,569,157,0.276
+Corbin Carroll,Arizona Diamondbacks,NL,565,161,0.285
+Travis d'Arnaud,Atlanta Braves,NL,267,60,0.225
+Kevin Pillar,Atlanta Braves,NL,197,45,0.228
+Sean Murphy,Atlanta Braves,NL,370,93,0.251
+Eddie Rosario,Atlanta Braves,NL,478,122,0.255
+Orlando Arcia,Atlanta Braves,NL,488,129,0.264
+Marcell Ozuna,Atlanta Braves,NL,530,145,0.274
+Ozzie Albies,Atlanta Braves,NL,596,167,0.28
+Austin Riley,Atlanta Braves,NL,636,179,0.281
+Matt Olson,Atlanta Braves,NL,608,172,0.283
+Michael Harris II,Atlanta Braves,NL,505,148,0.293
+Ronald Acuña Jr.,Atlanta Braves,NL,643,217,0.337
+Jorge Mateo,Baltimore Orioles,AL,318,69,0.217
+James McCann,Baltimore Orioles,AL,207,46,0.222
+Cedric Mullins,Baltimore Orioles,AL,404,94,0.233
+Adam Frazier,Baltimore Orioles,AL,412,99,0.24
+Ryan McKenna,Baltimore Orioles,AL,122,31,0.254
+Jordan Westburg,Baltimore Orioles,AL,208,54,0.26
+Ramón Urías,Baltimore Orioles,AL,360,95,0.264
+Ryan Mountcastle,Baltimore Orioles,AL,423,114,0.27
+Ryan O'Hearn,Baltimore Orioles,AL,346,100,0.289
+Gunnar Henderson,Baltimore Orioles,AL,560,143,0.255
+Anthony Santander,Baltimore Orioles,AL,591,152,0.257
+Austin Hays,Baltimore Orioles,AL,520,143,0.275
+Adley Rutschman,Baltimore Orioles,AL,588,163,0.277
+Yu Chang,Boston Red Sox,AL,105,17,0.162
+Trevor Story,Boston Red Sox,AL,158,32,0.203
+Connor Wong,Boston Red Sox,AL,371,87,0.235
+Christian Arroyo,Boston Red Sox,AL,195,47,0.241
+Adam Duvall,Boston Red Sox,AL,320,79,0.247
+Rob Refsnyder,Boston Red Sox,AL,202,50,0.248
+Enmanuel Valdéz,Boston Red Sox,AL,139,37,0.266
+Reese McGuire,Boston Red Sox,AL,187,50,0.267
+Pablo Reyes,Boston Red Sox,AL,167,48,0.287
+Jarren Duran,Boston Red Sox,AL,332,98,0.295
+Triston Casas,Boston Red Sox,AL,429,113,0.263
+Alex Verdugo,Boston Red Sox,AL,546,144,0.264
+Rafael Devers,Boston Red Sox,AL,580,157,0.271
+Justin Turner,Boston Red Sox,AL,558,154,0.276
+Masataka Yoshida,Boston Red Sox,AL,537,155,0.289
+Tucker Barnhart,Chicago Cubs,NL,109,22,0.202
+Patrick Wisdom,Chicago Cubs,NL,268,55,0.205
+Miguel Amaya,Chicago Cubs,NL,131,28,0.214
+Trey Mancini,Chicago Cubs,NL,235,55,0.234
+Miles Mastrobuoni,Chicago Cubs,NL,133,32,0.241
+Christopher Morel,Chicago Cubs,NL,388,96,0.247
+Mike Tauchman,Chicago Cubs,NL,337,85,0.252
+Nick Madrigal,Chicago Cubs,NL,270,71,0.263
+Yan Gomes,Chicago Cubs,NL,382,102,0.267
+Dansby Swanson,Chicago Cubs,NL,565,138,0.244
+Ian Happ,Chicago Cubs,NL,580,144,0.248
+Nico Hoerner,Chicago Cubs,NL,619,175,0.283
+Seiya Suzuki,Chicago Cubs,NL,515,147,0.285
+Cody Bellinger,Chicago Cubs,NL,499,153,0.307
+Lenyn Sosa,Chicago White Sox,AL,164,33,0.201
+Gavin Sheets,Chicago White Sox,AL,311,63,0.203
+Oscar Colás,Chicago White Sox,AL,245,53,0.216
+Yasmani Grandal,Chicago White Sox,AL,363,85,0.234
+Elvis Andrus,Chicago White Sox,AL,374,94,0.251
+Zach Remillard,Chicago White Sox,AL,147,37,0.252
+Yoán Moncada,Chicago White Sox,AL,334,87,0.26
+Eloy Jiménez,Chicago White Sox,AL,456,124,0.272
+Tim Anderson,Chicago White Sox,AL,493,121,0.245
+Andrew Vaughn,Chicago White Sox,AL,566,146,0.258
+Andrew Benintendi,Chicago White Sox,AL,562,147,0.262
+Luis Robert Jr.,Chicago White Sox,AL,546,144,0.264
+Wil Myers,Cincinnati Reds,NL,127,24,0.189
+Joey Votto,Cincinnati Reds,NL,208,42,0.202
+Jose Barrero,Cincinnati Reds,NL,133,29,0.218
+Stuart Fairchild,Cincinnati Reds,NL,219,50,0.228
+Elly De La Cruz,Cincinnati Reds,NL,388,91,0.235
+Luke Maile,Cincinnati Reds,NL,179,42,0.235
+Nick Senzel,Cincinnati Reds,NL,301,71,0.236
+Kevin Newman,Cincinnati Reds,NL,225,57,0.253
+Jake Fraley,Cincinnati Reds,NL,336,86,0.256
+Christian Encarnacion-Strand,Cincinnati Reds,NL,222,60,0.27
+Will Benson,Cincinnati Reds,NL,287,79,0.275
+Matt McLain,Cincinnati Reds,NL,365,106,0.29
+Noelvi Marté,Cincinnati Reds,NL,114,36,0.316
+Tyler Stephenson,Cincinnati Reds,NL,465,113,0.243
+Jonathan India,Cincinnati Reds,NL,454,111,0.244
+Spencer Steer,Cincinnati Reds,NL,582,158,0.271
+TJ Friedl,Cincinnati Reds,NL,488,136,0.279
+Cam Gallagher,Cleveland Guardians,AL,143,18,0.126
+Mike Zunino,Cleveland Guardians,AL,124,22,0.177
+Gabriel Arias,Cleveland Guardians,AL,315,66,0.21
+Oscar González,Cleveland Guardians,AL,173,37,0.214
+Kole Calhoun,Cleveland Guardians,AL,157,34,0.217
+Bo Naylor,Cleveland Guardians,AL,198,47,0.237
+David Fry,Cleveland Guardians,AL,101,24,0.238
+Tyler Freeman,Cleveland Guardians,AL,153,37,0.242
+Will Brennan,Cleveland Guardians,AL,432,115,0.266
+Josh Naylor,Cleveland Guardians,AL,452,139,0.308
+Myles Straw,Cleveland Guardians,AL,462,110,0.238
+Andrés Giménez,Cleveland Guardians,AL,557,140,0.251
+Steven Kwan,Cleveland Guardians,AL,638,171,0.268
+José Ramírez,Cleveland Guardians,AL,611,172,0.282
+Michael Toglia,Colorado Rockies,NL,141,23,0.163
+Brenton Doyle,Colorado Rockies,NL,399,81,0.203
+Alan Trejo,Colorado Rockies,NL,207,48,0.232
+Kris Bryant,Colorado Rockies,NL,300,70,0.233
+Elehuris Montero,Colorado Rockies,NL,284,69,0.243
+Harold Castro,Colorado Rockies,NL,258,65,0.252
+Brendan Rodgers,Colorado Rockies,NL,178,46,0.258
+Charlie Blackmon,Colorado Rockies,NL,359,100,0.279
+Nolan Jones,Colorado Rockies,NL,367,109,0.297
+Ryan McMahon,Colorado Rockies,NL,555,133,0.24
+Ezequiel Tovar,Colorado Rockies,NL,581,147,0.253
+Elias Díaz,Colorado Rockies,NL,486,130,0.267
+Nick Maton,Detroit Tigers,AL,249,43,0.173
+Zack Short,Detroit Tigers,AL,221,45,0.204
+Jonathan Schoop,Detroit Tigers,AL,136,29,0.213
+Akil Baddoo,Detroit Tigers,AL,312,68,0.218
+Jake Rogers,Detroit Tigers,AL,331,73,0.221
+Parker Meadows,Detroit Tigers,AL,125,29,0.232
+Miguel Cabrera,Detroit Tigers,AL,334,86,0.257
+Andy Ibáñez,Detroit Tigers,AL,356,94,0.264
+Kerry Carpenter,Detroit Tigers,AL,418,116,0.278
+Riley Greene,Detroit Tigers,AL,378,109,0.288
+Javier Báez,Detroit Tigers,AL,510,113,0.222
+Zach McKinstry,Detroit Tigers,AL,464,107,0.231
+Spencer Torkelson,Detroit Tigers,AL,606,141,0.233
+Matt Vierling,Detroit Tigers,AL,479,125,0.261
+Martín Maldonado,Houston Astros,AL,362,69,0.191
+Jake Meyers,Houston Astros,AL,309,70,0.227
+Corey Julks,Houston Astros,AL,298,73,0.245
+Chas McCormick,Houston Astros,AL,403,110,0.273
+Mauricio Dubón,Houston Astros,AL,467,130,0.278
+Yainer Diaz,Houston Astros,AL,355,100,0.282
+Yordan Alvarez,Houston Astros,AL,410,120,0.293
+Jose Altuve,Houston Astros,AL,360,112,0.311
+José Abreu,Houston Astros,AL,540,128,0.237
+Alex Bregman,Houston Astros,AL,622,163,0.262
+Jeremy Peña,Houston Astros,AL,577,152,0.263
+Kyle Tucker,Houston Astros,AL,574,163,0.284
+Jackie Bradley Jr.,Kansas City Royals,AL,105,14,0.133
+Drew Waters,Kansas City Royals,AL,302,69,0.228
+Michael Massey,Kansas City Royals,AL,428,98,0.229
+Nick Pratto,Kansas City Royals,AL,306,71,0.232
+Kyle Isbel,Kansas City Royals,AL,292,70,0.24
+Vinnie Pasquantino,Kansas City Royals,AL,231,57,0.247
+Matt Duffy,Kansas City Royals,AL,191,48,0.251
+Dairon Blanco,Kansas City Royals,AL,124,32,0.258
+Edward Olivares,Kansas City Royals,AL,354,93,0.263
+Freddy Fermin,Kansas City Royals,AL,217,61,0.281
+MJ Melendez,Kansas City Royals,AL,533,125,0.235
+Salvador Perez,Kansas City Royals,AL,538,137,0.255
+Maikel Garcia,Kansas City Royals,AL,464,126,0.272
+Bobby Witt Jr.,Kansas City Royals,AL,641,177,0.276
+Jared Walsh,Los Angeles Angels,AL,104,13,0.125
+Chad Wallach,Los Angeles Angels,AL,157,31,0.197
+Matt Thaiss,Los Angeles Angels,AL,262,56,0.214
+Zach Neto,Los Angeles Angels,AL,289,65,0.225
+Logan O'Hoppe,Los Angeles Angels,AL,182,43,0.236
+Anthony Rendon,Los Angeles Angels,AL,148,35,0.236
+Taylor Ward,Los Angeles Angels,AL,356,90,0.253
+Mike Trout,Los Angeles Angels,AL,308,81,0.263
+Luis Rengifo,Los Angeles Angels,AL,394,104,0.264
+Nolan Schanuel,Los Angeles Angels,AL,109,30,0.275
+Mickey Moniak,Los Angeles Angels,AL,311,87,0.28
+Gio Urshela,Los Angeles Angels,AL,214,64,0.299
+Brandon Drury,Los Angeles Angels,AL,485,127,0.262
+Shohei Ohtani,Los Angeles Angels,AL,497,151,0.304
+Austin Barnes,Los Angeles Dodgers,NL,178,32,0.18
+Miguel Vargas,Los Angeles Dodgers,NL,256,50,0.195
+Miguel Rojas,Los Angeles Dodgers,NL,385,91,0.236
+Chris Taylor,Los Angeles Dodgers,NL,338,80,0.237
+David Peralta,Los Angeles Dodgers,NL,394,102,0.259
+Jason Heyward,Los Angeles Dodgers,NL,334,90,0.269
+J.D. Martinez,Los Angeles Dodgers,NL,432,117,0.271
+Max Muncy,Los Angeles Dodgers,NL,482,102,0.212
+James Outman,Los Angeles Dodgers,NL,483,120,0.248
+Will Smith,Los Angeles Dodgers,NL,464,121,0.261
+Mookie Betts,Los Angeles Dodgers,NL,584,179,0.307
+Freddie Freeman,Los Angeles Dodgers,NL,637,211,0.331
+Avisaíl García,Miami Marlins,NL,108,20,0.185
+Jacob Stallings,Miami Marlins,NL,241,46,0.191
+Nick Fortes,Miami Marlins,NL,294,60,0.204
+Joey Wendle,Miami Marlins,NL,297,63,0.212
+Jean Segura,Miami Marlins,NL,301,66,0.219
+Yuli Gurriel,Miami Marlins,NL,298,73,0.245
+Jazz Chisholm Jr.,Miami Marlins,NL,352,88,0.25
+Jesús Sánchez,Miami Marlins,NL,360,91,0.253
+Garrett Hampson,Miami Marlins,NL,221,61,0.276
+Jon Berti,Miami Marlins,NL,388,114,0.294
+Jorge Soler,Miami Marlins,NL,504,126,0.25
+Bryan De La Cruz,Miami Marlins,NL,579,149,0.257
+Luis Arráez,Miami Marlins,NL,574,203,0.354
+Jesse Winker,Milwaukee Brewers,NL,166,33,0.199
+Joey Wiemer,Milwaukee Brewers,NL,367,75,0.204
+Rowdy Tellez,Milwaukee Brewers,NL,311,67,0.215
+Blake Perkins,Milwaukee Brewers,NL,143,31,0.217
+Brice Turang,Milwaukee Brewers,NL,404,88,0.218
+Brian Anderson,Milwaukee Brewers,NL,318,72,0.226
+Tyrone Taylor,Milwaukee Brewers,NL,231,54,0.234
+Sal Frelick,Milwaukee Brewers,NL,191,47,0.246
+Victor Caratini,Milwaukee Brewers,NL,201,52,0.259
+Andruw Monasterio,Milwaukee Brewers,NL,282,73,0.259
+Owen Miller,Milwaukee Brewers,NL,291,76,0.261
+Willy Adames,Milwaukee Brewers,NL,553,120,0.217
+Christian Yelich,Milwaukee Brewers,NL,550,153,0.278
+William Contreras,Milwaukee Brewers,NL,540,156,0.289
+Joey Gallo,Minnesota Twins,AL,282,50,0.177
+Byron Buxton,Minnesota Twins,AL,304,63,0.207
+José Miranda,Minnesota Twins,AL,142,30,0.211
+Trevor Larnach,Minnesota Twins,AL,183,39,0.213
+Michael A. Taylor,Minnesota Twins,AL,355,78,0.22
+Christian Vázquez,Minnesota Twins,AL,327,73,0.223
+Matt Wallner,Minnesota Twins,AL,213,53,0.249
+Jorge Polanco,Minnesota Twins,AL,302,77,0.255
+Kyle Farmer,Minnesota Twins,AL,336,86,0.256
+Willi Castro,Minnesota Twins,AL,358,92,0.257
+Max Kepler,Minnesota Twins,AL,438,114,0.26
+Edouard Julien,Minnesota Twins,AL,338,89,0.263
+Alex Kirilloff,Minnesota Twins,AL,281,76,0.27
+Ryan Jeffers,Minnesota Twins,AL,286,79,0.276
+Donovan Solano,Minnesota Twins,AL,394,111,0.282
+Royce Lewis,Minnesota Twins,AL,217,67,0.309
+Carlos Correa,Minnesota Twins,AL,514,118,0.23
+Francisco Alvarez,New York Mets,NL,382,80,0.209
+Omar Narváez,New York Mets,NL,128,27,0.211
+Mark Vientos,New York Mets,NL,218,46,0.211
+Brett Baty,New York Mets,NL,353,75,0.212
+Rafael Ortega,New York Mets,NL,114,25,0.219
+Luis Guillorme,New York Mets,NL,107,24,0.224
+Daniel Vogelbach,New York Mets,NL,275,64,0.233
+DJ Stewart,New York Mets,NL,160,39,0.244
+Ronny Mauricio,New York Mets,NL,101,25,0.248
+Starling Marte,New York Mets,NL,315,78,0.248
+Pete Alonso,New York Mets,NL,568,123,0.217
+Francisco Lindor,New York Mets,NL,602,153,0.254
+Jeff McNeil,New York Mets,NL,585,158,0.27
+Brandon Nimmo,New York Mets,NL,592,162,0.274
+Oswald Peraza,New York Yankees,AL,173,33,0.191
+Giancarlo Stanton,New York Yankees,AL,371,71,0.191
+Jake Bauers,New York Yankees,AL,242,49,0.202
+Jose Trevino,New York Yankees,AL,157,33,0.21
+Oswaldo Cabrera,New York Yankees,AL,298,63,0.211
+Billy McKinney,New York Yankees,AL,128,29,0.227
+Kyle Higashioka,New York Yankees,AL,242,57,0.236
+Willie Calhoun,New York Yankees,AL,134,32,0.239
+Isiah Kiner-Falefa,New York Yankees,AL,326,79,0.242
+Anthony Rizzo,New York Yankees,AL,373,91,0.244
+Aaron Judge,New York Yankees,AL,367,98,0.267
+Anthony Volpe,New York Yankees,AL,541,113,0.209
+DJ LeMahieu,New York Yankees,AL,497,121,0.243
+Gleyber Torres,New York Yankees,AL,596,163,0.273
+Tyler Soderstrom,Oakland Athletics,AL,125,20,0.16
+Kevin Smith,Oakland Athletics,AL,135,25,0.185
+JJ Bleday,Oakland Athletics,AL,256,50,0.195
+Shea Langeliers,Oakland Athletics,AL,448,92,0.205
+Tony Kemp,Oakland Athletics,AL,359,75,0.209
+Lawrence Butler,Oakland Athletics,AL,123,26,0.211
+Jordan Diaz,Oakland Athletics,AL,272,60,0.221
+Nick Allen,Oakland Athletics,AL,303,67,0.221
+Jesús Aguilar,Oakland Athletics,AL,104,23,0.221
+Seth Brown,Oakland Athletics,AL,343,76,0.222
+Carlos Pérez,Oakland Athletics,AL,168,38,0.226
+Aledmys Díaz,Oakland Athletics,AL,315,72,0.229
+Ryan Noda,Oakland Athletics,AL,406,93,0.229
+Esteury Ruiz,Oakland Athletics,AL,449,114,0.254
+Zack Gelof,Oakland Athletics,AL,270,72,0.267
+Brent Rooker,Oakland Athletics,AL,463,114,0.246
+Garrett Stubbs,Philadelphia Phillies,NL,113,23,0.204
+Josh Harrison,Philadelphia Phillies,NL,103,21,0.204
+Jake Cave,Philadelphia Phillies,NL,184,39,0.212
+Kody Clemens,Philadelphia Phillies,NL,139,32,0.23
+Edmundo Sosa,Philadelphia Phillies,NL,279,70,0.251
+Brandon Marsh,Philadelphia Phillies,NL,404,112,0.277
+Johan Rojas,Philadelphia Phillies,NL,149,45,0.302
+Kyle Schwarber,Philadelphia Phillies,NL,585,115,0.197
+J.T. Realmuto,Philadelphia Phillies,NL,489,123,0.252
+Trea Turner,Philadelphia Phillies,NL,639,170,0.266
+Nick Castellanos,Philadelphia Phillies,NL,626,170,0.272
+Alec Bohm,Philadelphia Phillies,NL,558,153,0.274
+Bryson Stott,Philadelphia Phillies,NL,585,164,0.28
+Bryce Harper,Philadelphia Phillies,NL,457,134,0.293
+Alika Williams,Pittsburgh Pirates,NL,101,20,0.198
+Nick Gonzales,Pittsburgh Pirates,NL,115,24,0.209
+Henry Davis,Pittsburgh Pirates,NL,225,48,0.213
+Endy Rodríguez,Pittsburgh Pirates,NL,186,41,0.22
+Ji Hwan Bae,Pittsburgh Pirates,NL,334,77,0.231
+Tucupita Marcano,Pittsburgh Pirates,NL,202,47,0.233
+Liover Peguero,Pittsburgh Pirates,NL,198,47,0.237
+Joshua Palacios,Pittsburgh Pirates,NL,247,59,0.239
+Connor Joe,Pittsburgh Pirates,NL,413,102,0.247
+Jason Delay,Pittsburgh Pirates,NL,167,42,0.251
+Andrew McCutchen,Pittsburgh Pirates,NL,390,100,0.256
+Jared Triolo,Pittsburgh Pirates,NL,181,54,0.298
+Jack Suwinski,Pittsburgh Pirates,NL,447,100,0.224
+Bryan Reynolds,Pittsburgh Pirates,NL,574,151,0.263
+Ke'Bryan Hayes,Pittsburgh Pirates,NL,494,134,0.271
+Austin Nola,San Diego Padres,NL,130,19,0.146
+Matt Carpenter,San Diego Padres,NL,188,33,0.176
+Rougned Odor,San Diego Padres,NL,138,28,0.203
+Nelson Cruz,San Diego Padres,NL,143,35,0.245
+Matthew Batten,San Diego Padres,NL,120,31,0.258
+Luis Campusano,San Diego Padres,NL,163,52,0.319
+Trent Grisham,San Diego Padres,NL,469,93,0.198
+Jake Cronenworth,San Diego Padres,NL,458,105,0.229
+Fernando Tatis Jr.,San Diego Padres,NL,575,148,0.257
+Manny Machado,San Diego Padres,NL,543,140,0.258
+Ha-Seong Kim,San Diego Padres,NL,538,140,0.26
+Juan Soto,San Diego Padres,NL,568,156,0.275
+Xander Bogaerts,San Diego Padres,NL,596,170,0.285
+Dylan Moore,Seattle Mariners,AL,145,30,0.207
+José Caballero,Seattle Mariners,AL,231,51,0.221
+Mike Ford,Seattle Mariners,AL,219,50,0.228
+Jarred Kelenic,Seattle Mariners,AL,372,94,0.253
+Tom Murphy,Seattle Mariners,AL,145,42,0.29
+Cal Raleigh,Seattle Mariners,AL,513,119,0.232
+Eugenio Suárez,Seattle Mariners,AL,598,139,0.232
+Ty France,Seattle Mariners,AL,587,147,0.25
+Teoscar Hernández,Seattle Mariners,AL,625,161,0.258
+J.P. Crawford,Seattle Mariners,AL,534,142,0.266
+Julio Rodríguez,Seattle Mariners,AL,654,180,0.275
+David Villar,San Francisco Giants,NL,124,18,0.145
+Brett Wisely,San Francisco Giants,NL,120,21,0.175
+Brandon Crawford,San Francisco Giants,NL,283,55,0.194
+Casey Schmitt,San Francisco Giants,NL,253,52,0.206
+Mitch Haniger,San Francisco Giants,NL,211,44,0.209
+Patrick Bailey,San Francisco Giants,NL,326,76,0.233
+Mike Yastrzemski,San Francisco Giants,NL,330,77,0.233
+Joc Pederson,San Francisco Giants,NL,358,84,0.235
+Blake Sabol,San Francisco Giants,NL,310,73,0.235
+Michael Conforto,San Francisco Giants,NL,406,97,0.239
+Luis Matos,San Francisco Giants,NL,228,57,0.25
+Austin Slater,San Francisco Giants,NL,185,50,0.27
+Wilmer Flores,San Francisco Giants,NL,405,115,0.284
+J.D. Davis,San Francisco Giants,NL,480,119,0.248
+LaMonte Wade Jr.,San Francisco Giants,NL,429,110,0.256
+Thairo Estrada,San Francisco Giants,NL,495,134,0.271
+Masyn Winn,St. Louis Cardinals,NL,122,21,0.172
+Dylan Carlson,St. Louis Cardinals,NL,219,48,0.219
+Tyler O'Neill,St. Louis Cardinals,NL,238,55,0.231
+Nolan Gorman,St. Louis Cardinals,NL,406,96,0.236
+Andrew Knizner,St. Louis Cardinals,NL,224,54,0.241
+Alec Burleson,St. Louis Cardinals,NL,315,77,0.244
+Willson Contreras,St. Louis Cardinals,NL,428,113,0.264
+Jordan Walker,St. Louis Cardinals,NL,420,116,0.276
+Brendan Donovan,St. Louis Cardinals,NL,327,93,0.284
+Tommy Edman,St. Louis Cardinals,NL,479,119,0.248
+Lars Nootbaar,St. Louis Cardinals,NL,426,111,0.261
+Nolan Arenado,St. Louis Cardinals,NL,560,149,0.266
+Paul Goldschmidt,St. Louis Cardinals,NL,593,159,0.268
+Taylor Walls,Tampa Bay Rays,AL,303,61,0.201
+Jose Siri,Tampa Bay Rays,AL,338,75,0.222
+Christian Bethancourt,Tampa Bay Rays,AL,315,71,0.225
+Francisco Mejia,Tampa Bay Rays,AL,150,34,0.227
+Brandon Lowe,Tampa Bay Rays,AL,377,87,0.231
+Luke Raley,Tampa Bay Rays,AL,357,89,0.249
+René Pinto,Tampa Bay Rays,AL,103,26,0.252
+Manuel Margot,Tampa Bay Rays,AL,311,82,0.264
+Wander Franco,Tampa Bay Rays,AL,442,124,0.281
+Harold Ramírez,Tampa Bay Rays,AL,400,125,0.313
+Isaac Paredes,Tampa Bay Rays,AL,492,123,0.25
+Randy Arozarena,Tampa Bay Rays,AL,551,140,0.254
+Josh Lowe,Tampa Bay Rays,AL,466,136,0.292
+Yandy Díaz,Tampa Bay Rays,AL,525,173,0.33
+Josh Smith,Texas Rangers,AL,195,36,0.185
+Robbie Grossman,Texas Rangers,AL,353,84,0.238
+Travis Jankowski,Texas Rangers,AL,247,65,0.263
+Mitch Garver,Texas Rangers,AL,296,80,0.27
+Ezequiel Durán,Texas Rangers,AL,406,112,0.276
+Adolis García,Texas Rangers,AL,555,136,0.245
+Jonah Heim,Texas Rangers,AL,457,118,0.258
+Nathaniel Lowe,Texas Rangers,AL,623,163,0.262
+Josh Jung,Texas Rangers,AL,478,127,0.266
+Leody Taveras,Texas Rangers,AL,511,136,0.266
+Marcus Semien,Texas Rangers,AL,670,185,0.276
+Corey Seager,Texas Rangers,AL,477,156,0.327
+Danny Jansen,Toronto Blue Jays,AL,268,61,0.228
+Cavan Biggio,Toronto Blue Jays,AL,289,68,0.235
+Santiago Espinal,Toronto Blue Jays,AL,230,57,0.248
+Alejandro Kirk,Toronto Blue Jays,AL,372,93,0.25
+Brandon Belt,Toronto Blue Jays,AL,339,86,0.254
+Kevin Kiermaier,Toronto Blue Jays,AL,370,98,0.265
+Davis Schneider,Toronto Blue Jays,AL,116,32,0.276
+Daulton Varsho,Toronto Blue Jays,AL,527,116,0.22
+Matt Chapman,Toronto Blue Jays,AL,509,122,0.24
+George Springer,Toronto Blue Jays,AL,613,158,0.258
+Vladimir Guerrero Jr.,Toronto Blue Jays,AL,602,159,0.264
+Whit Merrifield,Toronto Blue Jays,AL,547,149,0.272
+Bo Bichette,Toronto Blue Jays,AL,571,175,0.306
+Alex Call,Washington Nationals,NL,375,75,0.2
+Jake Alu,Washington Nationals,NL,159,36,0.226
+Corey Dickerson,Washington Nationals,NL,144,36,0.25
+Ildemaro Vargas,Washington Nationals,NL,262,66,0.252
+Jacob Young,Washington Nationals,NL,107,27,0.252
+Luis García Jr.,Washington Nationals,NL,447,119,0.266
+Stone Garrett,Washington Nationals,NL,234,63,0.269
+Riley Adams,Washington Nationals,NL,143,39,0.273
+Víctor Robles,Washington Nationals,NL,107,32,0.299
+CJ Abrams,Washington Nationals,NL,563,138,0.245
+Dominic Smith,Washington Nationals,NL,527,134,0.254
+Keibert Ruiz,Washington Nationals,NL,523,136,0.26
+Lane Thomas,Washington Nationals,NL,628,168,0.268
+Joey Meneses,Washington Nationals,NL,611,168,0.275
