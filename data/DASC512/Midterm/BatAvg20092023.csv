@@ -1,0 +1,201 @@
+Player,Team,League,BattingAvg,AtBats,Hits,Year
+Evan Longoria,Tampa Bay Rays,American League,0.281,584,164,2009
+Jose Guillen,Kansas City Royals,American League,0.242,281,68,2009
+John Buck,Kansas City Royals,American League,0.247,186,46,2009
+Mike Napoli,Los Angeles Angels of Anaheim,American League,0.272,382,104,2009
+Andrew McCutchen,Pittsburgh Pirates,National League,0.286,433,124,2009
+Mark DeRosa,St. Louis Cardinals,National League,0.228,237,54,2009
+Kevin Youkilis,Boston Red Sox,American League,0.305,491,150,2009
+Russell Martin,Los Angeles Dodgers,National League,0.25,505,126,2009
+Miguel Cabrera,Detroit Tigers,American League,0.324,611,198,2009
+Scott Podsednik,Chicago White Sox,American League,0.304,537,163,2009
+Miguel Tejada,Houston Astros,National League,0.313,635,199,2009
+Angel Pagan,New York Mets,National League,0.306,343,105,2009
+Willie Bloomquist,Kansas City Royals,American League,0.265,434,115,2009
+Jose Lopez,Seattle Mariners,American League,0.272,613,167,2009
+Alfonso Soriano,Chicago Cubs,National League,0.241,477,115,2009
+Michael Young,Texas Rangers,American League,0.322,541,174,2009
+Nick Hundley,San Diego Padres,National League,0.238,256,61,2009
+Andy LaRoche,Pittsburgh Pirates,National League,0.258,524,135,2009
+Chris Snyder,Arizona Diamondbacks,National League,0.2,165,33,2009
+Austin Kearns,Washington Nationals,National League,0.195,174,34,2009
+Koyie Hill,Chicago Cubs,National League,0.237,253,60,2009
+Michael Bourn,Houston Astros,National League,0.285,606,173,2009
+Placido Polanco,Detroit Tigers,American League,0.285,618,176,2009
+Daric Barton,Oakland Athletics,American League,0.269,160,43,2009
+Jose Morales,Minnesota Twins,American League,0.311,119,37,2009
+Cody Ross,Florida Marlins,National League,0.27,559,151,2009
+Jose Reyes,New York Mets,National League,0.279,147,41,2009
+Wladimir Balentien,Cincinnati Reds,National League,0.264,110,29,2009
+Victor Martinez,Cleveland Indians,American League,0.284,377,107,2009
+Jim Thome,Chicago White Sox,American League,0.249,345,86,2009
+Cliff Pennington,Oakland Athletics,American League,0.279,208,58,2009
+Juan Pierre,Los Angeles Dodgers,National League,0.308,380,117,2009
+David Eckstein,San Diego Padres,National League,0.26,503,131,2009
+Kelly Johnson,Atlanta Braves,National League,0.224,303,68,2009
+Skip Schumaker,St. Louis Cardinals,National League,0.303,532,161,2009
+Ramon Santiago,Detroit Tigers,American League,0.267,262,70,2009
+Julio Lugo,Boston Red Sox,American League,0.284,109,31,2009
+James Loney,Los Angeles Dodgers,National League,0.281,576,162,2009
+Frank Catalanotto,Milwaukee Brewers,National League,0.278,144,40,2009
+Steven Pearce,Pittsburgh Pirates,National League,0.206,165,34,2009
+Aaron Rowand,San Francisco Giants,National League,0.261,499,130,2009
+Nyjer Morgan,Washington Nationals,National League,0.351,191,67,2009
+Chone Figgins,Los Angeles Angels of Anaheim,American League,0.298,615,183,2009
+Eugenio Velez,San Francisco Giants,National League,0.267,285,76,2009
+Hideki Matsui,New York Yankees,American League,0.274,456,125,2009
+Kyle Blanks,San Diego Padres,National League,0.25,148,37,2009
+Ramon Vazquez,Pittsburgh Pirates,National League,0.23,204,47,2009
+Omar Vizquel,Texas Rangers,American League,0.266,177,47,2009
+Paul Konerko,Chicago White Sox,American League,0.277,546,151,2009
+Derrek Lee,Chicago Cubs,National League,0.306,532,163,2009
+Matt Holliday,Oakland Athletics,American League,0.286,346,99,2009
+Jason Giambi,Oakland Athletics,American League,0.193,269,52,2009
+Jack Wilson,Pittsburgh Pirates,National League,0.267,266,71,2009
+Jason Michaels,Houston Astros,National League,0.237,135,32,2009
+Daniel Murphy,New York Mets,National League,0.266,508,135,2009
+Julio Lugo,St. Louis Cardinals,National League,0.277,148,41,2009
+Elvis Andrus,Texas Rangers,American League,0.267,480,128,2009
+Colby Rasmus,St. Louis Cardinals,National League,0.251,474,119,2009
+Jamey Carroll,Cleveland Indians,American League,0.276,315,87,2009
+Gregg Zaun,Baltimore Orioles,American League,0.244,168,41,2009
+Willie Harris,Washington Nationals,National League,0.235,323,76,2009
+Andruw Jones,Texas Rangers,American League,0.214,281,60,2009
+Yuniesky Betancourt,Kansas City Royals,American League,0.24,246,59,2009
+Edgar Renteria,San Francisco Giants,National League,0.25,460,115,2009
+Mike Aviles,Kansas City Royals,American League,0.183,120,22,2009
+Matt Diaz,Atlanta Braves,National League,0.313,371,116,2009
+Matt Stairs,Philadelphia Phillies,National League,0.194,103,20,2009
+Nate McLouth,Pittsburgh Pirates,National League,0.256,168,43,2009
+Chris Iannetta,Colorado Rockies,National League,0.228,289,66,2009
+Ryan Hanigan,Cincinnati Reds,National League,0.263,251,66,2009
+Wil Nieves,Washington Nationals,National League,0.259,224,58,2009
+Rocco Baldelli,Boston Red Sox,American League,0.253,150,38,2009
+Carlos Lee,Houston Astros,National League,0.3,610,183,2009
+Brandon Allen,Arizona Diamondbacks,National League,0.202,104,21,2009
+Josh Wilson,Seattle Mariners,American League,0.25,128,32,2009
+Mark Teahen,Kansas City Royals,American League,0.271,524,142,2009
+Eric Hinske,Pittsburgh Pirates,National League,0.255,106,27,2009
+Rickie Weeks,Milwaukee Brewers,National League,0.272,147,40,2009
+Ryan Braun,Milwaukee Brewers,National League,0.32,635,203,2009
+Matt Kemp,Los Angeles Dodgers,National League,0.297,606,180,2009
+Alexis Rios,Chicago White Sox,American League,0.199,146,29,2009
+Bobby Crosby,Oakland Athletics,American League,0.223,238,53,2009
+Shane Victorino,Philadelphia Phillies,National League,0.292,620,181,2009
+Elijah Dukes,Washington Nationals,National League,0.25,364,91,2009
+Jack Wilson,Seattle Mariners,American League,0.224,107,24,2009
+Eliezer Alfonzo,San Diego Padres,National League,0.175,114,20,2009
+Raul Ibanez,Philadelphia Phillies,National League,0.272,500,136,2009
+Darnell McDonald,Cincinnati Reds,National League,0.267,105,28,2009
+Wladimir Balentien,Seattle Mariners,American League,0.213,155,33,2009
+Nyjer Morgan,Pittsburgh Pirates,National League,0.277,278,77,2009
+Carlos Gomez,Minnesota Twins,American League,0.229,315,72,2009
+Hunter Pence,Houston Astros,National League,0.282,585,165,2009
+Micah Hoffpauir,Chicago Cubs,National League,0.239,234,56,2009
+Rajai Davis,Oakland Athletics,American League,0.305,390,119,2009
+Carlos Guillen,Detroit Tigers,American League,0.242,277,67,2009
+Yorvit Torrealba,Colorado Rockies,National League,0.291,213,62,2009
+Kazuo Matsui,Houston Astros,National League,0.25,476,119,2009
+Lyle Overbay,Toronto Blue Jays,American League,0.265,423,112,2009
+Gabe Gross,Tampa Bay Rays,American League,0.227,282,64,2009
+Albert Pujols,St. Louis Cardinals,National League,0.327,568,186,2009
+Jose Altuve,Houston Astros,American League,0.311,360,112,2023
+Cam Gallagher,Cleveland Guardians,American League,0.126,143,18,2023
+Chris Taylor,Los Angeles Dodgers,National League,0.237,338,80,2023
+Isiah Kiner-Falefa,New York Yankees,American League,0.242,326,79,2023
+Eloy Jiménez,Chicago White Sox,American League,0.272,456,124,2023
+J.D. Davis,San Francisco Giants,National League,0.248,480,119,2023
+Andruw Monasterio,Milwaukee Brewers,National League,0.259,282,73,2023
+Jack Suwinski,Pittsburgh Pirates,National League,0.224,447,100,2023
+Jacob Young,Washington Nationals,National League,0.252,107,27,2023
+Ezequiel Durán,Texas Rangers,American League,0.276,406,112,2023
+Taylor Ward,Los Angeles Angels,American League,0.253,356,90,2023
+Zach McKinstry,Detroit Tigers,American League,0.231,464,107,2023
+Matt Duffy,Kansas City Royals,American League,0.251,191,48,2023
+Luis Robert Jr.,Chicago White Sox,American League,0.264,546,144,2023
+Endy Rodríguez,Pittsburgh Pirates,National League,0.22,186,41,2023
+Gabriel Moreno,Arizona Diamondbacks,National League,0.284,341,97,2023
+Alex Verdugo,Boston Red Sox,American League,0.264,546,144,2023
+Nick Maton,Detroit Tigers,American League,0.173,249,43,2023
+Corey Julks,Houston Astros,American League,0.245,298,73,2023
+Esteury Ruiz,Oakland Athletics,American League,0.254,449,114,2023
+Miguel Amaya,Chicago Cubs,National League,0.214,131,28,2023
+Zach Neto,Los Angeles Angels,American League,0.225,289,65,2023
+Cedric Mullins,Baltimore Orioles,American League,0.233,404,94,2023
+Zach Remillard,Chicago White Sox,American League,0.252,147,37,2023
+Gunnar Henderson,Baltimore Orioles,American League,0.255,560,143,2023
+Josh Harrison,Philadelphia Phillies,National League,0.204,103,21,2023
+Chas McCormick,Houston Astros,American League,0.273,403,110,2023
+Michael Conforto,San Francisco Giants,National League,0.239,406,97,2023
+Alex Bregman,Houston Astros,American League,0.262,622,163,2023
+JJ Bleday,Oakland Athletics,American League,0.195,256,50,2023
+Blake Perkins,Milwaukee Brewers,National League,0.217,143,31,2023
+Stuart Fairchild,Cincinnati Reds,National League,0.228,219,50,2023
+Andrew Knizner,St. Louis Cardinals,National League,0.241,224,54,2023
+Ryan McKenna,Baltimore Orioles,American League,0.254,122,31,2023
+Oswaldo Cabrera,New York Yankees,American League,0.211,298,63,2023
+Adolis García,Texas Rangers,American League,0.245,555,136,2023
+TJ Friedl,Cincinnati Reds,National League,0.279,488,136,2023
+Christian Bethancourt,Tampa Bay Rays,American League,0.225,315,71,2023
+Jorge Soler,Miami Marlins,National League,0.25,504,126,2023
+Akil Baddoo,Detroit Tigers,American League,0.218,312,68,2023
+Christopher Morel,Chicago Cubs,National League,0.247,388,96,2023
+Trey Mancini,Chicago Cubs,National League,0.234,235,55,2023
+Martín Maldonado,Houston Astros,American League,0.191,362,69,2023
+Brandon Nimmo,New York Mets,National League,0.274,592,162,2023
+Isaac Paredes,Tampa Bay Rays,American League,0.25,492,123,2023
+Bryan Reynolds,Pittsburgh Pirates,National League,0.263,574,151,2023
+Francisco Lindor,New York Mets,National League,0.254,602,153,2023
+J.T. Realmuto,Philadelphia Phillies,National League,0.252,489,123,2023
+Ian Happ,Chicago Cubs,National League,0.248,580,144,2023
+Nick Madrigal,Chicago Cubs,National League,0.263,270,71,2023
+Kevin Pillar,Atlanta Braves,National League,0.228,197,45,2023
+Miguel Rojas,Los Angeles Dodgers,National League,0.236,385,91,2023
+Cavan Biggio,Toronto Blue Jays,American League,0.235,289,68,2023
+Will Smith,Los Angeles Dodgers,National League,0.261,464,121,2023
+Joey Wendle,Miami Marlins,National League,0.212,297,63,2023
+Spencer Torkelson,Detroit Tigers,American League,0.233,606,141,2023
+Jesse Winker,Milwaukee Brewers,National League,0.199,166,33,2023
+Adam Duvall,Boston Red Sox,American League,0.247,320,79,2023
+Parker Meadows,Detroit Tigers,American League,0.232,125,29,2023
+Luis Guillorme,New York Mets,National League,0.224,107,24,2023
+Josh Lowe,Tampa Bay Rays,American League,0.292,466,136,2023
+Keibert Ruiz,Washington Nationals,National League,0.26,523,136,2023
+Fernando Tatis Jr.,San Diego Padres,National League,0.257,575,148,2023
+René Pinto,Tampa Bay Rays,American League,0.252,103,26,2023
+David Fry,Cleveland Guardians,American League,0.238,101,24,2023
+José Miranda,Minnesota Twins,American League,0.211,142,30,2023
+Andrew Vaughn,Chicago White Sox,American League,0.258,566,146,2023
+Kody Clemens,Philadelphia Phillies,National League,0.23,139,32,2023
+Jason Heyward,Los Angeles Dodgers,National League,0.269,334,90,2023
+Ryan McMahon,Colorado Rockies,National League,0.24,555,133,2023
+Ryan O'Hearn,Baltimore Orioles,American League,0.289,346,100,2023
+Brendan Rodgers,Colorado Rockies,National League,0.258,178,46,2023
+Salvador Perez,Kansas City Royals,American League,0.255,538,137,2023
+Mookie Betts,Los Angeles Dodgers,National League,0.307,584,179,2023
+Randy Arozarena,Tampa Bay Rays,American League,0.254,551,140,2023
+Shohei Ohtani,Los Angeles Angels,American League,0.304,497,151,2023
+Jared Walsh,Los Angeles Angels,American League,0.125,104,13,2023
+Dylan Carlson,St. Louis Cardinals,National League,0.219,219,48,2023
+Kevin Newman,Cincinnati Reds,National League,0.253,225,57,2023
+Jeff McNeil,New York Mets,National League,0.27,585,158,2023
+Luis Arráez,Miami Marlins,National League,0.354,574,203,2023
+Yuli Gurriel,Miami Marlins,National League,0.245,298,73,2023
+William Contreras,Milwaukee Brewers,National League,0.289,540,156,2023
+Matt Wallner,Minnesota Twins,American League,0.249,213,53,2023
+Jesús Sánchez,Miami Marlins,National League,0.253,360,91,2023
+Edmundo Sosa,Philadelphia Phillies,National League,0.251,279,70,2023
+LaMonte Wade Jr.,San Francisco Giants,National League,0.256,429,110,2023
+Andy Ibáñez,Detroit Tigers,American League,0.264,356,94,2023
+Jake Rogers,Detroit Tigers,American League,0.221,331,73,2023
+Alika Williams,Pittsburgh Pirates,National League,0.198,101,20,2023
+Nick Senzel,Cincinnati Reds,National League,0.236,301,71,2023
+Emmanuel Rivera,Arizona Diamondbacks,National League,0.261,257,67,2023
+Maikel Garcia,Kansas City Royals,American League,0.272,464,126,2023
+Mike Trout,Los Angeles Angels,American League,0.263,308,81,2023
+Liover Peguero,Pittsburgh Pirates,National League,0.237,198,47,2023
+Orlando Arcia,Atlanta Braves,National League,0.264,488,129,2023
+Alejandro Kirk,Toronto Blue Jays,American League,0.25,372,93,2023
+Willson Contreras,St. Louis Cardinals,National League,0.264,428,113,2023
+Elehuris Montero,Colorado Rockies,National League,0.243,284,69,2023
+Luke Maile,Cincinnati Reds,National League,0.235,179,42,2023
